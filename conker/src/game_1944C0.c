@@ -4,6 +4,9 @@
 #include "variables.h"
 
 
+void func_15168B10(s32 arg0, s32 arg1);
+extern u8 D_800D2DAB;
+
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15167010.s")
 // NON-MATCHING: not hugely far away
 // void func_15167010(void) {
@@ -34,7 +37,9 @@
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_1516865C.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15168800.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15168870.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15168A2C.s")
+void func_15168A2C(s32 arg0) {
+    func_15168B10(arg0, 0);
+}
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15168A4C.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15168A9C.s")
 // void *func_15168A9C(struct12 *arg0) {
@@ -67,7 +72,13 @@ void func_15168B10(s32 arg0, s32 arg1) {
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15168BAC.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15168BE4.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15168C4C.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15168E34.s")
+void func_15168E34(u32 *arg0, u32 arg1) {
+    u32 value = *arg0;
+
+    if ((value & 0x0F000000) == 0) {
+        *arg0 = value + arg1;
+    }
+}
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15168E54.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15168F08.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15168F84.s")
@@ -77,7 +88,10 @@ void func_15168B10(s32 arg0, s32 arg1) {
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_1516944C.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_151695F0.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_1516962C.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15169668.s")
+s32 func_15169668(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    D_800D2DAB = 1;
+    return arg0;
+}
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_1516968C.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_151696DC.s")
 
