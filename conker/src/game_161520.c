@@ -130,10 +130,10 @@ void func_1513530C(struct102 *arg0) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_161520/func_151355B8.s")
 
-s32 func_15135658(void *arg0) {
+s32 func_15135658(struct259 *arg0) {
     s32 ret = 1;
 
-    *(f32 *)((u8 *)arg0 + 0x74) = 1.0f;
+    arg0->unk74 = 1.0f;
     return ret;
 }
 
@@ -182,8 +182,8 @@ s32 func_15136A1C(struct102 *arg0) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_161520/func_15137C64.s")
 
-s32 func_15137E10(void *arg0) {
-    *(f32 *)((u8 *)arg0 + 0x74) = ((func_150ADA68() * 50.0f) + 580.0f) * D_800A4828;
+s32 func_15137E10(struct259 *arg0) {
+    arg0->unk74 = ((func_150ADA68() * 50.0f) + 580.0f) * D_800A4828;
     return 1;
 }
 
