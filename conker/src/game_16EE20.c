@@ -99,19 +99,20 @@ s32 func_151422F8(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15142838.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15142914.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_151429E0.s")
-s32 func_15142A5C(struct127 *arg0) {
-    typedef struct {
-        u8 pad0[0x3C];
-        s16 unk3C;
-    } struct197_local;
-
-    struct197_local *temp_v0 = (struct197_local *)arg0->unk2D0;
-
-    if (temp_v0->unk3C > 0) {
-        return 1;
-    }
-    return 0;
-}
+// s32 func_15142A5C(struct127 *arg0) {
+//     typedef struct {
+//         u8 pad0[0x3C];
+//         s16 unk3C;
+//     } struct197_local;
+//
+//     struct197_local *temp_v0 = (struct197_local *)arg0->unk2D0;
+//
+//     if (temp_v0->unk3C > 0) {
+//         return 1;
+//     }
+//     return 0;
+// }
+#pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15142A5C.s")
 f32 func_15142A80(f32 arg0) {
     return ((1.0f - arg0) * (arg0 - 2.0f) * arg0) * D_800A5624;
 }

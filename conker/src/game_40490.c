@@ -146,22 +146,23 @@ s32 func_1501407C(s32 arg0) {
 #pragma GLOBAL_ASM("asm/nonmatchings/game_40490/func_15014144.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_40490/func_15014220.s")
-s32 func_150142AC(struct134 *arg0) {
-    typedef struct {
-        u8 pad0[0x1B];
-        u8 unk1B;
-    } struct134_local;
-
-    s32 idx;
-
-    arg0->unk16 |= 4;
-    idx = ((struct134_local *)arg0)->unk1B;
-    if ((idx < 0) || (idx >= 3)) {
-        return 1;
-    }
-    D_800D9AA0[idx] = arg0;
-    return 1;
-}
+// s32 func_150142AC(struct134 *arg0) {
+//     typedef struct {
+//         u8 pad0[0x1B];
+//         u8 unk1B;
+//     } struct134_local;
+//
+//     s32 idx;
+//
+//     arg0->unk16 |= 4;
+//     idx = ((struct134_local *)arg0)->unk1B;
+//     if ((idx < 0) || (idx >= 3)) {
+//         return 1;
+//     }
+//     D_800D9AA0[idx] = arg0;
+//     return 1;
+// }
+#pragma GLOBAL_ASM("asm/nonmatchings/game_40490/func_150142AC.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_40490/func_150142EC.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_40490/func_150144B8.s")

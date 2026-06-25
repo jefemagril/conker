@@ -3,31 +3,6 @@
 #include "functions.h"
 #include "variables.h"
 
-
-typedef struct {
-    f32 unk0;
-    f32 unk4;
-    f32 unk8;
-} Game16DC80Vec3f;
-
-typedef struct {
-    u8 pad0[0x154];
-    volatile s32 unk154;
-    u8 pad158[0x10];
-    u8 unk168;
-    u8 pad169[0x7];
-    s32 unk170;
-    f32 unk174;
-    Game16DC80Vec3f *unk178;
-    Game16DC80Vec3f unk17C;
-} Game16DC80Obj;
-
-f32 func_1514182C(Game16DC80Obj *arg0, Game16DC80Vec3f *arg1, s32 arg2, f32 arg3, f32 arg4, f32 arg5);
-void func_1517E134(s32 arg0);
-extern s32 D_800DC9F0;
-extern void (*D_80089F9C[])(void *);
-extern void (*D_80089FE4[])(void *);
-
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16DC80/func_151407D0.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16DC80/func_151408A4.s")
@@ -40,21 +15,23 @@ void func_151411C4(struct210 *arg0) {
     func_1513CAA0(arg0);
 }
 
-void func_151411E4(Game16DC80Obj *arg0) {
-    if (arg0->unk154 != 0) {
-        func_1517E134(arg0->unk154);
-    }
-    D_800DC9F0--;
-    D_80089F9C[arg0->unk168](arg0);
-}
+// void func_151411E4(Game16DC80Obj *arg0) {
+//     if (arg0->unk154 != 0) {
+//         func_1517E134(arg0->unk154);
+//     }
+//     D_800DC9F0--;
+//     D_80089F9C[arg0->unk168](arg0);
+// }
+#pragma GLOBAL_ASM("asm/nonmatchings/game_16DC80/func_151411E4.s")
 
-void func_15141250(Game16DC80Obj *arg0) {
-    if (arg0->unk154 != 0) {
-        func_1517E134(arg0->unk154);
-    }
-    D_800DC9F0--;
-    D_80089FE4[arg0->unk168](arg0);
-}
+// void func_15141250(Game16DC80Obj *arg0) {
+//     if (arg0->unk154 != 0) {
+//         func_1517E134(arg0->unk154);
+//     }
+//     D_800DC9F0--;
+//     D_80089FE4[arg0->unk168](arg0);
+// }
+#pragma GLOBAL_ASM("asm/nonmatchings/game_16DC80/func_15141250.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16DC80/func_151412BC.s")
 
@@ -99,10 +76,11 @@ s32 func_15141818(s32 arg0, s32 arg1) {
 //     return temp_f0;
 // }
 
-s32 func_15141928(Game16DC80Obj *arg0) {
-    Game16DC80Vec3f *temp_v0;
-
-    temp_v0 = arg0->unk178;
-    func_1514182C(arg0, &arg0->unk17C, arg0->unk170, arg0->unk174, temp_v0->unk0, temp_v0->unk8);
-    return 1;
-}
+// s32 func_15141928(Game16DC80Obj *arg0) {
+//     Game16DC80Vec3f *temp_v0;
+//
+//     temp_v0 = arg0->unk178;
+//     func_1514182C(arg0, &arg0->unk17C, arg0->unk170, arg0->unk174, temp_v0->unk0, temp_v0->unk8);
+//     return 1;
+// }
+#pragma GLOBAL_ASM("asm/nonmatchings/game_16DC80/func_15141928.s")

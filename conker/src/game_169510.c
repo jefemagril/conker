@@ -531,22 +531,23 @@ void func_1513F6C0(struct210 *arg0, u8 arg1, u8 arg2) {
     arg0->unk81 = arg2;
 }
 
-s32 func_1513F6E8(void *arg0_raw) {
-    typedef struct {
-        u8 pad0[0x2C];
-        f32 unk2C;
-        f32 unk30;
-        u8 pad34[0xF4];
-        f32 unk128;
-    } Game169510Motion;
-
-    Game169510Motion *arg0 = (Game169510Motion *)arg0_raw;
-    f32 value = arg0->unk128;
-
-    arg0->unk2C += value * D_800BE9A4;
-    arg0->unk30 += value * D_800BE9A4;
-    return 1;
-}
+// s32 func_1513F6E8(void *arg0_raw) {
+//     typedef struct {
+//         u8 pad0[0x2C];
+//         f32 unk2C;
+//         f32 unk30;
+//         u8 pad34[0xF4];
+//         f32 unk128;
+//     } Game169510Motion;
+//
+//     Game169510Motion *arg0 = (Game169510Motion *)arg0_raw;
+//     f32 value = arg0->unk128;
+//
+//     arg0->unk2C += value * D_800BE9A4;
+//     arg0->unk30 += value * D_800BE9A4;
+//     return 1;
+// }
+#pragma GLOBAL_ASM("asm/nonmatchings/game_169510/func_1513F6E8.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_169510/func_1513F728.s")
 

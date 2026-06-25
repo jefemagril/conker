@@ -47,32 +47,33 @@
 //     return 1;
 // }
 
-s32 func_1515D030(u8 *arg0_raw, s32 arg1) {
-    typedef struct {
-        u8 pad0[0x25];
-        u8 unk25;
-        u8 pad26[0x6];
-        s8 unk2C;
-        u8 pad2D;
-        s8 unk2E;
-    } Game1897A0Ring;
-
-    Game1897A0Ring *arg0;
-    s32 ret;
-
-    arg0 = (Game1897A0Ring *)arg0_raw;
-    ret = 1;
-    if (arg0->unk2C >= 3) {
-        arg0->unk2C = arg0->unk2C - 1;
-        arg0->unk2E = arg0->unk2E - 1;
-        if (arg0->unk2E < 0) {
-            arg0->unk2E = arg0->unk25 - 1;
-        }
-    } else {
-        ret = 0;
-    }
-    return ret;
-}
+// s32 func_1515D030(u8 *arg0_raw, s32 arg1) {
+//     typedef struct {
+//         u8 pad0[0x25];
+//         u8 unk25;
+//         u8 pad26[0x6];
+//         s8 unk2C;
+//         u8 pad2D;
+//         s8 unk2E;
+//     } Game1897A0Ring;
+//
+//     Game1897A0Ring *arg0;
+//     s32 ret;
+//
+//     arg0 = (Game1897A0Ring *)arg0_raw;
+//     ret = 1;
+//     if (arg0->unk2C >= 3) {
+//         arg0->unk2C = arg0->unk2C - 1;
+//         arg0->unk2E = arg0->unk2E - 1;
+//         if (arg0->unk2E < 0) {
+//             arg0->unk2E = arg0->unk25 - 1;
+//         }
+//     } else {
+//         ret = 0;
+//     }
+//     return ret;
+// }
+#pragma GLOBAL_ASM("asm/nonmatchings/game_1897A0/func_1515D030.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1897A0/func_1515D088.s")
 // s32 func_1515D088(void *arg0) {
