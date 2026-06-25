@@ -2,6 +2,8 @@
 #include "functions.h"
 #include "variables.h"
 
+extern f32 D_800A4828;
+
 // requires jump table
 #pragma GLOBAL_ASM("asm/nonmatchings/game_161520/func_15134070.s")
 
@@ -180,7 +182,10 @@ s32 func_15136A1C(struct102 *arg0) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_161520/func_15137C64.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_161520/func_15137E10.s")
+s32 func_15137E10(void *arg0) {
+    *(f32 *)((u8 *)arg0 + 0x74) = ((func_150ADA68() * 50.0f) + 580.0f) * D_800A4828;
+    return 1;
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_161520/func_15137E60.s")
 
