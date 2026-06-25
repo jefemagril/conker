@@ -15,7 +15,13 @@
     \label:
 .endm
 
+.macro enddlabel label
+.endm
+
 .macro jlabel label
     .global \label
     \label:
+.endm
+
+.macro nonmatching label, size
 .endm
