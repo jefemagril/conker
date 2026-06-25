@@ -175,7 +175,7 @@ s32 func_15169668(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 }
 void func_1516968C(void *arg0, u8 *arg1, u8 arg2) {
     if ((arg2 == 0xF) || (arg2 == 0x10)) {
-        if (*arg1 == *(u8 *)((u8 *)arg0 + 0xC)) {
+        if (*arg1 == ((u8 *)arg0)[0xC]) {
             func_1516972C(arg0);
         }
     }
