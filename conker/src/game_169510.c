@@ -531,13 +531,33 @@ void func_1513F6C0(void *arg0, u8 arg1, u8 arg2) {
     ((u8 *)arg0)[0x81] = arg2;
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_169510/func_1513F6E8.s")
+s32 func_1513F6E8(void *arg0) {
+    f32 value = *(f32 *)((u8 *)arg0 + 0x128);
+
+    *(f32 *)((u8 *)arg0 + 0x2C) += value * D_800BE9A4;
+    *(f32 *)((u8 *)arg0 + 0x30) += value * D_800BE9A4;
+    return 1;
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_169510/func_1513F728.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_169510/func_1513FA2C.s")
+void func_1513FAB4(void *arg0, s32 arg1, f32 *arg2, s16 arg3);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_169510/func_1513FA70.s")
+void func_1513FA2C(void *arg0, s16 arg1) {
+    f32 sp18[2];
+
+    sp18[0] = 1.0f;
+    sp18[1] = 1.0f;
+    func_1513FAB4(arg0, 0, sp18, arg1);
+}
+
+void func_1513FA70(void *arg0, s16 arg1) {
+    f32 sp18[2];
+
+    sp18[0] = 1.0f;
+    sp18[1] = 1.0f;
+    func_1513FAB4(arg0, 1, sp18, arg1);
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_169510/func_1513FAB4.s")
 
