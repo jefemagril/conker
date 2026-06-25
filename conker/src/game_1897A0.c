@@ -47,15 +47,26 @@
 //     return 1;
 // }
 
-s32 func_1515D030(u8 *arg0, s32 arg1) {
+s32 func_1515D030(u8 *arg0_raw, s32 arg1) {
+    typedef struct {
+        u8 pad0[0x25];
+        u8 unk25;
+        u8 pad26[0x6];
+        s8 unk2C;
+        u8 pad2D;
+        s8 unk2E;
+    } Game1897A0Ring;
+
+    Game1897A0Ring *arg0;
     s32 ret;
 
+    arg0 = (Game1897A0Ring *)arg0_raw;
     ret = 1;
-    if (*(s8 *)(arg0 + 0x2C) >= 3) {
-        *(s8 *)(arg0 + 0x2C) = *(s8 *)(arg0 + 0x2C) - 1;
-        *(s8 *)(arg0 + 0x2E) = *(s8 *)(arg0 + 0x2E) - 1;
-        if (*(s8 *)(arg0 + 0x2E) < 0) {
-            *(s8 *)(arg0 + 0x2E) = *(u8 *)(arg0 + 0x25) - 1;
+    if (arg0->unk2C >= 3) {
+        arg0->unk2C = arg0->unk2C - 1;
+        arg0->unk2E = arg0->unk2E - 1;
+        if (arg0->unk2E < 0) {
+            arg0->unk2E = arg0->unk25 - 1;
         }
     } else {
         ret = 0;

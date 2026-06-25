@@ -526,16 +526,25 @@ void func_1513F680(struct171 *arg0, u8 arg1, u8 arg2, u8 arg3, u8 arg4) {
     arg0->unk73 = arg4;
 }
 
-void func_1513F6C0(void *arg0, u8 arg1, u8 arg2) {
-    ((u8 *)arg0)[0x80] = arg1;
-    ((u8 *)arg0)[0x81] = arg2;
+void func_1513F6C0(struct210 *arg0, u8 arg1, u8 arg2) {
+    arg0->unk80 = arg1;
+    arg0->unk81 = arg2;
 }
 
-s32 func_1513F6E8(void *arg0) {
-    f32 value = *(f32 *)((u8 *)arg0 + 0x128);
+s32 func_1513F6E8(void *arg0_raw) {
+    typedef struct {
+        u8 pad0[0x2C];
+        f32 unk2C;
+        f32 unk30;
+        u8 pad34[0xF4];
+        f32 unk128;
+    } Game169510Motion;
 
-    *(f32 *)((u8 *)arg0 + 0x2C) += value * D_800BE9A4;
-    *(f32 *)((u8 *)arg0 + 0x30) += value * D_800BE9A4;
+    Game169510Motion *arg0 = (Game169510Motion *)arg0_raw;
+    f32 value = arg0->unk128;
+
+    arg0->unk2C += value * D_800BE9A4;
+    arg0->unk30 += value * D_800BE9A4;
     return 1;
 }
 

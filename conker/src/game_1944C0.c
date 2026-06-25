@@ -71,20 +71,37 @@ void func_15168B10(s32 arg0, s32 arg1) {
 }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15168B44.s")
-void func_15168BAC(void *arg0) {
-    u8 idx = *(u8 *)((u8 *)arg0 + 0xE4);
+void func_15168BAC(void *arg0_raw) {
+    typedef struct {
+        u8 pad0[0xE4];
+        u8 unkE4;
+    } Game1944C0Dispatch;
+
+    Game1944C0Dispatch *arg0 = (Game1944C0Dispatch *)arg0_raw;
+    u8 idx = arg0->unkE4;
 
     if (idx != 0) {
         D_8008CA20[idx](arg0);
     }
 }
-void func_15168BE4(u8 *arg0, u8 arg1, s32 arg2) {
-    void *temp_v0;
+void func_15168BE4(void *arg0_raw, u8 arg1, s32 arg2) {
+    typedef struct {
+        u8 pad0[0x40];
+        s32 unk40;
+    } Game1944C0CopySrc;
 
-    if (*(s32 *)(arg0 + 0x40) != 0) {
+    typedef struct {
+        u8 pad0[0x90];
+        u8 unk90[0x60];
+    } Game1944C0CopyDst;
+
+    Game1944C0CopySrc *arg0 = (Game1944C0CopySrc *)arg0_raw;
+    Game1944C0CopyDst *temp_v0;
+
+    if (arg0->unk40 != 0) {
         temp_v0 = func_15167A68(0x10, arg2, 0xF0, 1, arg1, 1);
         if (temp_v0 != NULL) {
-            bcopy(arg0, (u8 *)temp_v0 + 0x90, 0x60);
+            bcopy(arg0, temp_v0->unk90, 0x60);
         }
     }
 }
@@ -138,13 +155,18 @@ void func_15168F84(s32 arg0, s32 *arg1, s32 *arg2) {
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_1516944C.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_151695F0.s")
 void func_1516962C(s32 arg0, void *arg1, u8 arg2) {
+    typedef struct {
+        u8 pad0[0x3B];
+        u8 unk3B;
+    } Game1944C0Payload;
+
     struct {
         void *unk0;
         u8 unk4;
     } sp18;
 
     sp18.unk0 = arg1;
-    sp18.unk4 = *(u8 *)((u8 *)arg1 + 0x3B);
+    sp18.unk4 = ((Game1944C0Payload *)arg1)->unk3B;
     func_1516944C(arg0, (s32)&sp18, arg2);
 }
 s32 func_15169668(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
@@ -158,12 +180,12 @@ void func_1516968C(void *arg0, u8 *arg1, u8 arg2) {
         }
     }
 }
-void func_151696DC(void *arg0) {
+void func_151696DC(struct102 *arg0) {
     s32 i;
 
     for (i = 0; i < D_800DD190; i = (s8)(i + 1)) {
         if (arg0 == ((void **)D_800DD198)[i]) {
-            ((void **)D_800DD198)[i] = *(void **)((u8 *)arg0 + 8);
+            ((void **)D_800DD198)[i] = (void *)arg0->unk8;
         }
     }
 }

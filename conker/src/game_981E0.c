@@ -1450,8 +1450,8 @@ void func_15072AF8(void) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_15072B44.s")
 void func_15072DA0(void) {
-    *(u16 *)((u8 *)D_800D154C + 0x2F8) &= 0xFFF8;
-    *(u16 *)((u8 *)D_800D154C + 0x2F8) |= D_800D1580;
+    D_800D154C->unk2F8 &= 0xFFF8;
+    D_800D154C->unk2F8 |= D_800D1580;
 }
 
 void func_15072DD8(void) {
