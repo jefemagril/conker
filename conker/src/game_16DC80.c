@@ -11,6 +11,10 @@ typedef struct {
 } Game16DC80Vec3f;
 
 f32 func_1514182C(u8 *arg0, u8 *arg1, s32 arg2, f32 arg3, f32 arg4, f32 arg5);
+void func_1517E134(s32 arg0);
+extern s32 D_800DC9F0;
+extern void (*D_80089F9C[])(void *);
+extern void (*D_80089FE4[])(void *);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16DC80/func_151407D0.s")
 
@@ -24,9 +28,21 @@ void func_151411C4(struct210 *arg0) {
     func_1513CAA0(arg0);
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_16DC80/func_151411E4.s")
+void func_151411E4(u8 *arg0) {
+    if (*(volatile s32 *)(arg0 + 0x154) != 0) {
+        func_1517E134(*(volatile s32 *)(arg0 + 0x154));
+    }
+    D_800DC9F0--;
+    D_80089F9C[*(u8 *)(arg0 + 0x168)](arg0);
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_16DC80/func_15141250.s")
+void func_15141250(u8 *arg0) {
+    if (*(volatile s32 *)(arg0 + 0x154) != 0) {
+        func_1517E134(*(volatile s32 *)(arg0 + 0x154));
+    }
+    D_800DC9F0--;
+    D_80089FE4[*(u8 *)(arg0 + 0x168)](arg0);
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16DC80/func_151412BC.s")
 
