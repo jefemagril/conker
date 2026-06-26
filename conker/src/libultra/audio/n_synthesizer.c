@@ -1,6 +1,13 @@
 #include "n_synthInternals.h"
 
 extern f32 D_8002C750;
+Acmd *func_1001FB40(s32 sampleOffset, Acmd *p);
+s32 __n_nextSampleTime(ALPlayer **client);
+s32 _n_timeToSamplesNoRound(s32 micros);
+
+#ifndef MIN
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
+#endif
 
 #pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/n_synthesizer/n_alSynNew.s")
 // void n_alSynNew(struct07 *arg0) {
@@ -116,74 +123,48 @@ extern f32 D_8002C750;
 //     D_8002BA44->unk3C = sp34;
 // }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/n_synthesizer/n_alAudioFrame.s")
-// void *n_alAudioFrame(void *arg0, void *arg1, s32 arg2, u32 arg3) {
-//     void *sp3C;
-//     void *sp38;
-//     s32 sp34;
-//     s32 sp30;
-//     void *sp2C;
-//     void *sp28;
-//     s32 temp_t5_2;
-//     void *temp_t0;
-//     void *temp_t1;
-//     void *temp_t2;
-//     void *temp_t5;
-//     void *temp_t7;
-//     void *temp_t8;
-//     void *temp_t9;
-//
-//     sp38 = arg0;
-//     sp30 = arg2;
-//     if (*D_8002BA44 == 0) {
-//         *arg1 = 0;
-//         return arg0;
-//     }
-//     D_8002BA44->unk1C = func_10019A04(&sp3C);
-//     temp_t2 = D_8002BA44;
-//     if ((u32) (temp_t2->unk1C - temp_t2->unk20) < arg3) {
-// loop_3:
-//         temp_t7 = D_8002BA44;
-//         temp_t7->unk1C = (s32) (temp_t7->unk1C & -0x10);
-//         sp3C->unk10 = (s32) (sp3C->unk10 + _n_timeToSamplesNoRound(sp3C->unk8(sp3C)));
-//         D_8002BA44->unk1C = func_10019A04(&sp3C);
-//         temp_t5 = D_8002BA44;
-//         if ((u32) (temp_t5->unk1C - temp_t5->unk20) < arg3) {
-//             goto loop_3;
-//         }
-//     }
-//     temp_t9 = D_8002BA44;
-//     temp_t9->unk1C = (s32) (temp_t9->unk1C & -0x10);
-//     if ((s32) arg3 > 0) {
-// loop_5:
-//         temp_t5_2 = D_8002BA44->unk58;
-//         if (temp_t5_2 < (s32) arg3) {
-//             sp34 = temp_t5_2;
-//         } else {
-//             sp34 = (s32) arg3;
-//         }
-//         sp38 = func_1001FB40(D_8002BA44->unk20, sp38);
-//         temp_t0 = sp38;
-//         sp38 = temp_t0 + 8;
-//         sp2C = temp_t0;
-//         *sp2C = 0xD000000;
-//         temp_t1 = sp38;
-//         sp38 = temp_t1 + 8;
-//         sp28 = temp_t1;
-//         sp28->unk0 = 0x62E0000;
-//         sp28->unk4 = sp30;
-//         arg3 = arg3 - sp34;
-//         sp30 = sp30 + (sp34 * 2 * 2);
-//         temp_t8 = D_8002BA44;
-//         temp_t8->unk20 = (s32) (temp_t8->unk20 + sp34);
-//         if ((s32) arg3 > 0) {
-//             goto loop_5;
-//         }
-//     }
-//     *arg1 = (s32) ((s32) (sp38 - arg0) >> 3);
-//     _collectPVoices();
-//     return sp38;
-// }
+Acmd *n_alAudioFrame(Acmd *cmdList, s32 *cmdLen, s16 *outBuf, s32 outLen) {
+    ALPlayer *client;
+    Acmd *cmdlEnd = cmdList;
+    s32 nOut;
+    s16 *lOutBuf = outBuf;
+    Acmd *cmdPtr;
+    Acmd *cmdPtr2;
+
+    if (n_syn->head == 0) {
+        *cmdLen = 0;
+        return cmdList;
+    }
+
+    for (n_syn->paramSamples = __n_nextSampleTime(&client);
+         (u32)(n_syn->paramSamples - n_syn->curSamples) < (u32)outLen;
+         n_syn->paramSamples = __n_nextSampleTime(&client)) {
+        n_syn->paramSamples &= ~0xf;
+        client->samplesLeft += _n_timeToSamplesNoRound((*client->handler)(client));
+    }
+
+    n_syn->paramSamples &= ~0xf;
+
+    while (outLen > 0) {
+        nOut = MIN(n_syn->maxOutSamples, outLen);
+
+        cmdlEnd = func_1001FB40(n_syn->curSamples, cmdlEnd);
+        cmdPtr = cmdlEnd++;
+        cmdPtr->words.w0 = 0x0D000000;
+
+        cmdPtr2 = cmdlEnd++;
+        cmdPtr2->words.w0 = 0x062E0000;
+        cmdPtr2->words.w1 = (u32)lOutBuf;
+
+        outLen -= nOut;
+        lOutBuf += nOut << 1;
+        n_syn->curSamples += nOut;
+    }
+
+    *cmdLen = (s32)(cmdlEnd - cmdList);
+    _n_collectPVoices();
+    return cmdlEnd;
+}
 
 ALParam *__n_allocParam(void) {
     ALParam *update = 0;
