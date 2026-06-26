@@ -93,7 +93,17 @@ void func_151F2BA8(void) {
     osSetIntMask(mask);
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/game_21FC90/func_151F2BE8.s")
+void n_alStreamStop(void) {
+    u32 mask;
+
+    mask = osSetIntMask(1);
+    if (gStreamState == STREAM_STATE_START_PENDING) {
+        gStreamState = STREAM_STATE_FADE_OUT;
+    } else {
+        gStreamState = STREAM_STATE_STOPPING;
+    }
+    osSetIntMask(mask);
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/game_21FC90/func_151F2C4C.s")
 
