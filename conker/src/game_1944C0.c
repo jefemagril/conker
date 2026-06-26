@@ -24,6 +24,25 @@ extern u8 D_800D2DAB;
 // }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_1516706C.s")
+// NEAR-MATCHING: loop body matches, but IDO schedules the setup as
+// `addiu s0, D_8008CB64` before `addiu s1, D_8008CB70`; target asm needs
+// the low-half setup in `s1` then `s0` order. Reordering declarations flips
+// both high-half and low-half setup instead of only the low-half instructions.
+// extern void (*D_8008CB64[])(void);
+// extern void (*D_8008CB70[])(void);
+// void func_1516706C(void) {
+//     void (**table)(void) = D_8008CB64;
+//     void (**end)(void) = D_8008CB70;
+//     void (*func)(void);
+//
+//     do {
+//         func = *table;
+//         if (func != NULL) {
+//             func();
+//         }
+//         table++;
+//     } while (table != end);
+// }
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_151670C0.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_151671E8.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15167310.s")
