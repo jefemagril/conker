@@ -27,6 +27,7 @@ extern s32  D_800E0DFC;
 
 #define STREAM_STATE_PLAYING       1
 #define STREAM_STATE_STOPPING      2
+#define STREAM_STATE_TEARDOWN      3
 #define STREAM_STATE_START_PENDING 5
 #define STREAM_STATE_FADE_OUT      6
 #define STREAM_STATE_FADE_IN       7
@@ -47,6 +48,34 @@ typedef ALDMAproc (*N_ALStreamDMANew)(void *state);
 
 
 #pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/game_21FC90/func_151F27E0.s")
+// NON-MATCHING: This is a CRC-5-style helper over a 16-bit word using polynomial
+// 0x15. Straight C matches the semantics, but IDO schedules the input-bit branch
+// and return epilogue differently than the original.
+//
+// u8 n_alStreamCrc5Word(u16 value) {
+//     u8 crc;
+//     u8 feedback;
+//     s32 bit;
+//     s32 i;
+//
+//     crc = 0;
+//     for (i = 0; i < 16; i++) {
+//         if (crc & 0x10) {
+//             feedback = 0x15;
+//         } else {
+//             feedback = 0;
+//         }
+//         if (value & 0x400) {
+//             bit = 1;
+//         } else {
+//             bit = 0;
+//         }
+//         crc = (crc << 1) | bit;
+//         value <<= 1;
+//         crc ^= feedback;
+//     }
+//     return crc & 0x1F;
+// }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/game_21FC90/func_151F2890.s")
 
@@ -99,9 +128,9 @@ void func_151F2960(s32 arg0, s32 arg1) {
     gStreamState = STREAM_STATE_START_PENDING;
 }
 
-void func_151F2BA8(void) {
+void n_alStreamForceStop(void) {
     u32 mask = osSetIntMask(1);
-    gStreamState = 3;
+    gStreamState = STREAM_STATE_TEARDOWN;
     osSetIntMask(mask);
 }
 

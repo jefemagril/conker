@@ -22,7 +22,7 @@ void func_100125CC(s32 arg0) {
             return;
         }
         if (res != 0) {
-            func_151F2BA8();
+            n_alStreamForceStop();
         }
     }
 }
