@@ -1,6 +1,36 @@
 #include <n_libaudio.h>
 
-#pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/n_csq/n_alCSeqNew.s")
+u32 __readVarLen(ALCSeq *seq, s32 track);
+
+void n_alCSeqNew(ALCSeq *seq, u8 *ptr) {
+    u32 i;
+    u32 tmpOff;
+    u32 flagTmp;
+
+    seq->base = (ALCMidiHdr *)ptr;
+    seq->validTracks = 0;
+    seq->lastDeltaTicks = 0;
+    seq->lastTicks = 0;
+    seq->deltaFlag = 1;
+
+    for (i = 0; i < 16; i++) {
+        seq->lastStatus[i] = 0;
+        seq->curBUPtr[i] = 0;
+        seq->curBULen[i] = 0;
+        tmpOff = seq->base->trackOffset[i];
+
+        if (tmpOff != 0) {
+            flagTmp = 1 << i;
+            seq->validTracks |= flagTmp;
+            seq->curLoc[i] = ptr + tmpOff;
+            seq->evtDeltaTicks[i] = __readVarLen(seq, i);
+        } else {
+            seq->curLoc[i] = 0;
+        }
+    }
+
+    seq->qnpt = 1.0f / (f32)seq->base->division;
+}
 #pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/n_csq/n_alCSeqNextEvent.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/n_csq/__n_alCSeqGetTrackEvent.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/n_csq/func_100186DC.s")
