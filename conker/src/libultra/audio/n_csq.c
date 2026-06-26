@@ -1,7 +1,10 @@
 #include <n_libaudio.h>
 
 #define CONKER_AL_TRACK_END 0x13
+#define CONKER_AL_CSP_LOOPSTART 0x14
+#define CONKER_AL_CSP_LOOPEND 0x15
 
+u8 __getTrackByte(ALCSeq *seq, s32 track);
 u32 __readVarLen(ALCSeq *seq, s32 track);
 u32 __n_alCSeqGetTrackEvent(ALCSeq *seq, u32 track, N_ALEvent *event, s32 arg3);
 
@@ -69,7 +72,87 @@ void n_alCSeqNextEvent(ALCSeq *seq, N_ALEvent *evt, s32 arg2) {
 
     seq->deltaFlag = 1;
 }
-#pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/n_csq/__n_alCSeqGetTrackEvent.s")
+u32 __n_alCSeqGetTrackEvent(ALCSeq *seq, u32 track, N_ALEvent *event, s32 arg3) {
+    u32 offset;
+    u8 status;
+    u8 loopCt;
+    u8 curLpCt;
+    u8 *tmpPtr;
+
+    status = __getTrackByte(seq, track);
+
+    if (status == AL_MIDI_Meta) {
+        u8 type = __getTrackByte(seq, track);
+
+        if (type == AL_MIDI_META_TEMPO) {
+            event->type = AL_TEMPO_EVT;
+            event->msg.tempo.status = status;
+            event->msg.tempo.type = type;
+            event->msg.tempo.byte1 = __getTrackByte(seq, track);
+            event->msg.tempo.byte2 = __getTrackByte(seq, track);
+            event->msg.tempo.byte3 = __getTrackByte(seq, track);
+            seq->lastStatus[track] = 0;
+        } else if (type == AL_MIDI_META_EOT) {
+            u32 flagMask = 1 << track;
+
+            seq->validTracks ^= flagMask;
+            if (seq->validTracks != 0) {
+                event->type = CONKER_AL_TRACK_END;
+            } else {
+                event->type = AL_SEQ_END_EVT;
+            }
+        } else if (type == AL_CMIDI_LOOPSTART_CODE) {
+            status = __getTrackByte(seq, track);
+            event->msg.loop.count = status << 8;
+            status = __getTrackByte(seq, track);
+            event->msg.loop.count += status;
+            seq->lastStatus[track] = 0;
+            event->type = CONKER_AL_CSP_LOOPSTART;
+        } else if (type == AL_CMIDI_LOOPEND_CODE) {
+            tmpPtr = seq->curLoc[track];
+            loopCt = *tmpPtr++;
+            curLpCt = *tmpPtr;
+            if (curLpCt == 0 || arg3 == 0) {
+                *tmpPtr = loopCt;
+                seq->curLoc[track] = tmpPtr + 5;
+            } else {
+                if (curLpCt != 0xFF) {
+                    *tmpPtr = curLpCt - 1;
+                }
+                tmpPtr++;
+                offset = *tmpPtr++ << 24;
+                offset += *tmpPtr++ << 16;
+                offset += *tmpPtr++ << 8;
+                offset += *tmpPtr++;
+                seq->curLoc[track] = tmpPtr - offset;
+            }
+            seq->lastStatus[track] = 0;
+            event->type = CONKER_AL_CSP_LOOPEND;
+        }
+    } else {
+        event->type = AL_SEQ_MIDI_EVT;
+        if (status & 0x80) {
+            event->msg.midi.status = (status & 0xF0) | track;
+            event->msg.midi.byte1 = __getTrackByte(seq, track);
+            seq->lastStatus[track] = event->msg.midi.status;
+        } else {
+            event->msg.midi.status = seq->lastStatus[track];
+            event->msg.midi.byte1 = status;
+        }
+
+        if (((event->msg.midi.status & 0xF0) != AL_MIDI_ProgramChange) &&
+            ((event->msg.midi.status & 0xF0) != AL_MIDI_ChannelPressure)) {
+            event->msg.midi.byte2 = __getTrackByte(seq, track);
+            if ((event->msg.midi.status & 0xF0) == AL_MIDI_NoteOn) {
+                event->msg.midi.duration = __readVarLen(seq, track);
+            }
+        } else {
+            event->msg.midi.byte2 = 0;
+        }
+    }
+
+    return 1;
+}
 #pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/n_csq/func_100186DC.s")
 // void func_100186DC(void *arg0, void *arg1) {
 //     s32 sp4;
