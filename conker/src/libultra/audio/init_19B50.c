@@ -101,7 +101,18 @@ void func_1001A3FC(struct24 *arg0, s32 arg1, s32 arg2, s32 arg3) {
     func_1001263C(arg0->unk36 * 100 + arg3, 0x7FFF, 0x40);
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/init_19B50/func_1001A45C.s")
+void n_alCSPApplyChlVol(N_ALCSPlayer *seqp, u8 chan) {
+    N_ALSoundState *state;
+    s16 vol;
+
+    for (state = seqp->vAllocHead; state != NULL; state = state->voice.node.next) {
+        if ((state->chan == chan) && (state->unk38 != 3)) {
+            vol = __n_vsVol(state, seqp);
+            n_alSynSetVol(&state->voice.node.prev, vol, __n_vsDelta(state, seqp->curTime));
+        }
+    }
+}
+
 #pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/init_19B50/func_1001A508.s")
 
 void func_1001A704(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 arg3) {
@@ -153,7 +164,7 @@ void func_1001A704(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 arg3) {
     } else {
         seqp->chanMask &= ~(1 << chan);
     }
-    func_1001A45C(seqp, chan);
+    n_alCSPApplyChlVol(seqp, chan);
 }
 
 void func_1001A9DC(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 arg3) {
@@ -168,5 +179,5 @@ void func_1001AA08(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 arg3) {
     } else {
         seqp->chanMask |= 1 << chan;
     }
-    func_1001A45C(seqp, chan);
+    n_alCSPApplyChlVol(seqp, chan);
 }
