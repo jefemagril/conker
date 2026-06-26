@@ -1,7 +1,6 @@
 #include <n_libaudio.h>
 #include "n_sndp.h"
 
-
 void func_10019B50(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 vol) {
     N_ALSoundState *state;
     s16 tmp;
@@ -114,6 +113,30 @@ void n_alCSPApplyChlVol(N_ALCSPlayer *seqp, u8 chan) {
 }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/init_19B50/func_1001A508.s")
+// NON-MATCHING: Semantics match Rare's channel fade-start control, but IDO branch
+// layout around the "already fading" path does not yet match the original asm.
+// The original also uses `abs.s`; if reviving this, add the local `fabsf`
+// intrinsic declaration used elsewhere in the repo.
+//
+// void n_alCSPStartChlFade(N_ALCSPlayer *seqp, N_ALEvent *event, s32 chan, s32 target) {
+//     f32 fadeDelta;
+//
+//     if (seqp->chanState[chan].unkF == 0) {
+//         seqp->chanState[chan].unkF = 0x88;
+//     }
+//     if (seqp->chanState[chan].unkE != target) {
+//         fadeDelta = target - seqp->chanState[chan].unkD;
+//         seqp->chanState[chan].unk10 = fadeDelta / (seqp->chanState[chan].unkF & 0x7F);
+//         seqp->chanState[chan].unk10 = fabsf(seqp->chanState[chan].unk10);
+//         if (seqp->chanState[chan].unkD == seqp->chanState[chan].unkE) {
+//             seqp->chanState[chan].unkE = target;
+//             event->msg.midi.byte1 = 0xFE;
+//             func_1001A704(seqp, event, chan, target);
+//         } else {
+//             seqp->chanState[chan].unkE = target;
+//         }
+//     }
+// }
 
 void func_1001A704(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 arg3) {
     u8 sp2F;
