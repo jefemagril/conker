@@ -153,33 +153,21 @@ u32 __n_alCSeqGetTrackEvent(ALCSeq *seq, u32 track, N_ALEvent *event, s32 arg3) 
 
     return 1;
 }
-#pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/n_csq/func_100186DC.s")
-// void func_100186DC(void *arg0, void *arg1) {
-//     s32 sp4;
-//     s32 temp_t0;
-//     s32 temp_t4;
-//     s32 temp_t5;
-//     s32 temp_t8;
-//
-//     arg0->unk4 = (s32) arg1->unk0;
-//     arg0->unkC = (s32) arg1->unk4;
-//     arg0->unk10 = (s32) arg1->unk8;
-//     sp4 = 0;
-// loop_1:
-//     temp_t0 = sp4 * 4;
-//     (arg0 + temp_t0)->unk18 = (s32) (arg1 + temp_t0)->unkC;
-//     temp_t5 = sp4 * 4;
-//     (arg0 + temp_t5)->unk58 = (s32) (arg1 + temp_t5)->unk4C;
-//     (arg0 + sp4)->unk98 = (u8) (arg1 + sp4)->unk8C;
-//     (arg0 + sp4)->unkA8 = (u8) (arg1 + sp4)->unk9C;
-//     temp_t8 = sp4 * 4;
-//     (arg0 + temp_t8)->unkB8 = (s32) (arg1 + temp_t8)->unkAC;
-//     temp_t4 = sp4 + 1;
-//     sp4 = temp_t4;
-//     if (temp_t4 < 0x10) {
-//         goto loop_1;
-//     }
-// }
+void alCSeqSetLoc(ALCSeq *seq, ALCSeqMarker *m) {
+    s32 i;
+
+    seq->validTracks = m->validTracks;
+    seq->lastTicks = m->lastTicks;
+    seq->lastDeltaTicks = m->lastDeltaTicks;
+
+    for (i = 0; i < 16; i++) {
+        seq->curLoc[i] = m->curLoc[i];
+        seq->curBUPtr[i] = m->curBUPtr[i];
+        seq->curBULen[i] = m->curBULen[i];
+        seq->lastStatus[i] = m->lastStatus[i];
+        seq->evtDeltaTicks[i] = m->evtDeltaTicks[i];
+    }
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/n_csq/func_10018790.s")
 
