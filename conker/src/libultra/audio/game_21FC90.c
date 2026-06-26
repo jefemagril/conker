@@ -23,6 +23,8 @@ extern s32  D_800E0DFC;
 #define STREAM_VOLUME_LIMIT 0x8000
 #define STREAM_VOLUME_MAX   0x7FFF
 
+#define STREAM_PREFETCH_SIZE 0x810
+
 #define STREAM_STATE_PLAYING       1
 #define STREAM_STATE_STOPPING      2
 #define STREAM_STATE_START_PENDING 5
@@ -35,6 +37,13 @@ extern s32  D_800E0DFC;
 #define gStreamTargetVolume      D_800E0E08
 #define gStreamVolumeRampSamples D_800E0E10
 #define gStreamTransitionDelay   D_800E0E18
+#define gStreamDataStart         D_800E0D80
+#define gStreamReadOffset        D_800E0DE4
+
+typedef ALDMAproc (*N_ALStreamDMANew)(void *state);
+
+/* Conker stores a stream DMA-new callback in N_ALSynth's custom pad at 0x24. */
+#define n_alStreamDmaNew() (((N_ALStreamDMANew *) n_syn->pad24)[0])
 
 
 #pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/game_21FC90/func_151F27E0.s")
@@ -82,9 +91,9 @@ void func_151F2960(s32 arg0, s32 arg1) {
         }
         func_151F3DE0();
     }
-    D_800E0D80 = arg0;
+    gStreamDataStart = arg0;
     D_800E0DE0 = arg1;
-    D_800E0DE4 = 0;
+    gStreamReadOffset = 0;
     gStreamVolumeRampSamples = 0;
     gStreamTransitionDelay = STREAM_TRANSITION_DELAY;
     gStreamState = STREAM_STATE_START_PENDING;
@@ -190,4 +199,10 @@ void func_151F3C34(s32 arg0) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/game_21FC90/func_151F3C4C.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/game_21FC90/func_151F3D78.s")
+void n_alStreamPrefetch(void) {
+    void *dmaState;
+    ALDMAproc dmaProc;
+
+    dmaProc = n_alStreamDmaNew()(&dmaState);
+    dmaProc(gStreamDataStart + gStreamReadOffset, STREAM_PREFETCH_SIZE, 0);
+}
