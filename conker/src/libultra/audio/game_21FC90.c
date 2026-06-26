@@ -24,6 +24,7 @@ extern s32  D_800E0DFC;
 #define STREAM_VOLUME_MAX   0x7FFF
 
 #define STREAM_PREFETCH_SIZE 0x810
+#define STREAM_DMA_CACHED_BASE 0x80000000
 
 #define STREAM_STATE_PLAYING       1
 #define STREAM_STATE_STOPPING      2
@@ -257,7 +258,28 @@ void func_151F3C34(s32 arg0) {
     D_800E0DFC = arg0;
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/game_21FC90/func_151F3C4C.s")
+s32 n_alStreamRead(void *state, void *dst, s32 len, s32 offset) {
+    void *src;
+    ALDMAproc dmaProc;
+
+    if (offset != -1) {
+        gStreamReadOffset = offset;
+    }
+    if (gStreamReadOffset + len > D_800E0DE0) {
+        len = D_800E0DE0 - gStreamReadOffset;
+    }
+
+    dmaProc = n_alStreamDmaNew()(&src);
+    src = (void *) dmaProc(gStreamDataStart + gStreamReadOffset, len, 0);
+    if (src == 0) {
+        return 0;
+    }
+    src = (void *) ((s32) src + STREAM_DMA_CACHED_BASE);
+    osInvalDCache(src, len);
+    bcopy(src, dst, len);
+    gStreamReadOffset += len;
+    return len;
+}
 
 void n_alStreamPrefetch(void) {
     void *dmaState;
