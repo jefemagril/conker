@@ -1,6 +1,9 @@
 #include <n_libaudio.h>
 
+#define CONKER_AL_TRACK_END 0x13
+
 u32 __readVarLen(ALCSeq *seq, s32 track);
+u32 __n_alCSeqGetTrackEvent(ALCSeq *seq, u32 track, N_ALEvent *event, s32 arg3);
 
 void n_alCSeqNew(ALCSeq *seq, u8 *ptr) {
     u32 i;
@@ -31,7 +34,41 @@ void n_alCSeqNew(ALCSeq *seq, u8 *ptr) {
 
     seq->qnpt = 1.0f / (f32)seq->base->division;
 }
-#pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/n_csq/n_alCSeqNextEvent.s")
+void n_alCSeqNextEvent(ALCSeq *seq, N_ALEvent *evt, s32 arg2) {
+    u32 i;
+    u32 firstTime = -1;
+    u32 firstTrack = -1;
+    u32 lastTicks = seq->lastDeltaTicks;
+
+    for (i = 0; i < 16; i++) {
+        if ((seq->validTracks >> i) & 1) {
+            if (seq->deltaFlag != 0) {
+                seq->evtDeltaTicks[i] -= lastTicks;
+            }
+
+            if (seq->evtDeltaTicks[i] < firstTime) {
+                firstTime = seq->evtDeltaTicks[i];
+                firstTrack = i;
+            }
+        }
+    }
+
+    if (firstTrack != -1) {
+        __n_alCSeqGetTrackEvent(seq, firstTrack, evt, arg2);
+    } else {
+        evt->type = CONKER_AL_TRACK_END;
+    }
+
+    evt->msg.midi.ticks = firstTime;
+    seq->lastTicks += firstTime;
+    seq->lastDeltaTicks = firstTime;
+
+    if (evt->type != CONKER_AL_TRACK_END) {
+        seq->evtDeltaTicks[firstTrack] += __readVarLen(seq, firstTrack);
+    }
+
+    seq->deltaFlag = 1;
+}
 #pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/n_csq/__n_alCSeqGetTrackEvent.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/n_csq/func_100186DC.s")
 // void func_100186DC(void *arg0, void *arg1) {
