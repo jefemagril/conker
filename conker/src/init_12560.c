@@ -11,7 +11,7 @@ void func_10012560(s32 arg0) {
 void func_10012588(s32 arg0) {
     func_15016170(arg0);
     func_15043A00(&D_800427A0, &D_800427B0, 64);
-    func_151F3C1C(func_10012560);
+    n_alStreamSetDoneCallback(func_10012560);
 }
 
 void func_100125CC(s32 arg0) {
@@ -36,13 +36,13 @@ void func_1001263C(s32 arg0, s32 arg1, s32 arg2) {
     D_800427F4 = (s16) arg0;
     if ((temp_v0 != 0) && (sp18 != 0)) {
         n_alStreamSetVolumeRamp(arg1, 0);
-        func_151F2DFC(arg2, 1);
+        n_alStreamSetPan(arg2, 1);
         if (arg0 != 0xD2) {
-            func_151F2E4C(10, 11000);
+            n_alStreamSetLoadInfo(10, 11000);
         } else {
-            func_151F2E4C(0, 0);
+            n_alStreamSetLoadInfo(0, 0);
         }
-        func_151F2960(temp_v0, sp18);
+        n_alStreamStart(temp_v0, sp18);
     }
 }
 

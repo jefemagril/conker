@@ -1,6 +1,9 @@
 #include <n_libaudio.h>
 
-extern s32  D_800E0E00;
+typedef void (*N_ALStreamDoneCallback)(s32);
+typedef s32 (*N_ALStreamReadCallback)(void *state, void *dst, s32 len, s32 offset);
+
+extern N_ALStreamDoneCallback D_800E0E00;
 extern s32  D_800E0E04;
 extern s32  D_800E0E08;
 extern s32  D_800E0E10;
@@ -18,7 +21,7 @@ extern s16  D_800E0DB2;
 extern s32  D_800E0DD8;
 extern s32  D_800E0DE0;
 extern s32  D_800E0DE4;
-extern s32  D_800E0DFC;
+extern N_ALStreamReadCallback D_800E0DFC;
 extern s16  D_8002BC10[];
 extern s16  D_8002BD0E[];
 extern u8   D_800428C1;
@@ -64,13 +67,33 @@ typedef struct N_ALStreamState {
 #define STREAM_STATE_FADE_IN       7
 
 #define STREAM_TRANSITION_DELAY 5
+#define STREAM_LOADING_STATE    4
+#define STREAM_PAN_MIN          0
+#define STREAM_PAN_CENTER       0x40
+#define STREAM_PAN_LIMIT        0x80
+#define STREAM_PAN_MAX          0x7F
+#define STREAM_DATA_BUFFER_SIZE  0x8000
+#define STREAM_BANK_ID           0x17
 
 #define gStreamState             D_800E0E04
 #define gStreamTargetVolume      D_800E0E08
 #define gStreamVolumeRampSamples D_800E0E10
+#define gStreamCurrentPan        D_800E0E14
+#define gStreamTargetPan         D_800E0E16
 #define gStreamTransitionDelay   D_800E0E18
+#define gStreamInitialized       D_800E0E2C
+#define gStreamVoice0            D_800E0E20
+#define gStreamVoice1            D_800E0E24
+#define gStreamVoice2            D_800E0E28
+#define gStreamDataBuffer        D_800E0E30
+#define gStreamLoadCommandCount  D_800E0DB2
+#define gStreamLoadSampleRate    D_800E0DB0
+#define gStreamLoadMode          D_800E0DD8
+#define gStreamDoneCallback      D_800E0E00
 #define gStreamDataStart         D_800E0D80
+#define gStreamDataLength        D_800E0DE0
 #define gStreamReadOffset        D_800E0DE4
+#define gStreamReadCallback      D_800E0DFC
 #define gStreamStateBlock        (*(N_ALStreamState *) &D_800E0D80)
 
 typedef ALDMAproc (*N_ALStreamDMANew)(void *state);
@@ -142,49 +165,49 @@ typedef ALDMAproc (*N_ALStreamDMANew)(void *state);
 //     return crc;
 // }
 
-void func_151F2960(s32 arg0, s32 arg1) {
-    if (D_800E0DFC == 0) {
+void n_alStreamStart(s32 dataStart, s32 dataLength) {
+    if (gStreamReadCallback == 0) {
         return;
     }
-    gStreamState = 4;
-    if (D_800E0E2C == 0) {
-      D_800E0E2C = 1;
-        D_800E0E30 = allocate_memory(0x8000, 0xFF, 2, 1);
-        if (D_800E0E30 == 0) {
-            D_800E0E2C = 0;
+    gStreamState = STREAM_LOADING_STATE;
+    if (gStreamInitialized == 0) {
+      gStreamInitialized = 1;
+        gStreamDataBuffer = allocate_memory(STREAM_DATA_BUFFER_SIZE, 0xFF, 2, 1);
+        if (gStreamDataBuffer == 0) {
+            gStreamInitialized = 0;
             return;
         }
-        D_800E0E20 = func_1502B5C8(0, 2, 0x17, 4);
-        if (D_800E0E20 != 0) {
-            func_100043B4(D_800E0E20, 0xFF);
+        gStreamVoice0 = func_1502B5C8(0, 2, STREAM_BANK_ID, 4);
+        if (gStreamVoice0 != 0) {
+            func_100043B4(gStreamVoice0, 0xFF);
         }
-        D_800E0E24 = func_1502B5C8(0, 2, 0x17, 5);
-        if (D_800E0E24 != 0) {
-            func_100043B4(D_800E0E24, 0xFF);
+        gStreamVoice1 = func_1502B5C8(0, 2, STREAM_BANK_ID, 5);
+        if (gStreamVoice1 != 0) {
+            func_100043B4(gStreamVoice1, 0xFF);
         }
-        D_800E0E28 = func_1502B5C8(0, 2, 0x17, 6);
-        if (D_800E0E28 != 0) {
-            func_100043B4(D_800E0E28, 0xFF);
+        gStreamVoice2 = func_1502B5C8(0, 2, STREAM_BANK_ID, 6);
+        if (gStreamVoice2 != 0) {
+            func_100043B4(gStreamVoice2, 0xFF);
         }
-        if ((D_800E0E20 == 0) || (D_800E0E24 == 0) || (D_800E0E28 == 0)) {
-            if (D_800E0E20 != 0) {
-                func_10004074(D_800E0E20);
+        if ((gStreamVoice0 == 0) || (gStreamVoice1 == 0) || (gStreamVoice2 == 0)) {
+            if (gStreamVoice0 != 0) {
+                func_10004074(gStreamVoice0);
             }
-            if (D_800E0E24 != 0) {
-                func_10004074(D_800E0E24);
+            if (gStreamVoice1 != 0) {
+                func_10004074(gStreamVoice1);
             }
-            if (D_800E0E28 != 0) {
-                func_10004074(D_800E0E28);
+            if (gStreamVoice2 != 0) {
+                func_10004074(gStreamVoice2);
             }
-            func_10004074(D_800E0E30);
-            D_800E0E30 = 0;
-            D_800E0E2C = 0;
+            func_10004074(gStreamDataBuffer);
+            gStreamDataBuffer = 0;
+            gStreamInitialized = 0;
             return;
         }
         func_151F3DE0();
     }
-    gStreamDataStart = arg0;
-    D_800E0DE0 = arg1;
+    gStreamDataStart = dataStart;
+    gStreamDataLength = dataLength;
     gStreamReadOffset = 0;
     gStreamVolumeRampSamples = 0;
     gStreamTransitionDelay = STREAM_TRANSITION_DELAY;
@@ -255,25 +278,25 @@ void n_alStreamSetVolumeRamp(s32 volume, s32 rampSamples) {
     osSetIntMask(mask);
 }
 
-void func_151F2DFC(s32 arg0, s32 arg1) {
-    if (arg0 >= 0x80) {
-        arg0 = (u16)0x7F;
+void n_alStreamSetPan(s32 pan, s32 immediate) {
+    if (pan >= STREAM_PAN_LIMIT) {
+        pan = (u16) STREAM_PAN_MAX;
     } else {
-        if (arg0 < 0) {
-            arg0 = (u16)0;
+        if (pan < STREAM_PAN_MIN) {
+            pan = (u16) STREAM_PAN_MIN;
         }
     }
-    D_800E0E16 = arg0;
-    if (arg1 != 0) {
-        D_800E0E14 = (s16) D_800E0E16;
+    gStreamTargetPan = pan;
+    if (immediate != 0) {
+        gStreamCurrentPan = (s16) gStreamTargetPan;
     }
 }
 
-void func_151F2E4C(s32 arg0, s32 arg1) {
-    D_800E0DB2 = arg0;
-    D_800E0DB0 = arg1;
-    if (D_800E0DD8 == 0) {
-        D_800E0DD8 = 2;
+void n_alStreamSetLoadInfo(s32 commandCount, s32 sampleRate) {
+    gStreamLoadCommandCount = commandCount;
+    gStreamLoadSampleRate = sampleRate;
+    if (gStreamLoadMode == 0) {
+        gStreamLoadMode = 2;
     }
 }
 
@@ -320,12 +343,12 @@ void n_alStreamUpdateEnvelope(N_ALStreamState *state) {
     }
 }
 
-void func_151F3C1C(s32 arg0) {
-    D_800E0E00 = arg0;
+void n_alStreamSetDoneCallback(N_ALStreamDoneCallback callback) {
+    gStreamDoneCallback = callback;
 }
 
-void func_151F3C34(s32 arg0) {
-    D_800E0DFC = arg0;
+void n_alStreamSetReadCallback(N_ALStreamReadCallback readCallback) {
+    gStreamReadCallback = readCallback;
 }
 
 s32 n_alStreamRead(void *state, void *dst, s32 len, s32 offset) {
@@ -335,8 +358,8 @@ s32 n_alStreamRead(void *state, void *dst, s32 len, s32 offset) {
     if (offset != -1) {
         gStreamReadOffset = offset;
     }
-    if (gStreamReadOffset + len > D_800E0DE0) {
-        len = D_800E0DE0 - gStreamReadOffset;
+    if (gStreamReadOffset + len > gStreamDataLength) {
+        len = gStreamDataLength - gStreamReadOffset;
     }
 
     dmaProc = n_alStreamDmaNew()(&src);

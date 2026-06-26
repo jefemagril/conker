@@ -29,5 +29,5 @@
 //     D_800E0D80.unk24 = 1;
 //     D_800E0D80.unk14 = 0x7FFC;
 //     D_800E0D80.unk16 = 0;
-//     func_151F3C34(n_alStreamRead, tmp, 64);
+//     n_alStreamSetReadCallback(n_alStreamRead);
 // }

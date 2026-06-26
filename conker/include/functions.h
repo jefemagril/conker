@@ -109,6 +109,10 @@ void func_100126E8(s32 arg0, s32 arg1);
 s32  func_10012718(u16 arg0, struct127 *arg1, s32 arg2, s16 arg3, u16 arg4);
 s32  func_100127D0(void);
 s32  n_alStreamGetState(void);
+void n_alStreamStart(s32 dataStart, s32 dataLength);
+void n_alStreamSetPan(s32 pan, s32 immediate);
+void n_alStreamSetLoadInfo(s32 commandCount, s32 sampleRate);
+void n_alStreamSetDoneCallback(void (*callback)(s32));
 void n_alStreamSetVolumeRamp(s32 volume, s32 rampSamples);
 void n_alStreamForceStop(void);
 void n_alStreamResume(void);
@@ -1128,6 +1132,7 @@ void func_151D9B8C(u8 arg0, f32 arg1, u8 arg2, s32 arg3, struct17 *arg4, s16 arg
 void func_151DA08C(u8 arg0, f32 arg1, f32 arg2, u8 arg3, s16 arg4, s32 arg5, void *arg6, s32 arg7, s32 arg8);
 void func_151DBCBC(u8 arg0, f32 arg1, s16 arg2, s32 arg3, void *arg4, u8 arg5, s32 arg6);
 void func_151EF954(f32 arg0[4][4], f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7);
+void n_alStreamSetReadCallback(s32 (*readCallback)(void *state, void *dst, s32 len, s32 offset));
 s32 n_alStreamRead(void *state, void *dst, s32 len, s32 offset);
 void func_151FA130(void);
 void func_1019EA88(void);
