@@ -13,82 +13,82 @@ typedef struct N_ALCSPExtraChanState {
     u8 useCustomReleaseTime;
 } N_ALCSPExtraChanState;
 
-void func_10019B50(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 vol) {
-    N_ALSoundState *state;
-    s16 tmp;
+void n_alCSPHandleChlVolCtrl(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 vol) {
+    N_ALSoundState *voiceState;
+    s16 voiceVol;
     seqp->chanState[chan].vol = vol;
-    for(state = seqp->vAllocHead; state != NULL; state = state->voice.node.next) {
-        if ((state->chan == chan) && (state->unk38 != 3)) {
-            tmp = __n_vsVol(state, seqp);
-            n_alSynSetVol(&state->voice.node.prev, tmp, __n_vsDelta(state, seqp->curTime));
+    for(voiceState = seqp->vAllocHead; voiceState != NULL; voiceState = voiceState->voice.node.next) {
+        if ((voiceState->chan == chan) && (voiceState->unk38 != 3)) {
+            voiceVol = __n_vsVol(voiceState, seqp);
+            n_alSynSetVol(&voiceState->voice.node.prev, voiceVol, __n_vsDelta(voiceState, seqp->curTime));
         }
     }
 }
 
-void func_10019C28(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 pan) {
-    N_ALSoundState *state;
-    u8 tmp;
+void n_alCSPHandleChlPanCtrl(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 pan) {
+    N_ALSoundState *voiceState;
+    u8 voicePan;
     seqp->chanState[chan].pan = pan;
-    for (state = seqp->vAllocHead; state != NULL; state = state->voice.node.next) {
-        if ((state->chan == chan)) {
-            tmp = __n_vsPan(state, seqp);
-            func_1001E2A0(&state->voice.node.prev, tmp);
+    for (voiceState = seqp->vAllocHead; voiceState != NULL; voiceState = voiceState->voice.node.next) {
+        if ((voiceState->chan == chan)) {
+            voicePan = __n_vsPan(voiceState, seqp);
+            func_1001E2A0(&voiceState->voice.node.prev, voicePan);
         }
     }
 }
 
-void func_10019CD0(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 priority) {
+void n_alCSPHandleChlPriorityCtrl(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 priority) {
     seqp->chanState[chan].priority = priority;
 }
 
-void func_10019CFC(N_ALCSPlayer *seqp, s32 arg1, s32 arg2, s32 arg3) {
+void n_alCSPPostOsMesg(N_ALCSPlayer *seqp, s32 arg1, s32 arg2, s32 msgValue) {
     if (seqp->unk84 != 0) {
-        osSendMesg(seqp->unk84, (arg3 & 7) | 0x10 | ((seqp->node.samplesLeft << 5) & -0x100), 0);
+        osSendMesg(seqp->unk84, (msgValue & 7) | 0x10 | ((seqp->node.samplesLeft << 5) & -0x100), 0);
     }
 }
 
-void func_10019D6C(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 arg3) {
-    seqp->chanState[chan].unk8 = arg3;
+void n_alCSPSetChlFxId(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 fxId) {
+    seqp->chanState[chan].unk8 = fxId;
 }
 
-void n_alCSPApplyChlPitchPan(N_ALCSPlayer *seqp, u8 chan) {
-    N_ALVoiceState *state;
-    s16 pan;
+void n_alCSPApplyChlFilterPitch(N_ALCSPlayer *seqp, u8 chan) {
+    N_ALVoiceState *voiceState;
+    s16 filter12;
     s8 pitchOffset;
     f32 pitchBend;
 
     pitchOffset = seqp->chanState[chan].unk15 - 0x40;
     pitchBend = seqp->chanState[chan].pitchBend;
 
-    for (state = seqp->vAllocHead; state != NULL; state = state->next) {
-        if (state->channel == chan) {
-            pan = seqp->chanState[chan].unk14;
-            n_alSynSetPan(&state->voice, pan);
-            if (pan != 0) {
-                func_1001CA90(&state->voice,
-                              func_1001CEA4((state->key - state->sound->keyMap->keyBase) + pitchOffset) *
+    for (voiceState = seqp->vAllocHead; voiceState != NULL; voiceState = voiceState->next) {
+        if (voiceState->channel == chan) {
+            filter12 = seqp->chanState[chan].unk14;
+            n_alSynSetPan(&voiceState->voice, filter12);
+            if (filter12 != 0) {
+                func_1001CA90(&voiceState->voice,
+                              func_1001CEA4((voiceState->key - voiceState->sound->keyMap->keyBase) + pitchOffset) *
                                   440.0f * pitchBend);
             }
         }
     }
 }
 
-void func_10019ED8(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 arg3) {
-    seqp->chanState[chan].unk14 = arg3;
-    n_alCSPApplyChlPitchPan(seqp, chan);
+void n_alCSPSetChlFilter12(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 filter12) {
+    seqp->chanState[chan].unk14 = filter12;
+    n_alCSPApplyChlFilterPitch(seqp, chan);
 }
 
-void func_10019F38(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 arg3) {
-    seqp->chanState[chan].unk15 = arg3;
-    n_alCSPApplyChlPitchPan(seqp, chan);
+void n_alCSPSetChlFilter13Pitch(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 pitchOffset) {
+    seqp->chanState[chan].unk15 = pitchOffset;
+    n_alCSPApplyChlFilterPitch(seqp, chan);
 }
 
-void func_10019F98(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 arg3) {
-    N_ALSoundState *state;
-    seqp->chanState[chan].unk16 = arg3;
-    for (state = seqp->vAllocHead; state != NULL; state = state->voice.node.next) {
-        if (state->chan == chan) {
-            func_1001E350(&state->voice.node.prev, arg3);
+void n_alCSPSetChlFilter11(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 filter11) {
+    N_ALSoundState *voiceState;
+    seqp->chanState[chan].unk16 = filter11;
+    for (voiceState = seqp->vAllocHead; voiceState != NULL; voiceState = voiceState->voice.node.next) {
+        if (voiceState->chan == chan) {
+            func_1001E350(&voiceState->voice.node.prev, filter11);
         }
     }
 }
@@ -130,51 +130,50 @@ void n_alCSPSetChlSustain(N_ALCSPlayer *seqp, s32 arg1, s32 chan, u32 sustain) {
     }
 }
 
-void func_1001A224(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 arg3) {
-    N_ALSoundState *state;
+void n_alCSPSetChlFXMix80(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 fxmix80) {
+    N_ALSoundState *voiceState;
 
-    seqp->chanState[chan].fxmix = (seqp->chanState[chan].fxmix & 0x7F) | (arg3 << 7);
-    for (state = seqp->vAllocHead; state != NULL; state = state->voice.node.next) {
-        if ((state->chan == chan) && (state->unk38 != 3)) {
-            n_alSynSetFXMix(&state->voice.node.prev, seqp->chanState[chan].fxmix);
+    seqp->chanState[chan].fxmix = (seqp->chanState[chan].fxmix & 0x7F) | (fxmix80 << 7);
+    for (voiceState = seqp->vAllocHead; voiceState != NULL; voiceState = voiceState->voice.node.next) {
+        if ((voiceState->chan == chan) && (voiceState->unk38 != 3)) {
+            n_alSynSetFXMix(&voiceState->voice.node.prev, seqp->chanState[chan].fxmix);
         }
     }
 }
 
-void func_1001A2F8(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 arg3) {
-    arg3 = arg3 & 0x7F;
-    seqp->chanState[chan].fxmix = (seqp->chanState[chan].fxmix & 0x80) | arg3;
-    func_1001A224(seqp, arg1, chan, seqp->chanState[chan].fxmix >> 7);
+void n_alCSPSetChlFXMix7F(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 fxmix7F) {
+    fxmix7F = fxmix7F & 0x7F;
+    seqp->chanState[chan].fxmix = (seqp->chanState[chan].fxmix & 0x80) | fxmix7F;
+    n_alCSPSetChlFXMix80(seqp, arg1, chan, seqp->chanState[chan].fxmix >> 7);
 }
 
-void func_1001A39C(N_ALCSPlayer *seqp, s32 arg1, s32 chan, u32 arg3) {
-    if (arg3 < n_syn->maxAuxBusses) {
-        seqp->chanState[chan].unkB = arg3;
+void n_alCSPSetChlFXBus(N_ALCSPlayer *seqp, s32 arg1, s32 chan, u32 fxbus) {
+    if (fxbus < n_syn->maxAuxBusses) {
+        seqp->chanState[chan].unkB = fxbus;
     }
 }
 
-// FIXME:
 typedef struct {
     u8 pad0[0x36];
-    u8 unk36;
+    u8 streamFileGroup;
 } struct24;
 
-void func_1001A3E0(struct24 *arg0, s32 arg1, s32 arg2, s32 arg3) {
-    arg0->unk36 = arg3;
+void n_alCSPSetStreamFileGroup(struct24 *state, s32 arg1, s32 arg2, s32 group) {
+    state->streamFileGroup = group;
 }
 
-void func_1001A3FC(struct24 *arg0, s32 arg1, s32 arg2, s32 arg3) {
-    func_1001263C(arg0->unk36 * 100 + arg3, 0x7FFF, 0x40);
+void n_alCSPPlayStreamFile(struct24 *state, s32 arg1, s32 arg2, s32 fileIndex) {
+    func_1001263C(state->streamFileGroup * 100 + fileIndex, 0x7FFF, 0x40);
 }
 
 void n_alCSPApplyChlVol(N_ALCSPlayer *seqp, u8 chan) {
-    N_ALSoundState *state;
+    N_ALSoundState *voiceState;
     s16 vol;
 
-    for (state = seqp->vAllocHead; state != NULL; state = state->voice.node.next) {
-        if ((state->chan == chan) && (state->unk38 != 3)) {
-            vol = __n_vsVol(state, seqp);
-            n_alSynSetVol(&state->voice.node.prev, vol, __n_vsDelta(state, seqp->curTime));
+    for (voiceState = seqp->vAllocHead; voiceState != NULL; voiceState = voiceState->voice.node.next) {
+        if ((voiceState->chan == chan) && (voiceState->unk38 != 3)) {
+            vol = __n_vsVol(voiceState, seqp);
+            n_alSynSetVol(&voiceState->voice.node.prev, vol, __n_vsDelta(voiceState, seqp->curTime));
         }
     }
 }
@@ -198,58 +197,58 @@ void n_alCSPApplyChlVol(N_ALCSPlayer *seqp, u8 chan) {
 //         if (seqp->chanState[chan].unkD == seqp->chanState[chan].unkE) {
 //             seqp->chanState[chan].unkE = target;
 //             event->msg.midi.byte1 = 0xFE;
-//             func_1001A704(seqp, event, chan, target);
+//             n_alCSPStepChlFade(seqp, event, chan, target);
 //         } else {
 //             seqp->chanState[chan].unkE = target;
 //         }
 //     }
 // }
 
-void func_1001A704(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 arg3) {
-    u8 sp2F;
-    u8 sp2E;
-    s32 sp28;
-    s32 sp24;
-    f32 sp20;
-    f32 sp1C;
+void n_alCSPStepChlFade(N_ALCSPlayer *seqp, s32 event, s32 chan, s32 arg3) {
+    u8 currentFadeVol;
+    u8 targetFadeVol;
+    s32 fadeDelta;
+    s32 fadeStep;
+    f32 fadeStepFloat;
+    f32 eventDelayScale;
 
-    sp2F = seqp->chanState[chan].unkD;
-    sp2E = seqp->chanState[chan].unkE;
-    sp20 = seqp->chanState[chan].unk10;
-    sp28 = sp2E - sp2F;
-    if (sp28 > 0) {
+    currentFadeVol = seqp->chanState[chan].unkD;
+    targetFadeVol = seqp->chanState[chan].unkE;
+    fadeStepFloat = seqp->chanState[chan].unk10;
+    fadeDelta = targetFadeVol - currentFadeVol;
+    if (fadeDelta > 0) {
         if (seqp->chanState[chan].unkF & 0x80) {
-            sp20 = sp20 * 2.0f;
+            fadeStepFloat = fadeStepFloat * 2.0f;
         }
-        sp24 = sp20;
-        if (sp24 == 0) {
-            sp24 = 1;
-            sp1C = 1.0f / sp20;
+        fadeStep = fadeStepFloat;
+        if (fadeStep == 0) {
+            fadeStep = 1;
+            eventDelayScale = 1.0f / fadeStepFloat;
         } else {
-            sp1C = sp24 / sp20;
+            eventDelayScale = fadeStep / fadeStepFloat;
         }
-        if (sp28 > sp24) {
-            sp28 = sp24;
+        if (fadeDelta > fadeStep) {
+            fadeDelta = fadeStep;
         }
     } else {
-        sp24 = sp20;
-        if (sp24 == 0) {
-            sp24 = 1;
-            sp1C = sp20;
+        fadeStep = fadeStepFloat;
+        if (fadeStep == 0) {
+            fadeStep = 1;
+            eventDelayScale = fadeStepFloat;
         } else {
-            sp1C = sp24 / sp20;
+            eventDelayScale = fadeStep / fadeStepFloat;
         }
-        sp24 = -sp24;
-        if (sp28 < sp24) {
-            sp28 = sp24;
+        fadeStep = -fadeStep;
+        if (fadeDelta < fadeStep) {
+            fadeDelta = fadeStep;
         }
     }
-    sp2F = sp28 + sp2F;
-    seqp->chanState[chan].unkD = sp2F;
-    if (sp2F != sp2E) {
-        n_alEvtqPostEvent(&seqp->evtq, arg1, seqp->uspt * 100 * sp1C, 2);
+    currentFadeVol = fadeDelta + currentFadeVol;
+    seqp->chanState[chan].unkD = currentFadeVol;
+    if (currentFadeVol != targetFadeVol) {
+        n_alEvtqPostEvent(&seqp->evtq, event, seqp->uspt * 100 * eventDelayScale, 2);
     }
-    if (sp2F != 0) {
+    if (currentFadeVol != 0) {
         seqp->chanMask |= (1 << chan);
     } else {
         seqp->chanMask &= ~(1 << chan);
@@ -257,14 +256,14 @@ void func_1001A704(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 arg3) {
     n_alCSPApplyChlVol(seqp, chan);
 }
 
-void func_1001A9DC(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 arg3) {
-    seqp->chanState[chan].unkF = arg3;
+void n_alCSPSetChlFadeSpeed(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 fadeSpeed) {
+    seqp->chanState[chan].unkF = fadeSpeed;
 }
 
-void func_1001AA08(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 arg3) {
-    seqp->chanState[chan].unkD = arg3;
-    seqp->chanState[chan].unkE = arg3;
-    if (arg3 == 0) {
+void n_alCSPSetChlFadeEnd(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 fadeVol) {
+    seqp->chanState[chan].unkD = fadeVol;
+    seqp->chanState[chan].unkE = fadeVol;
+    if (fadeVol == 0) {
         seqp->chanMask &= (1 << chan) ^ 0xFFFF; // disable
     } else {
         seqp->chanMask |= 1 << chan;

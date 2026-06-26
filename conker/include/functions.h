@@ -157,20 +157,23 @@ void n_alClose(s32 arg0);
 s32  _n_timeToSamplesNoRound(s32 micros);
 s32  _n_timeToSamples(s32 micros);
 f32  alCents2Ratio(s32 arg0);
-void func_10019B50(struct26 *arg0, s32 arg1, s32 arg2, s32 arg3);
-void func_10019C28(struct26 *arg0, s32 arg1, s32 arg2, s32 arg3);
-void func_10019CD0(struct26 *arg0, s32 arg1, s32 arg2, s32 arg3);
-void func_10019D6C(struct26 *arg0, s32 arg1, s32 arg2, s32 arg3);
-void func_10019ED8(struct26 *arg0, s32 arg1, s32 arg2, s32 arg3);
-void func_10019F38(struct26 *arg0, s32 arg1, s32 arg2, s32 arg3);
-void func_10019F98(struct26 *arg0, s32 arg1, s32 arg2, s32 arg3);
-void func_1001A224(struct26 *arg0, s32 arg1, s32 arg2, s32 arg3);
-void func_1001A2F8(struct26 *arg0, s32 arg1, s32 arg2, s32 arg3);
-void func_1001A39C(struct26 *arg0, s32 arg1, s32 arg2, u32 arg3);
-void func_1001A3E0(struct24 *arg0, s32 arg1, s32 arg2, s32 arg3);
-void func_1001A3FC(struct26 *arg0, s32 arg1, s32 arg2, s32 arg3);
-void func_1001A9DC(struct26 *arg0, s32 arg1, s32 arg2, s32 arg3);
-void func_1001AA08(struct26 *arg0, s32 arg1, s32 arg2, s32 arg3);
+void n_alCSPHandleChlVolCtrl(struct26 *arg0, s32 arg1, s32 arg2, s32 arg3);
+void n_alCSPHandleChlPanCtrl(struct26 *arg0, s32 arg1, s32 arg2, s32 arg3);
+void n_alCSPHandleChlPriorityCtrl(struct26 *arg0, s32 arg1, s32 arg2, s32 arg3);
+void n_alCSPPostOsMesg(struct26 *arg0, s32 arg1, s32 arg2, s32 arg3);
+void n_alCSPSetChlFxId(struct26 *arg0, s32 arg1, s32 arg2, s32 arg3);
+void n_alCSPSetChlFilter12(struct26 *arg0, s32 arg1, s32 arg2, s32 arg3);
+void n_alCSPSetChlFilter13Pitch(struct26 *arg0, s32 arg1, s32 arg2, s32 arg3);
+void n_alCSPSetChlFilter11(struct26 *arg0, s32 arg1, s32 arg2, s32 arg3);
+void n_alCSPSetChlSustain(struct26 *arg0, s32 arg1, s32 arg2, u32 arg3);
+void n_alCSPSetChlFXMix80(struct26 *arg0, s32 arg1, s32 arg2, s32 arg3);
+void n_alCSPSetChlFXMix7F(struct26 *arg0, s32 arg1, s32 arg2, s32 arg3);
+void n_alCSPSetChlFXBus(struct26 *arg0, s32 arg1, s32 arg2, u32 arg3);
+void n_alCSPSetStreamFileGroup(struct24 *arg0, s32 arg1, s32 arg2, s32 arg3);
+void n_alCSPPlayStreamFile(struct26 *arg0, s32 arg1, s32 arg2, s32 arg3);
+void n_alCSPStepChlFade(struct26 *arg0, s32 arg1, s32 arg2, s32 arg3);
+void n_alCSPSetChlFadeSpeed(struct26 *arg0, s32 arg1, s32 arg2, s32 arg3);
+void n_alCSPSetChlFadeEnd(struct26 *arg0, s32 arg1, s32 arg2, s32 arg3);
 s32  __n_vsDelta(struct07 *arg0, s32 arg1);
 void func_1001B620(struct26 *arg0, s32 arg1);
 void func_1001CBF0(f32 arg0, f32 arg1, f32 arg2, struct17 *arg3, struct17 *arg4);
@@ -1000,8 +1003,7 @@ void func_100114D0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
 //func_100126E8
 // void func_10017870(u8 arg0);
 void n_alCSeqNewLoopStartMarkers(ALCSeq *seq, ALCSeqMarker *m, u32 markerCount, u32 firstLoopIndex);
-// void n_alCSPApplyChlPitchPan(struct26 *arg0, u8 arg1);
-// void n_alCSPSetChlSustain(struct26 *arg0, s32 arg1, s32 arg2, u32 arg3);
+// void n_alCSPApplyChlFilterPitch(struct26 *arg0, u8 arg1);
 // void func_1001A508(struct26 *arg0, struct25 *arg1, s32 arg2, s32 arg3);
 //func_1001AAE0
 //func_1001ADA4
