@@ -24,7 +24,7 @@ void func_10017D80(N_ALCSPlayer *arg0, u8 arg1, u8 arg2);
 void func_10017DF0(N_ALCSPlayer *csp, f32 arg1, f32 arg2);
 void func_10017E4C(N_ALCSPlayer *csp, u8 chan, u8 arg2);
 void func_10017F10(N_ALCSPlayer *arg0, u8 arg1, u8 arg2, u8 arg3, s32 arg4);
-void func_10018790(N_ALCSPlayer *arg0, s32 arg1, u32 arg2, u32 arg3);
+void n_alCSeqNewLoopStartMarkers(ALCSeq *seq, ALCSeqMarker *m, u32 markerCount, u32 firstLoopIndex);
 void func_10018D00(N_ALCSPlayer *arg0, s16 arg1);
 void func_10018D50(N_ALCSPlayer *seqp);
 
@@ -167,7 +167,7 @@ void func_10008BC0(u8 idx, f32 arg1, f32 arg2) {
 }
 
 void func_10008C04(u8 idx, u8 arg1, s32 arg2) {
-    func_10018790(&D_8003CA58[idx], &D_8003CD48[idx], arg1, arg2);
+    n_alCSeqNewLoopStartMarkers(&D_8003CA58[idx], &D_8003CD48[idx], arg1, arg2);
 }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/init_8180/func_10008C6C.s")

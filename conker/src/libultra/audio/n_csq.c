@@ -169,7 +169,47 @@ void alCSeqSetLoc(ALCSeq *seq, ALCSeqMarker *m) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/n_csq/func_10018790.s")
+void n_alCSeqNewLoopStartMarkers(ALCSeq *seq, ALCSeqMarker *m, u32 markerCount, u32 firstLoopIndex) {
+    N_ALEvent evt;
+    ALCSeq tempSeq;
+    s32 i;
+    s32 j;
+    ALCSeqMarker m2;
+
+    n_alCSeqNew(&tempSeq, (u8 *)seq->base);
+
+    for (j = 0; j < markerCount; j++) {
+        m[j].lastTicks = 0;
+    }
+
+    do {
+        m2.validTracks = tempSeq.validTracks;
+        m2.lastTicks = tempSeq.lastTicks;
+        m2.lastDeltaTicks = tempSeq.lastDeltaTicks;
+
+        for (i = 0; i < 16; i++) {
+            m2.curLoc[i] = tempSeq.curLoc[i];
+            m2.curBUPtr[i] = tempSeq.curBUPtr[i];
+            m2.curBULen[i] = tempSeq.curBULen[i];
+            m2.lastStatus[i] = tempSeq.lastStatus[i];
+            m2.evtDeltaTicks[i] = tempSeq.evtDeltaTicks[i];
+        }
+
+        n_alCSeqNextEvent(&tempSeq, &evt, 0);
+
+        if (evt.type == CONKER_AL_CSP_LOOPSTART) {
+            if (((evt.msg.loop.count >> 8) >= firstLoopIndex) && ((evt.msg.loop.count >> 8) < firstLoopIndex + markerCount)) {
+                if (m[(evt.msg.loop.count >> 8) - firstLoopIndex].lastTicks == 0) {
+                    m[(evt.msg.loop.count >> 8) - firstLoopIndex] = m2;
+
+                    if (--j <= 0) {
+                        return;
+                    }
+                }
+            }
+        }
+    } while (evt.type != AL_SEQ_END_EVT);
+}
 
 u8 __getTrackByte(ALCSeq *seq, s32 track) {
     u8 theByte;
