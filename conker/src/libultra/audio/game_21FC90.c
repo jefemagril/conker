@@ -29,9 +29,12 @@ extern s32  D_800E0DFC;
 #define STREAM_STATE_FADE_OUT      6
 #define STREAM_STATE_FADE_IN       7
 
+#define STREAM_TRANSITION_DELAY 5
+
 #define gStreamState             D_800E0E04
 #define gStreamTargetVolume      D_800E0E08
 #define gStreamVolumeRampSamples D_800E0E10
+#define gStreamTransitionDelay   D_800E0E18
 
 
 #pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/game_21FC90/func_151F27E0.s")
@@ -83,7 +86,7 @@ void func_151F2960(s32 arg0, s32 arg1) {
     D_800E0DE0 = arg1;
     D_800E0DE4 = 0;
     gStreamVolumeRampSamples = 0;
-    D_800E0E18 = 5;
+    gStreamTransitionDelay = STREAM_TRANSITION_DELAY;
     gStreamState = STREAM_STATE_START_PENDING;
 }
 
@@ -105,7 +108,19 @@ void n_alStreamStop(void) {
     osSetIntMask(mask);
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/game_21FC90/func_151F2C4C.s")
+void n_alStreamResume(void) {
+    u32 mask;
+
+    mask = osSetIntMask(1);
+    if (gStreamState == STREAM_STATE_STOPPING) {
+        gStreamTransitionDelay = STREAM_TRANSITION_DELAY;
+        gStreamState = STREAM_STATE_FADE_IN;
+    } else if (gStreamState == STREAM_STATE_FADE_OUT) {
+        gStreamTransitionDelay = STREAM_TRANSITION_DELAY;
+        gStreamState = STREAM_STATE_START_PENDING;
+    }
+    osSetIntMask(mask);
+}
 
 s32 n_alStreamGetState(void) {
     s32 state;
