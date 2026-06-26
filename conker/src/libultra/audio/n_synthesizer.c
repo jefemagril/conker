@@ -203,7 +203,49 @@ void _n_freeParam(ALParam *param)
   n_syn->paramList = param;
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/n_synthesizer/_n_collectPVoices.s")
+void _n_collectPVoices(void) {
+    ALLink *dl;
+    ALLink *element;
+    ALLink *linkElement;
+    ALLink *after;
+    ALLink *voiceLink;
+
+    while ((dl = n_syn->pLameList.next) != 0) {
+        element = dl;
+
+        if (element->next != 0) {
+            element->next->prev = element->prev;
+        }
+
+        if (element->prev != 0) {
+            element->prev->next = element->next;
+        }
+
+        linkElement = dl;
+        after = &n_syn->pFreeList;
+        linkElement->next = after->next;
+        linkElement->prev = after;
+
+        if (after->next != 0) {
+            after->next->prev = linkElement;
+        }
+
+        after->next = linkElement;
+
+        voiceLink = &((N_PVoice *)dl)->voiceLink;
+
+        if (voiceLink->next != 0) {
+            voiceLink->next->prev = voiceLink->prev;
+        }
+
+        if (voiceLink->prev != 0) {
+            voiceLink->prev->next = voiceLink->next;
+        }
+
+        ((N_PVoice *)dl)->voiceLink.next = 0;
+        ((N_PVoice *)dl)->voiceLink.prev = 0;
+    }
+}
 
 void _n_freePVoice(N_PVoice *pvoice) {
     N_PVoice *voice = pvoice;

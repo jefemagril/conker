@@ -55,9 +55,13 @@ typedef struct {
 
 typedef struct N_PVoice_s {
     ALLink               node;
-    struct N_ALVoice_s    *vvoice;
+    /* Reused as a link while moving physical voices between synth lists. */
+    union {
+        struct N_ALVoice_s    *vvoice;
+        ALLink                voiceLink;
+    };
     /* RARE CUSTOM */
-    u8                          pad[0x8];
+    u8                          pad[0x4];
 /** ALLoadFilter *********************************/
     ADPCM_STATE                 *dc_state;
     ADPCM_STATE                 *dc_lstate;
