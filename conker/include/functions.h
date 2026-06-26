@@ -1001,7 +1001,7 @@ void func_100114D0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
 // void func_10017870(u8 arg0);
 void n_alCSeqNewLoopStartMarkers(ALCSeq *seq, ALCSeqMarker *m, u32 markerCount, u32 firstLoopIndex);
 // void n_alCSPApplyChlPitchPan(struct26 *arg0, u8 arg1);
-// void func_1001A030(struct26 *arg0, s32 arg1, s32 arg2, u32 arg3);
+// void n_alCSPSetChlSustain(struct26 *arg0, s32 arg1, s32 arg2, u32 arg3);
 // void func_1001A508(struct26 *arg0, struct25 *arg1, s32 arg2, s32 arg3);
 //func_1001AAE0
 //func_1001ADA4

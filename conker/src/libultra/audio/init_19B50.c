@@ -1,8 +1,17 @@
 #include <n_libaudio.h>
 #include "n_sndp.h"
+#include "n_seqp.h"
 
 void func_1001CA90(N_ALVoice *voice, f32 pitch);
 f32 func_1001CEA4(s32 cents);
+
+#define CSP_MIN_RELEASE_TIME 0x3E80
+
+typedef struct N_ALCSPExtraChanState {
+    u8 pad0[0x24];
+    s32 releaseTime;
+    u8 useCustomReleaseTime;
+} N_ALCSPExtraChanState;
 
 void func_10019B50(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 vol) {
     N_ALSoundState *state;
@@ -84,7 +93,42 @@ void func_10019F98(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 arg3) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/init_19B50/func_1001A030.s")
+void n_alCSPSetChlSustain(N_ALCSPlayer *seqp, s32 arg1, s32 chan, u32 sustain) {
+    N_ALVoiceState *state;
+    register s32 releaseTime;
+
+    seqp->chanState[chan].sustain = sustain;
+    for (state = seqp->vAllocHead; state != NULL; state = state->next) {
+        if ((state->channel == chan) && (state->phase != AL_PHASE_RELEASE)) {
+            if (sustain >= (AL_SUSTAIN + 1)) {
+                if (state->phase == AL_PHASE_NOTEON) {
+                    state->phase = AL_PHASE_SUSTAIN;
+                }
+            } else {
+                if (state->phase == AL_PHASE_SUSTAIN) {
+                    state->phase = AL_PHASE_NOTEON;
+                } else if (state->phase == AL_PHASE_SUSTREL) {
+                    state->phase = AL_PHASE_RELEASE;
+                    if (((N_ALCSPExtraChanState *) &seqp->chanState[chan])->useCustomReleaseTime) {
+                        if (((N_ALCSPExtraChanState *) &seqp->chanState[chan])->releaseTime < CSP_MIN_RELEASE_TIME) {
+                            releaseTime = CSP_MIN_RELEASE_TIME;
+                        } else {
+                            releaseTime = ((N_ALCSPExtraChanState *) &seqp->chanState[chan])->releaseTime;
+                        }
+                        __n_seqpReleaseVoice((N_ALSeqPlayer *) seqp, &state->voice, releaseTime);
+                    } else {
+                        if (state->sound->envelope->releaseTime < CSP_MIN_RELEASE_TIME) {
+                            releaseTime = CSP_MIN_RELEASE_TIME;
+                        } else {
+                            releaseTime = state->sound->envelope->releaseTime;
+                        }
+                        __n_seqpReleaseVoice((N_ALSeqPlayer *) seqp, &state->voice, releaseTime);
+                    }
+                }
+            }
+        }
+    }
+}
 
 void func_1001A224(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 arg3) {
     N_ALSoundState *state;
