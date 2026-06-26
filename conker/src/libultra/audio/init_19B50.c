@@ -2,8 +2,9 @@
 #include "n_sndp.h"
 #include "n_seqp.h"
 
-void func_1001CA90(N_ALVoice *voice, f32 pitch);
+void n_alSynFilter13(N_ALVoice *voice, f32 pitch);
 f32 func_1001CEA4(s32 cents);
+void n_alCSPStepChlFade(N_ALCSPlayer *seqp, s32 event, s32 chan, s32 arg3);
 
 #define CSP_MIN_RELEASE_TIME 0x3E80
 
@@ -65,7 +66,7 @@ void n_alCSPApplyChlFilterPitch(N_ALCSPlayer *seqp, u8 chan) {
             filter12 = seqp->chanState[chan].unk14;
             n_alSynSetPan(&voiceState->voice, filter12);
             if (filter12 != 0) {
-                func_1001CA90(&voiceState->voice,
+                n_alSynFilter13(&voiceState->voice,
                               func_1001CEA4((voiceState->key - voiceState->sound->keyMap->keyBase) + pitchOffset) *
                                   440.0f * pitchBend);
             }
@@ -88,7 +89,7 @@ void n_alCSPSetChlFilter11(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 filter11)
     seqp->chanState[chan].unk16 = filter11;
     for (voiceState = seqp->vAllocHead; voiceState != NULL; voiceState = voiceState->voice.node.next) {
         if (voiceState->chan == chan) {
-            func_1001E350(&voiceState->voice.node.prev, filter11);
+            n_alSynFilter11(&voiceState->voice.node.prev, filter11);
         }
     }
 }
@@ -180,10 +181,11 @@ void n_alCSPApplyChlVol(N_ALCSPlayer *seqp, u8 chan) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/init_19B50/func_1001A508.s")
 // NON-MATCHING: Semantics match Rare's channel fade-start control, but IDO branch
-// layout around the "already fading" path does not yet match the original asm.
-// The original also uses `abs.s`; if reviving this, add the local `fabsf`
-// intrinsic declaration used elsewhere in the repo.
+// layout around the "already fading" path has an extra branch island that C keeps
+// optimizing away or over-expanding.
 //
+// extern f32 fabsf(f32);
+// #pragma intrinsic (fabsf)
 // void n_alCSPStartChlFade(N_ALCSPlayer *seqp, N_ALEvent *event, s32 chan, s32 target) {
 //     f32 fadeDelta;
 //
@@ -197,7 +199,7 @@ void n_alCSPApplyChlVol(N_ALCSPlayer *seqp, u8 chan) {
 //         if (seqp->chanState[chan].unkD == seqp->chanState[chan].unkE) {
 //             seqp->chanState[chan].unkE = target;
 //             event->msg.midi.byte1 = 0xFE;
-//             n_alCSPStepChlFade(seqp, event, chan, target);
+//             n_alCSPStepChlFade(seqp, (s32) event, chan, target);
 //         } else {
 //             seqp->chanState[chan].unkE = target;
 //         }

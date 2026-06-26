@@ -87,6 +87,8 @@ void    n_alSynRemovePlayer( ALPlayer *client);
 void    n_alSynSetFXMix(N_ALVoice *v, u8 fxmix);
 void    n_alSynSetFXParam(ALFxRef fx, s16 paramID, void *param);
 void    n_alSynFreeFX(ALFxRef *fx);
+void    n_alSynFilter11(N_ALVoice *v, u8 arg1);
+void    n_alSynFilter13(N_ALVoice *v, f32 arg1);
 void    n_alSynSetPan(N_ALVoice *v, u8 pan);
 void    n_alSynSetPitch( N_ALVoice *v, f32 pitch);
 void    n_alSynSetPriority( N_ALVoice *voice, s16 priority);

@@ -2,9 +2,7 @@
 #include <ultraerror.h>
 #include "n_synthInternals.h"
 
-
-// set pitch 2 ?
-void func_1001CA90( N_ALVoice *v, f32 pitch) {
+void n_alSynFilter13(N_ALVoice *v, f32 pitch) {
     ALParam  *update;
 
     if (v->pvoice) {
