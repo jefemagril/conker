@@ -2,6 +2,7 @@
 
 extern s32  D_800E0E00;
 extern s32  D_800E0E04;
+extern s32  D_800E0E08;
 extern s32  D_800E0E10;
 extern s16  D_800E0E14;
 extern s16  D_800E0E16;
@@ -18,6 +19,12 @@ extern s32  D_800E0DD8;
 extern s32  D_800E0DE0;
 extern s32  D_800E0DE4;
 extern s32  D_800E0DFC;
+
+#define STREAM_VOLUME_LIMIT 0x8000
+#define STREAM_VOLUME_MAX   0x7FFF
+
+#define gStreamTargetVolume      D_800E0E08
+#define gStreamVolumeRampSamples D_800E0E10
 
 
 #pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/game_21FC90/func_151F27E0.s")
@@ -68,7 +75,7 @@ void func_151F2960(s32 arg0, s32 arg1) {
     D_800E0D80 = arg0;
     D_800E0DE0 = arg1;
     D_800E0DE4 = 0;
-    D_800E0E10 = 0;
+    gStreamVolumeRampSamples = 0;
     D_800E0E18 = 5;
     D_800E0E04 = 5;
 }
@@ -85,7 +92,20 @@ void func_151F2BA8(void) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/game_21FC90/func_151F2CDC.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/game_21FC90/func_151F2D6C.s")
+void n_alStreamSetVolumeRamp(s32 volume, s32 rampSamples) {
+    u32 mask;
+
+    mask = osSetIntMask(1);
+    if (volume < 0) {
+        gStreamTargetVolume = 0;
+    } else if (volume >= STREAM_VOLUME_LIMIT) {
+        gStreamTargetVolume = STREAM_VOLUME_MAX;
+    } else {
+        gStreamTargetVolume = volume;
+    }
+    gStreamVolumeRampSamples = rampSamples;
+    osSetIntMask(mask);
+}
 
 void func_151F2DFC(s32 arg0, s32 arg1) {
     if (arg0 >= 0x80) {

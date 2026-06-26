@@ -18,7 +18,7 @@ void func_100125CC(s32 arg0) {
     s32 res = func_151F2CDC();
     if ((arg0 != 30) || (D_800BE9F8 != 27)) {
         if (res == 1) {
-            func_151F2D6C(0, 11010);
+            n_alStreamSetVolumeRamp(0, 11010);
             return;
         }
         if (res != 0) {
@@ -35,7 +35,7 @@ void func_1001263C(s32 arg0, s32 arg1, s32 arg2) {
     temp_v0 = func_1502B020(&sp18, 2, 22, arg0);
     D_800427F4 = (s16) arg0;
     if ((temp_v0 != 0) && (sp18 != 0)) {
-        func_151F2D6C(arg1, 0);
+        n_alStreamSetVolumeRamp(arg1, 0);
         func_151F2DFC(arg2, 1);
         if (arg0 != 0xD2) {
             func_151F2E4C(10, 11000);
