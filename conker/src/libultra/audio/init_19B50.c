@@ -1,6 +1,9 @@
 #include <n_libaudio.h>
 #include "n_sndp.h"
 
+void func_1001CA90(N_ALVoice *voice, f32 pitch);
+f32 func_1001CEA4(s32 cents);
+
 void func_10019B50(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 vol) {
     N_ALSoundState *state;
     s16 tmp;
@@ -39,16 +42,36 @@ void func_10019D6C(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 arg3) {
     seqp->chanState[chan].unk8 = arg3;
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/init_19B50/func_10019D98.s")
+void n_alCSPApplyChlPitchPan(N_ALCSPlayer *seqp, u8 chan) {
+    N_ALVoiceState *state;
+    s16 pan;
+    s8 pitchOffset;
+    f32 pitchBend;
+
+    pitchOffset = seqp->chanState[chan].unk15 - 0x40;
+    pitchBend = seqp->chanState[chan].pitchBend;
+
+    for (state = seqp->vAllocHead; state != NULL; state = state->next) {
+        if (state->channel == chan) {
+            pan = seqp->chanState[chan].unk14;
+            n_alSynSetPan(&state->voice, pan);
+            if (pan != 0) {
+                func_1001CA90(&state->voice,
+                              func_1001CEA4((state->key - state->sound->keyMap->keyBase) + pitchOffset) *
+                                  440.0f * pitchBend);
+            }
+        }
+    }
+}
 
 void func_10019ED8(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 arg3) {
     seqp->chanState[chan].unk14 = arg3;
-    func_10019D98(seqp, chan);
+    n_alCSPApplyChlPitchPan(seqp, chan);
 }
 
 void func_10019F38(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 arg3) {
     seqp->chanState[chan].unk15 = arg3;
-    func_10019D98(seqp, chan);
+    n_alCSPApplyChlPitchPan(seqp, chan);
 }
 
 void func_10019F98(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 arg3) {
