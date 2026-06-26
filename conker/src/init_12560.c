@@ -15,7 +15,7 @@ void func_10012588(s32 arg0) {
 }
 
 void func_100125CC(s32 arg0) {
-    s32 res = func_151F2CDC();
+    s32 res = n_alStreamGetState();
     if ((arg0 != 30) || (D_800BE9F8 != 27)) {
         if (res == 1) {
             n_alStreamSetVolumeRamp(0, 11010);
@@ -65,7 +65,7 @@ s32 func_10012718(u16 arg0, struct127 *arg1, s32 arg2, s16 arg3, u16 arg4) {
 }
 
 s32 func_100127D0(void) {
-    s32 tmp = func_151F2CDC();
+    s32 tmp = n_alStreamGetState();
 
     if (tmp == 1 || tmp == 2 || tmp == 5) {
         return 1;

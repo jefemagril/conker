@@ -23,6 +23,13 @@ extern s32  D_800E0DFC;
 #define STREAM_VOLUME_LIMIT 0x8000
 #define STREAM_VOLUME_MAX   0x7FFF
 
+#define STREAM_STATE_PLAYING       1
+#define STREAM_STATE_STOPPING      2
+#define STREAM_STATE_START_PENDING 5
+#define STREAM_STATE_FADE_OUT      6
+#define STREAM_STATE_FADE_IN       7
+
+#define gStreamState             D_800E0E04
 #define gStreamTargetVolume      D_800E0E08
 #define gStreamVolumeRampSamples D_800E0E10
 
@@ -35,7 +42,7 @@ void func_151F2960(s32 arg0, s32 arg1) {
     if (D_800E0DFC == 0) {
         return;
     }
-    D_800E0E04 = 4;
+    gStreamState = 4;
     if (D_800E0E2C == 0) {
       D_800E0E2C = 1;
         D_800E0E30 = allocate_memory(0x8000, 0xFF, 2, 1);
@@ -77,12 +84,12 @@ void func_151F2960(s32 arg0, s32 arg1) {
     D_800E0DE4 = 0;
     gStreamVolumeRampSamples = 0;
     D_800E0E18 = 5;
-    D_800E0E04 = 5;
+    gStreamState = STREAM_STATE_START_PENDING;
 }
 
 void func_151F2BA8(void) {
     u32 mask = osSetIntMask(1);
-    D_800E0E04 = 3;
+    gStreamState = 3;
     osSetIntMask(mask);
 }
 
@@ -90,7 +97,22 @@ void func_151F2BA8(void) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/game_21FC90/func_151F2C4C.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/game_21FC90/func_151F2CDC.s")
+s32 n_alStreamGetState(void) {
+    s32 state;
+    u32 mask;
+
+    state = 0;
+    mask = osSetIntMask(1);
+    if ((gStreamState == STREAM_STATE_PLAYING) ||
+        (gStreamState == STREAM_STATE_START_PENDING) ||
+        (gStreamState == STREAM_STATE_FADE_OUT) ||
+        (gStreamState == STREAM_STATE_FADE_IN) ||
+        (gStreamState == STREAM_STATE_STOPPING)) {
+        state = gStreamState;
+    }
+    osSetIntMask(mask);
+    return state;
+}
 
 void n_alStreamSetVolumeRamp(s32 volume, s32 rampSamples) {
     u32 mask;

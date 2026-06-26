@@ -108,6 +108,7 @@ void func_1001263C(s32 arg0, s32 arg1, s32 arg2);
 void func_100126E8(s32 arg0, s32 arg1);
 s32  func_10012718(u16 arg0, struct127 *arg1, s32 arg2, s16 arg3, u16 arg4);
 s32  func_100127D0(void);
+s32  n_alStreamGetState(void);
 void n_alStreamSetVolumeRamp(s32 volume, s32 rampSamples);
 void func_10012A28(struct121 *arg0, s32 arg1, s32 arg2, s32 arg3);
 void func_10012B84(struct11 *arg0, s32 arg1);
