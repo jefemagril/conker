@@ -19,12 +19,42 @@ extern s32  D_800E0DD8;
 extern s32  D_800E0DE0;
 extern s32  D_800E0DE4;
 extern s32  D_800E0DFC;
+extern s16  D_8002BC10[];
+extern s16  D_8002BD0E[];
+extern u8   D_800428C1;
+extern u8   D_800428C2;
+
+typedef struct N_ALStreamState {
+    u8 pad0[0xC];
+    s16 pan;
+    s16 volume;
+    s16 currentLeft;
+    s16 currentRight;
+    s16 pad14;
+    s16 pad16;
+    u16 leftRateFrac;
+    s16 leftRate;
+    s16 targetLeft;
+    u16 rightRateFrac;
+    s16 rightRate;
+    s16 targetRight;
+    s16 needsEnvelopeUpdate;
+    s16 pad26;
+    s32 rampSamplesDone;
+    s32 rampSamplesTotal;
+    u8 pad30[0x58];
+    s32 targetVolume;
+    u8 pad8C[0x4];
+    u32 requestedRampSamples;
+    s16 targetPan;
+} N_ALStreamState;
 
 #define STREAM_VOLUME_LIMIT 0x8000
 #define STREAM_VOLUME_MAX   0x7FFF
 
 #define STREAM_PREFETCH_SIZE 0x810
 #define STREAM_DMA_CACHED_BASE 0x80000000
+#define STREAM_AUDIO_FRAME_SAMPLES 0xB8
 
 #define STREAM_STATE_PLAYING       1
 #define STREAM_STATE_STOPPING      2
@@ -41,6 +71,7 @@ extern s32  D_800E0DFC;
 #define gStreamTransitionDelay   D_800E0E18
 #define gStreamDataStart         D_800E0D80
 #define gStreamReadOffset        D_800E0DE4
+#define gStreamStateBlock        (*(N_ALStreamState *) &D_800E0D80)
 
 typedef ALDMAproc (*N_ALStreamDMANew)(void *state);
 
@@ -248,7 +279,46 @@ void func_151F2E4C(s32 arg0, s32 arg1) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/game_21FC90/func_151F2E88.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/game_21FC90/func_151F39E4.s")
+void n_alStreamUpdateEnvelope(N_ALStreamState *state) {
+    if ((state->volume != state->targetVolume) || (state->pan != state->targetPan)) {
+        if (state->rampSamplesDone >= state->rampSamplesTotal) {
+            state->targetLeft = (D_8002BC10[state->pan] * state->volume) >> 15;
+            state->targetRight = (D_8002BD0E[-state->pan] * state->volume) >> 15;
+            state->rampSamplesDone = state->rampSamplesTotal;
+            state->currentLeft = state->targetLeft;
+            state->currentRight = state->targetRight;
+        } else {
+            state->currentLeft = _getVol(state->currentLeft, state->rampSamplesDone, state->leftRate,
+                                         state->leftRateFrac);
+            state->currentRight = _getVol(state->currentRight, state->rampSamplesDone, state->rightRate,
+                                          state->rightRateFrac);
+        }
+        if (state->currentLeft == 0) {
+            state->currentLeft = 1;
+        }
+        if (state->currentRight == 0) {
+            state->currentRight = 1;
+        }
+        state->volume = state->targetVolume;
+        if ((state->volume == 0) && (state->requestedRampSamples != 0)) {
+            n_alStreamForceStop();
+        }
+        if (state->pan != state->targetPan) {
+            if (D_800428C2 != 0) {
+                state->pan = (state->targetPan >> 1) + 0x20;
+            } else if (D_800428C1 != 0) {
+                state->pan = 0x40;
+            } else {
+                state->pan = state->targetPan;
+            }
+        }
+        state->rampSamplesDone = 0;
+        state->rampSamplesTotal =
+            ((state->requestedRampSamples + (STREAM_AUDIO_FRAME_SAMPLES - 1)) / STREAM_AUDIO_FRAME_SAMPLES) *
+            STREAM_AUDIO_FRAME_SAMPLES;
+        state->needsEnvelopeUpdate = 1;
+    }
+}
 
 void func_151F3C1C(s32 arg0) {
     D_800E0E00 = arg0;
