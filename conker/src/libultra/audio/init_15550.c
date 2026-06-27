@@ -19,6 +19,28 @@ typedef struct {
     f32 unk34;  // used
 } struct154;
 
+typedef struct N_ALSndpSoundState {
+    /* 0x00 */ ALLink node;
+    /* 0x08 */ u8 pad8[0x4];
+    /* 0x0C */ ALSound *sound;
+    /* 0x10 */ u8 voice[0x20]; /* N_ALVoice storage; local header layout is still incomplete */
+    /* 0x30 */ f32 basePitch;
+    /* 0x34 */ f32 pitch;
+    /* 0x38 */ struct N_ALSndpSoundState **handle;
+    /* 0x3C */ ALBank *bank;
+    /* 0x40 */ s32 retryCount;
+    /* 0x44 */ u16 vol;
+    /* 0x46 */ u8 pad46[0x6];
+    /* 0x4C */ s16 soundNum;
+    /* 0x4E */ s8 priority;
+    /* 0x4F */ u8 pan;
+    /* 0x50 */ u8 fxmix;
+    /* 0x51 */ u8 fxbus;
+    /* 0x52 */ u8 pad52;
+    /* 0x53 */ u8 flags;
+    /* 0x54 */ u8 state;
+} N_ALSndpSoundState;
+
 extern N_ALUnknownStruct1 *D_8002BA20;
 extern N_ALUnknownStruct1 *D_8002BA24;
 extern N_ALUnknownStruct1 *D_8002BA28;
@@ -36,6 +58,7 @@ void n_alSndpFlushVoiceEvents(ALEventQueue *evtq, N_ALUnknownStruct1 *voice, u16
 #define SNDP_CLEAR_RESTART_FLAG_MASK -0x11
 #define SNDP_CHANNEL_MASK            0x1F
 #define SNDP_ALL_EVENT_TYPES         0xFFFF
+#define SNDP_PLAY_SOUND_EVT          0x4000
 
 void func_10015550(N_ALCSPlayer *csp, s32 arg1) {
     N_ALEvent event;
@@ -240,48 +263,53 @@ s32 func_100173C4(N_ALUnknownEvent2 *arg0) {
     return ret;
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/init_15550/func_10017438.s")
-// void *func_10017438(s32 arg0, s16 arg1, u16 arg2, u8 arg3, f32 arg4, u8 arg5, u8 arg6, void *arg7) {
-//     void *sp34;
-//     void *sp30;
-//     s16 sp2E;
-//     s32 sp28;
-//     void *sp1C;
-//     s16 sp18;
-//
-//     sp30 = NULL;
-//     sp2E = 0;
-//     if (arg1 != 0) {
-// loop_1:
-//         sp34 = func_10017100(arg0, arg1 - 1);
-//         if (sp34 != 0) {
-//             (*(void *)0x8002BA2C)->unk3C = sp34;
-//             sp18 = 0x4000;
-//             sp1C = sp34;
-//             sp34->unk4F = arg3;
-//             sp34->unk44 = arg2;
-//             sp34->unk34 = arg4;
-//             sp34->unk50 = arg5;
-//             sp34->unk51 = arg6;
-//             sp28 = 0;
-//             n_alEvtqPostEvent(D_8002BA2C + 20, &sp18, sp28 + 1, 2);
-//             sp30 = sp34;
-//         }
-//         arg1 = (u16)0;
-//         if (arg1 != 0) {
-//             if (sp34 != 0) {
-//                 goto loop_1;
-//             }
-//         }
-//         if ((sp30 == 0) || (sp30->unk53 = (u8) (sp30->unk53 | 1), sp30->unk38 = arg7, (sp2E != 0))) {
-//
-//         }
-//     }
-//     if (arg7 != 0) {
-//         *arg7 = sp30;
-//     }
-//     return sp30;
-// }
+N_ALSndpSoundState *n_alSndpPlaySound(ALBank *bank, s16 soundNum, u16 vol, ALPan pan, f32 pitch, u8 fxmix, u8 fxbus,
+                                      N_ALSndpSoundState **handle) {
+    typedef struct N_ALSndpEventFragment {
+        s16 type;
+        u8 pad2[2];
+        N_ALSndpSoundState *state;
+        u8 pad8[8];
+    } N_ALSndpEventFragment;
+
+    N_ALSndpSoundState *state;
+    N_ALSndpSoundState *leafState;
+    s16 done;
+    s32 delay;
+    N_ALSndpEventFragment event;
+
+    leafState = NULL;
+    done = 0;
+    if (soundNum != 0) {
+        do {
+            state = (N_ALSndpSoundState *) func_10017100((s32) bank, soundNum - 1);
+            if (state != 0) {
+                D_8002BA2C->target = (s32) state;
+                event.type = SNDP_PLAY_SOUND_EVT;
+                event.state = state;
+                state->pan = pan;
+                state->vol = vol;
+                state->pitch = pitch;
+                state->fxmix = fxmix;
+                state->fxbus = fxbus;
+                delay = 0;
+                n_alEvtqPostEvent(&D_8002BA2C->evtq, (N_ALEvent *) &event, delay + 1, 2);
+                leafState = state;
+            }
+            soundNum = 0;
+        } while ((soundNum != 0) && (state != 0));
+        if (leafState != 0) {
+            leafState->flags |= SNDP_ACTIVE_FLAG;
+            leafState->handle = handle;
+            if (done != 0) {
+            }
+        }
+    }
+    if (handle != 0) {
+        *handle = leafState;
+    }
+    return leafState;
+}
 
 void func_10017594(N_ALUnknownStruct1 *arg0) {
     N_ALEvent event;
