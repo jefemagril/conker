@@ -4,7 +4,7 @@ typedef struct N_ALSndpSoundState {
     /* 0x00 */ ALLink node;
     /* 0x08 */ u8 pad8[0x4];
     /* 0x0C */ ALSound *sound;
-    /* 0x10 */ u8 voice[0x20]; /* N_ALVoice storage; local header layout is still incomplete */
+    /* 0x10 */ u8 voice[0x20]; /* Embedded N_ALVoice storage; Conker's local header is truncated to 0x20 bytes. */
     /* 0x30 */ f32 basePitch;
     /* 0x34 */ f32 pitch;
     /* 0x38 */ struct N_ALSndpSoundState **handle;
@@ -52,11 +52,13 @@ void n_alSndpFlushVoiceEvents(ALEventQueue *evtq, N_ALUnknownStruct1 *voice, u16
 #define SNDP_VOICE_CHANNEL_EVT       0x800
 #define SNDP_ACTIVE_FLAG             0x01
 #define SNDP_STATE_READY_MASK        0x03
+#define SNDP_HAS_VOICE_FLAG          0x04
 #define SNDP_CLEAR_RESTART_FLAG_MASK -0x11
 #define SNDP_CHANNEL_MASK            0x1F
 #define SNDP_ALL_EVENT_TYPES         0xFFFF
 #define SNDP_API_EVT                 0x20
 #define SNDP_PLAY_SOUND_EVT          0x4000
+#define SNDP_STATE_VOICE(state)      ((N_ALVoice *) (state)->voice)
 
 void n_alCSPSetBank(N_ALCSPlayer *csp, ALBank *bank) {
     N_ALEvent event;
@@ -141,13 +143,13 @@ s32 _n_sndpVoiceHandler(N_ALSndPlayer *sp) {
 // jump table
 #pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/init_15550/_n_handleEvent.s")
 
-void sndp_free_state(N_ALUnknownStruct1 *arg0) {
-    if ((arg0->unk53 & 4) != 0) {
-        n_alSynStopVoice(&arg0->unk10);
-        n_alSynFreeVoice(&arg0->unk10);
+void sndp_free_state(N_ALSndpSoundState *state) {
+    if ((state->flags & SNDP_HAS_VOICE_FLAG) != 0) {
+        n_alSynStopVoice(SNDP_STATE_VOICE(state));
+        n_alSynFreeVoice(SNDP_STATE_VOICE(state));
     }
-    sndp_free_state2(arg0);
-    n_alSndpFlushVoiceEvents(&D_8002BA2C->evtq, arg0, SNDP_ALL_EVENT_TYPES);
+    sndp_free_state2((N_ALUnknownStruct1 *) state);
+    n_alSndpFlushVoiceEvents(&D_8002BA2C->evtq, (N_ALUnknownStruct1 *) state, SNDP_ALL_EVENT_TYPES);
 }
 
 void sndp_apply_detune_pitch(N_ALSndpSoundState *state) {
