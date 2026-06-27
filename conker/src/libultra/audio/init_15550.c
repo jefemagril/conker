@@ -77,11 +77,11 @@ void n_alSndpFlushVoiceEvents(ALEventQueue *evtq, N_ALUnknownStruct1 *voice, u16
 #define SNDP_API_EVT                 0x20
 #define SNDP_PLAY_SOUND_EVT          0x4000
 
-void func_10015550(N_ALCSPlayer *csp, s32 arg1) {
+void n_alCSPSetBank(N_ALCSPlayer *csp, ALBank *bank) {
     N_ALEvent event;
 
-    event.type = 14;
-    event.msg.midi.ticks = arg1;
+    event.type = AL_SEQP_BANK_EVT;
+    event.msg.spbank.bank = bank;
 
     n_alEvtqPostEvent(&csp->evtq, &event, 0, 2);
 }
