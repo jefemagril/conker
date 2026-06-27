@@ -102,41 +102,9 @@ typedef ALDMAproc (*N_ALStreamDMANew)(void *state);
 #define n_alStreamDmaNew() (((N_ALStreamDMANew *) n_syn->pad24)[0])
 
 
-/* n_alStreamCrc5Word (func_151F27E0) lives in its own -O1 translation unit
- * (src/libultra/audio/n_streamcrc.c); the rest of this file is -g/-O0. */
-
-#pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/game_21FC90/func_151F2890.s")
-// NON-MATCHING: CRC-8-style helper over 32 data bytes plus one final zero-byte
-// round using polynomial 0x85. Straight C matches the semantics, but IDO does
-// not schedule the shift and loop-counter update into the same delay slots as
-// the original asm.
-//
-// u8 n_alStreamCrc8Block(u8 *data) {
-//     u8 crc;
-//     u8 feedback;
-//     s32 i;
-//     s32 bit;
-//
-//     crc = 0;
-//     for (i = 0; i < 0x21; i++) {
-//         for (bit = 7; bit >= 0; bit--) {
-//             if (crc & 0x80) {
-//                 feedback = 0x85;
-//             } else {
-//                 feedback = 0;
-//             }
-//             crc <<= 1;
-//             if (i != 0x20) {
-//                 if (*data & (1 << bit)) {
-//                     crc |= 1;
-//                 }
-//             }
-//             crc ^= feedback;
-//         }
-//         data++;
-//     }
-//     return crc;
-// }
+/* The CRC-5/CRC-8 stream helpers (func_151F27E0, func_151F2890) live in their
+ * own -O1 translation unit (src/libultra/audio/n_streamcrc.c); the rest of this
+ * file is -g/-O0. */
 
 void n_alStreamStart(s32 dataStart, s32 dataLength) {
     if (gStreamReadCallback == 0) {
