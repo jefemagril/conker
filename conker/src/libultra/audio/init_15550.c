@@ -27,6 +27,11 @@ extern s16 D_8002BA30;
 
 void func_10017298(N_ALUnknownStruct1 *arg0);
 
+#define SNDP_VOICE_UPDATE_EVT        0x400
+#define SNDP_ACTIVE_FLAG             0x01
+#define SNDP_STATE_READY_MASK        0x03
+#define SNDP_CLEAR_RESTART_FLAG_MASK -0x11
+
 void func_10015550(N_ALCSPlayer *csp, s32 arg1) {
     N_ALEvent event;
 
@@ -280,46 +285,47 @@ void func_10017594(N_ALUnknownStruct1 *arg0) {
     N_ALEvent event;
 
     if (arg0) {
-        event.type = 1024;
+        event.type = SNDP_VOICE_UPDATE_EVT;
         event.msg.unknown1.unk0 = arg0;
-        event.msg.unknown1.unk0->unk53 &= -0x11;
+        event.msg.unknown1.unk0->unk53 &= SNDP_CLEAR_RESTART_FLAG_MASK;
         n_alEvtqPostEvent(&D_8002BA2C->evtq, &event, 0, 2);
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/init_15550/func_10017604.s")
-// NON-MATCHING: stack isnt quite right
-// void func_10017604(u8 arg0) {
-//     s32 mask;
-//     struct31 *sp20;
-//     u16 foo;
-//     s16 sp1C;
-//     struct31 *sp18;
-//
-//     mask = osSetIntMask(1);
-//     sp18 = D_8002BA20;
-//     if (sp18 != 0) {
-//         do
-//         {
-//             sp1C = 1024;
-//             sp20 = sp18;
-//             if ((sp18->unk53 & arg0) == arg0) {
-//                 sp20->unk53 = sp20->unk53 & -0x11;
-//                 n_alEvtqPostEvent(D_8002BA2C + 20, &sp1C, 0, 2);
-//             }
-//             sp18 = sp18->unk0;
-//         }
-//         while (sp18);
-//     }
-//     osSetIntMask(mask);
-// }
+void n_alSndpPostVoiceUpdateEvents(u8 flags) {
+    typedef struct N_ALVoiceEventFragment {
+        s16 type;
+        u8 pad2[2];
+        N_ALUnknownStruct1 *voice;
+        u8 pad8[8];
+    } N_ALVoiceEventFragment;
 
-void func_100176C4(void) {
-    func_10017604(1);
+    s32 mask;
+    N_ALVoiceEventFragment event;
+    N_ALUnknownStruct1 *voice;
+
+    mask = osSetIntMask(1);
+    voice = D_8002BA20;
+    if (voice != 0) {
+        do {
+            event.type = SNDP_VOICE_UPDATE_EVT;
+            event.voice = voice;
+            if ((voice->unk53 & flags) == flags) {
+                event.voice->unk53 &= SNDP_CLEAR_RESTART_FLAG_MASK;
+                n_alEvtqPostEvent(&D_8002BA2C->evtq, (N_ALEvent *) &event, 0, 2);
+            }
+            voice = voice->node.next;
+        } while (voice != 0);
+    }
+    osSetIntMask(mask);
 }
 
-void func_100176EC(void) {
-    func_10017604(3);
+void n_alSndpPostActiveVoiceUpdates(void) {
+    n_alSndpPostVoiceUpdateEvents(SNDP_ACTIVE_FLAG);
+}
+
+void n_alSndpPostReadyVoiceUpdates(void) {
+    n_alSndpPostVoiceUpdateEvents(SNDP_STATE_READY_MASK);
 }
 
 void func_10017714(s32 arg0, s16 type, s32 arg2) {
