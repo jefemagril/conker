@@ -414,7 +414,7 @@ void func_15000090(void) {
 //             func_1000E40C(sp66, sp68);
 //         }
 //     }
-//     func_10017944(1, sp6D);
+//     n_alSndpSetOutputRoute(1, sp6D);
 // }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_2D4B0/func_150006E0.s")

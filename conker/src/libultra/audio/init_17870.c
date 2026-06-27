@@ -3,64 +3,84 @@
 #include "functions.h"
 #include "variables.h"
 
+#define AUDIO_OUTPUT_MODE_MONO        1
+#define AUDIO_OUTPUT_MODE_STEREO      2
+#define AUDIO_OUTPUT_MODE_HEADPHONES  3
+#define AUDIO_OUTPUT_MODE_SURROUND    4
 
-void func_10017870(u8 arg0) {
-    s32 i;
+#define AUDIO_OUTPUT_ROUTE_STEREO     2
+#define AUDIO_OUTPUT_ROUTE_SURROUND   3
+#define AUDIO_OUTPUT_ROUTE_CENTER     4
+#define AUDIO_OUTPUT_ROUTE_MONO       5
 
-    D_800428C0 = (u8)0;
-    D_800428C1 = (u8)0;
-    D_800428C2 = (u8)0;
+#define AUDIO_OUTPUT_SLOT_COUNT       2
 
-    switch (arg0) {
+#define gAudioOutputSurroundEnabled   D_800428C0
+#define gAudioOutputMonoEnabled       D_800428C1
+#define gAudioOutputNarrowPanEnabled  D_800428C2
+#define gAudioOutputLeftMixFlags      D_800428C4
+#define gAudioOutputRightMixFlags     D_800428C6
+#define gAudioOutputRoutes            D_800428C8
 
-        case 1:
-            D_800428C1 = (u8)1;
+void n_alSndpSetOutputRoute(s32 slot, u32 route);
+
+void n_alSndpSetOutputMode(u8 outputMode) {
+    s32 slot;
+
+    gAudioOutputSurroundEnabled = 0;
+    gAudioOutputMonoEnabled = 0;
+    gAudioOutputNarrowPanEnabled = 0;
+
+    switch (outputMode) {
+
+        case AUDIO_OUTPUT_MODE_MONO:
+            gAudioOutputMonoEnabled = 1;
             break;
-        case 3:
-            D_800428C2 = (u8)1;
+        case AUDIO_OUTPUT_MODE_HEADPHONES:
+            gAudioOutputNarrowPanEnabled = 1;
             break;
-        case 4:
-            D_800428C0 = (u8)1;
+        case AUDIO_OUTPUT_MODE_SURROUND:
+            gAudioOutputSurroundEnabled = 1;
             break;
     }
 
-    for(i = 0; i < 2; i++) {
-        func_10017944(i, 0);
+    for(slot = 0; slot < AUDIO_OUTPUT_SLOT_COUNT; slot++) {
+        n_alSndpSetOutputRoute(slot, 0);
     }
 }
 
-void func_10017944(s32 arg0, u32 arg1) {
-    if (arg1 == 0) {
-        arg1 = D_800428C8[arg0];
+void n_alSndpSetOutputRoute(s32 slot, u32 route) {
+    if (route == 0) {
+        route = gAudioOutputRoutes[slot];
     }
 
-    D_800428C4[arg0] = 0;
-    D_800428C6[arg0] = 0;
+    gAudioOutputLeftMixFlags[slot] = 0;
+    gAudioOutputRightMixFlags[slot] = 0;
 
-    switch (arg1)
+    switch (route)
     {
-        case 2:
-            if (D_800428C0 != 0) {
-                D_800428C6[arg0] = 1;
+        case AUDIO_OUTPUT_ROUTE_STEREO:
+            if (gAudioOutputSurroundEnabled != 0) {
+                gAudioOutputRightMixFlags[slot] = 1;
             }
             break;
-        case 3:
-            if (D_800428C0 != 0) {
-                D_800428C4[arg0] = 1;
+        case AUDIO_OUTPUT_ROUTE_SURROUND:
+            if (gAudioOutputSurroundEnabled != 0) {
+                gAudioOutputLeftMixFlags[slot] = 1;
             }
             break;
-        case 4:
-            if (D_800428C1 == 0) {
-                D_800428C4[arg0] = 1;
+        case AUDIO_OUTPUT_ROUTE_CENTER:
+            if (gAudioOutputMonoEnabled == 0) {
+                gAudioOutputLeftMixFlags[slot] = 1;
             }
             break;
-        case 5:
-            if (D_800428C1 == 0) {
-                D_800428C4[arg0] = 1;
-                D_800428C6[arg0] = 1;
+        case AUDIO_OUTPUT_ROUTE_MONO:
+            if (gAudioOutputMonoEnabled == 0) {
+                gAudioOutputLeftMixFlags[slot] = 1;
+                gAudioOutputRightMixFlags[slot] = 1;
             }
             break;
     }
 
-    D_800428C8[arg0] = arg1;
+    gAudioOutputRoutes[slot] = route;
 }
