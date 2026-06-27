@@ -9,6 +9,9 @@ extern f32 fabsf(f32);
 #pragma intrinsic (fabsf)
 
 #define CSP_MIN_RELEASE_TIME 0x3E80
+#define CSP_DEFAULT_CHL_FADE_SPEED 0x88
+#define CSP_CHL_FADE_DURATION_MASK 0x7F
+#define CSP_CHL_FADE_STEP_EVENT 0xFE
 
 typedef struct N_ALCSPExtraChanState {
     u8 pad0[0x24];
@@ -185,11 +188,11 @@ void n_alCSPStartChlFade(N_ALCSPlayer *seqp, N_ALEvent *event, s32 chan, s32 tar
     f32 fadeDelta;
 
     if (seqp->chanState[chan].unkF == 0) {
-        seqp->chanState[chan].unkF = 0x88;
+        seqp->chanState[chan].unkF = CSP_DEFAULT_CHL_FADE_SPEED;
     }
     if (seqp->chanState[chan].unkE != target) {
         fadeDelta = target - seqp->chanState[chan].unkD;
-        seqp->chanState[chan].unk10 = fadeDelta / (seqp->chanState[chan].unkF & 0x7F);
+        seqp->chanState[chan].unk10 = fadeDelta / (seqp->chanState[chan].unkF & CSP_CHL_FADE_DURATION_MASK);
         seqp->chanState[chan].unk10 = fabsf(seqp->chanState[chan].unk10);
         if (seqp->chanState[chan].unkE == seqp->chanState[chan].unkD) {
             seqp->chanState[chan].unkE = target;
@@ -200,7 +203,7 @@ void n_alCSPStartChlFade(N_ALCSPlayer *seqp, N_ALEvent *event, s32 chan, s32 tar
     } else {
         return;
     }
-    event->msg.midi.byte1 = 0xFE;
+    event->msg.midi.byte1 = CSP_CHL_FADE_STEP_EVENT;
     n_alCSPStepChlFade(seqp, (s32) event, chan, target);
 }
 
