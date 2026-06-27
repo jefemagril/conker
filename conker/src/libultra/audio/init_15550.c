@@ -422,13 +422,13 @@ void n_alSndpPostReadyVoiceUpdates(void) {
     n_alSndpPostVoiceUpdateEvents(SNDP_STATE_READY_MASK);
 }
 
-void func_10017714(s32 arg0, s16 type, s32 arg2) {
+void sndp_post_event(N_ALUnknownStruct1 *state, s16 type, s32 data) {
     N_ALEvent event;
 
-    if (arg0 != 0) {
+    if (state != 0) {
         event.type = type;
-        event.msg.vol.voice = arg0;
-        event.msg.vol.delta = arg2;
+        event.msg.vol.voice = (N_ALVoice *) state;
+        event.msg.vol.delta = data;
         n_alEvtqPostEvent(&D_8002BA2C->evtq, &event, 0, 2);
     }
 }

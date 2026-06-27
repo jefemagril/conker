@@ -219,7 +219,7 @@ s32 func_1000F44C(u16 arg0) {
 //                     phi_a1 = (u16)0x10;
 //                 }
 //             }
-//             func_10017714((((sp18 & 0xF) * 0xC) + 0x80040000) - 0x25E8, phi_a1, arg2);
+//             sndp_post_event((((sp18 & 0xF) * 0xC) + 0x80040000) - 0x25E8, phi_a1, arg2);
 //         }
 //     }
 // }
