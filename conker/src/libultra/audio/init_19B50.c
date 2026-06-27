@@ -5,6 +5,8 @@
 void n_alSynFilter13(N_ALVoice *voice, f32 pitch);
 f32 func_1001CEA4(s32 cents);
 void n_alCSPStepChlFade(N_ALCSPlayer *seqp, s32 event, s32 chan, s32 arg3);
+extern f32 fabsf(f32);
+#pragma intrinsic (fabsf)
 
 #define CSP_MIN_RELEASE_TIME 0x3E80
 
@@ -179,32 +181,28 @@ void n_alCSPApplyChlVol(N_ALCSPlayer *seqp, u8 chan) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/init_19B50/func_1001A508.s")
-// NON-MATCHING: Semantics match Rare's channel fade-start control, but IDO branch
-// layout around the "already fading" path has an extra branch island that C keeps
-// optimizing away or over-expanding.
-//
-// extern f32 fabsf(f32);
-// #pragma intrinsic (fabsf)
-// void n_alCSPStartChlFade(N_ALCSPlayer *seqp, N_ALEvent *event, s32 chan, s32 target) {
-//     f32 fadeDelta;
-//
-//     if (seqp->chanState[chan].unkF == 0) {
-//         seqp->chanState[chan].unkF = 0x88;
-//     }
-//     if (seqp->chanState[chan].unkE != target) {
-//         fadeDelta = target - seqp->chanState[chan].unkD;
-//         seqp->chanState[chan].unk10 = fadeDelta / (seqp->chanState[chan].unkF & 0x7F);
-//         seqp->chanState[chan].unk10 = fabsf(seqp->chanState[chan].unk10);
-//         if (seqp->chanState[chan].unkD == seqp->chanState[chan].unkE) {
-//             seqp->chanState[chan].unkE = target;
-//             event->msg.midi.byte1 = 0xFE;
-//             n_alCSPStepChlFade(seqp, (s32) event, chan, target);
-//         } else {
-//             seqp->chanState[chan].unkE = target;
-//         }
-//     }
-// }
+void n_alCSPStartChlFade(N_ALCSPlayer *seqp, N_ALEvent *event, s32 chan, s32 target) {
+    f32 fadeDelta;
+
+    if (seqp->chanState[chan].unkF == 0) {
+        seqp->chanState[chan].unkF = 0x88;
+    }
+    if (seqp->chanState[chan].unkE != target) {
+        fadeDelta = target - seqp->chanState[chan].unkD;
+        seqp->chanState[chan].unk10 = fadeDelta / (seqp->chanState[chan].unkF & 0x7F);
+        seqp->chanState[chan].unk10 = fabsf(seqp->chanState[chan].unk10);
+        if (seqp->chanState[chan].unkE == seqp->chanState[chan].unkD) {
+            seqp->chanState[chan].unkE = target;
+        } else {
+            seqp->chanState[chan].unkE = target;
+            return;
+        }
+    } else {
+        return;
+    }
+    event->msg.midi.byte1 = 0xFE;
+    n_alCSPStepChlFade(seqp, (s32) event, chan, target);
+}
 
 void n_alCSPStepChlFade(N_ALCSPlayer *seqp, s32 event, s32 chan, s32 arg3) {
     u8 currentFadeVol;
