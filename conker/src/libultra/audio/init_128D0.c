@@ -16,6 +16,10 @@
 #define OSC_STATE_SIZE           0x2C
 
 typedef struct124 ConkerOscState;
+typedef struct121 ConkerBank;
+typedef struct11 ConkerWaveBaseList;
+
+#define BNKF_SAMPLE_BANK_BASE(sampleBankId) (((sampleBankId) & -8) << 5)
 
 #define oscNext                  unk0
 #define oscType                  unk4
@@ -24,6 +28,19 @@ typedef struct124 ConkerOscState;
 #define tremoloDepth             unk0
 #define tremoloBaseVolume        unk1
 #define vibratoDepthCents        unk0
+
+#define bankInstrumentCount      unk0
+#define bankPatched              unk2
+#define bankPercussion           unk8
+#define bankInstruments          unkC
+
+#define waveListPatched          unk3
+#define waveBaseCount            unkE
+#define waveBases                unk10
+
+void n_alBnkfPatchBank(ConkerBank *bank, s32 bankFileOffset, s32 sampleTableOffset, s32 sampleBankBase);
+void n_alBnkfPatchSingleWaveBaseList(ConkerWaveBaseList *waveList, s32 sampleBankBase);
+void n_alBnkfPatchWaveBaseList(ConkerWaveBaseList *waveList, s32 sampleBankBase);
 
 void alSeqFileNew(ALSeqFile *arg0, u8 *base) {
     s32 offset = base;
@@ -35,74 +52,74 @@ void alSeqFileNew(ALSeqFile *arg0, u8 *base) {
     }
 }
 
-// non-vanila alBnkfNew
-void func_10012934(ALBankFile *file, u8 *table, s32 arg2) {
-    s32 offset = file;
-    s32 woffset = table;
-    s32 sp1C = arg2;
+// Conker's bank files can point at sample banks outside the loaded bank file.
+void n_alBnkfNew(ALBankFile *file, u8 *sampleTable, s32 sampleBankId) {
+    s32 bankFileOffset = file;
+    s32 sampleTableOffset = sampleTable;
+    s32 sampleBankBase = sampleBankId;
 
     s32 i;
 
     ALFailIf(file->revision != AL_BANK_VERSION, ERR_ALBNKFNEW);
 
     for (i = 0; i < file->bankCount; i++) {
-        file->bankArray[i] = (ALBank *)((u8 *)file->bankArray[i] + offset) ; // (s32)sp24; // ??
+        file->bankArray[i] = (ALBank *)((u8 *)file->bankArray[i] + bankFileOffset);
         if (file->bankArray[i] != 0) {
-            func_10012A28(file->bankArray[i], offset, woffset, sp1C);
+            n_alBnkfPatchBank((ConkerBank *) file->bankArray[i], bankFileOffset, sampleTableOffset, sampleBankBase);
         }
     }
 }
 
-void func_10012A28(struct121 *arg0, s32 arg1, s32 arg2, s32 arg3) {
+void n_alBnkfPatchBank(ConkerBank *bank, s32 bankFileOffset, s32 sampleTableOffset, s32 sampleBankBase) {
     s32 i;
-    s32 tmp;
+    s32 baseOffset;
 
-    if (arg0->unk2 != 0) {
+    if (bank->bankPatched != 0) {
         return;
     }
 
-    arg0->unk2 = 1;
+    bank->bankPatched = 1;
 
-    if (arg0->unk8 != 0) {
-        arg0->unk8 += arg1;
-        func_10012B84(arg0->unk8, arg3);
+    if (bank->bankPercussion != 0) {
+        bank->bankPercussion += bankFileOffset;
+        n_alBnkfPatchSingleWaveBaseList((ConkerWaveBaseList *) bank->bankPercussion, sampleBankBase);
     }
 
-    for (i = 0; i < arg0->unk0; i ++) {
-        if (arg0->unkC[i] != 0) {
+    for (i = 0; i < bank->bankInstrumentCount; i ++) {
+        if (bank->bankInstruments[i] != 0) {
             if (i == 0) {
-                arg0->unkC[i] += arg1;
-                func_10012BD0(arg0->unkC[i], arg3);
+                bank->bankInstruments[i] += bankFileOffset;
+                n_alBnkfPatchWaveBaseList((ConkerWaveBaseList *) bank->bankInstruments[i], sampleBankBase);
             } else {
-                tmp = (arg3 & -8) << 5;
-                arg0->unkC[i] += tmp;
+                baseOffset = BNKF_SAMPLE_BANK_BASE(sampleBankBase);
+                bank->bankInstruments[i] += baseOffset;
             }
         }
     }
 }
 
-void func_10012B84(struct11 *arg0, s32 arg1) {
-    if (arg0->unk3) {
+void n_alBnkfPatchSingleWaveBaseList(ConkerWaveBaseList *waveList, s32 sampleBankBase) {
+    if (waveList->waveListPatched) {
         return;
     }
-    arg0->unk3 = 1;
-    arg1 = (0xFFFFFFF8 & arg1) << 5;
-    arg0->unk10[0] += arg1;
+    waveList->waveListPatched = 1;
+    sampleBankBase = BNKF_SAMPLE_BANK_BASE(sampleBankBase);
+    waveList->waveBases[0] += sampleBankBase;
 }
 
-void func_10012BD0(struct11 *arg0, s32 arg1) {
+void n_alBnkfPatchWaveBaseList(ConkerWaveBaseList *waveList, s32 sampleBankBase) {
     s32 i;
 
-    if (arg0->unk3 != 0) {
+    if (waveList->waveListPatched != 0) {
         return;
     }
-    arg0->unk3 = 1;
+    waveList->waveListPatched = 1;
 
-    arg1 = (arg1 & -8) << 5;
+    sampleBankBase = BNKF_SAMPLE_BANK_BASE(sampleBankBase);
 
-    for (i = 0; i < arg0->unkE; i++)
+    for (i = 0; i < waveList->waveBaseCount; i++)
     {
-        arg0->unk10[i] += arg1;
+        waveList->waveBases[i] += sampleBankBase;
     }
 }
 
