@@ -163,7 +163,7 @@ s32 func_1000F3D0(u16 arg0) {
     temp_v1 = &D_800425E0[arg0 & 0xF];
     if (temp_v1->unk8 != 0) {
         if ((temp_v1->unk0 == arg0) || (arg0 == (arg0 & 0xF))) {
-            if (func_100173C4(&temp_v1->unk8) != 0) {
+            if (sndp_get_state(&temp_v1->unk8) != 0) {
                 return 1;
             }
         }
@@ -446,7 +446,7 @@ void func_100111C8(u16 arg0) {
     if ((tmp->unk8 != 0) && (tmp->unk0 == arg0)) {
         tmp->unk0 = 0;
         tmp->unk4 = 0;
-        func_10017594(tmp->unk8);
+        sndp_post_end_event(tmp->unk8);
         tmp->unk8 = 0;
     }
 }
@@ -456,7 +456,7 @@ void func_1001123C(u16 arg0) {
 
     if ((tmp->unk8 != 0) && (tmp->unk0 == arg0)) {
         if (func_100112BC(arg0, 1) == 0) {
-            func_10017594(tmp->unk8);
+            sndp_post_end_event(tmp->unk8);
             tmp->unk8 = 0;
         }
     }
