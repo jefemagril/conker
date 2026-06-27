@@ -41,6 +41,20 @@ typedef struct N_ALSndpSoundState {
     /* 0x54 */ u8 state;
 } N_ALSndpSoundState;
 
+typedef struct {
+    /* 0x00 */ ALPlayer node;
+    /* 0x14 */ ALEventQueue evtq;
+    /* 0x28 */ N_ALEvent nextEvent;
+    /* 0x38 */ N_ALSynth *drvr;
+    /* 0x3C */ s32 target;
+    /* 0x40 */ N_ALSndpSoundState *sndState;
+    /* 0x44 */ s32 maxSounds;
+    /* 0x48 */ ALMicroTime frameTime;
+    /* 0x4C */ ALMicroTime nextDelta;
+    /* 0x50 */ ALMicroTime curTime;
+    /* 0x54 */ s32 soundTableCount;
+} N_ALSndPlayerExtended;
+
 extern N_ALUnknownStruct1 *D_8002BA20;
 extern N_ALUnknownStruct1 *D_8002BA24;
 extern N_ALUnknownStruct1 *D_8002BA28;
@@ -50,6 +64,7 @@ extern u16 *D_800428B8;
 
 void func_10017298(N_ALUnknownStruct1 *arg0);
 void n_alSndpFlushVoiceEvents(ALEventQueue *evtq, N_ALUnknownStruct1 *voice, u16 typeMask);
+s32 func_10015878(N_ALSndPlayer *sp);
 
 #define SNDP_VOICE_UPDATE_EVT        0x400
 #define SNDP_VOICE_CHANNEL_EVT       0x800
@@ -58,6 +73,7 @@ void n_alSndpFlushVoiceEvents(ALEventQueue *evtq, N_ALUnknownStruct1 *voice, u16
 #define SNDP_CLEAR_RESTART_FLAG_MASK -0x11
 #define SNDP_CHANNEL_MASK            0x1F
 #define SNDP_ALL_EVENT_TYPES         0xFFFF
+#define SNDP_API_EVT                 0x20
 #define SNDP_PLAY_SOUND_EVT          0x4000
 
 void func_10015550(N_ALCSPlayer *csp, s32 arg1) {
@@ -69,7 +85,54 @@ void func_10015550(N_ALCSPlayer *csp, s32 arg1) {
     n_alEvtqPostEvent(&csp->evtq, &event, 0, 2);
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/init_15550/func_100155A0.s")
+void n_alSndpNew(N_ALSndpConfig *config) {
+    u32 stateIndex;
+    void *ptr;
+    N_ALEvent event;
+    N_ALSndpSoundState *states;
+    N_ALSndpSoundState *state;
+    N_ALSndpSoundState *prevState;
+
+    D_8002BA2C->maxSounds = config->maxSounds;
+    D_8002BA2C->target = 0;
+    D_8002BA2C->drvr = n_syn;
+    D_8002BA2C->frameTime = 16000;
+
+    ptr = alHeapDBAlloc(0, 0, config->heap, config->maxStates, sizeof(N_ALSndpSoundState));
+    D_8002BA2C->sndState = ptr;
+    ((N_ALSndPlayerExtended *) D_8002BA2C)->soundTableCount = config->soundTableCount;
+
+    ptr = alHeapDBAlloc(0, 0, config->heap, config->maxEvents, sizeof(N_ALEventListItem));
+    n_alEvtqNew(&D_8002BA2C->evtq, ptr, config->maxEvents);
+
+    D_8002BA28 = (N_ALUnknownStruct1 *) D_8002BA2C->sndState;
+
+    for (stateIndex = 1; stateIndex < (u32) config->maxStates; stateIndex++) {
+        states = (N_ALSndpSoundState *) D_8002BA2C->sndState;
+        state = &states[stateIndex];
+        prevState = &states[stateIndex - 1];
+        state->node.next = prevState->node.next;
+        state->node.prev = &prevState->node;
+        if (prevState->node.next != 0) {
+            prevState->node.next->prev = &state->node;
+        }
+        prevState->node.next = &state->node;
+    }
+
+    D_800428B8 = alHeapDBAlloc(0, 0, config->heap, sizeof(u16), config->maxVolumes);
+    for (stateIndex = 0; stateIndex < config->maxVolumes; stateIndex++) {
+        D_800428B8[stateIndex] = 0x7FFF;
+    }
+
+    D_8002BA2C->node.next = 0;
+    D_8002BA2C->node.handler = (ALVoiceHandler) func_10015878;
+    D_8002BA2C->node.clientData = D_8002BA2C;
+    n_alSynAddPlayer(&D_8002BA2C->node);
+
+    event.type = SNDP_API_EVT;
+    n_alEvtqPostEvent(&D_8002BA2C->evtq, &event, D_8002BA2C->frameTime, 3);
+    D_8002BA2C->nextDelta = n_alEvtqNextEvent(&D_8002BA2C->evtq, &D_8002BA2C->nextEvent);
+}
 
 s32 func_10015878(N_ALSndPlayer *sp) {
     N_ALSndPlayer *alsp;

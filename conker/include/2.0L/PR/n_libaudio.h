@@ -379,7 +379,16 @@ typedef struct {
     /* 0x50 */  ALMicroTime         curTime;
 } N_ALSndPlayer;
 
-void     n_alSndpNew(N_ALSndPlayer *sndp, ALSndpConfig *c);
+typedef struct {
+    /* 0x00 */  s32                 maxStates;
+    /* 0x04 */  s32                 maxEvents;
+    /* 0x08 */  s32                 maxSounds;
+    /* 0x0C */  ALHeap             *heap;
+    /* 0x10 */  s32                 soundTableCount;
+    /* 0x14 */  u16                 maxVolumes;
+} N_ALSndpConfig;
+
+void     n_alSndpNew(N_ALSndpConfig *c);
 void     n_alSndpDelete(void);
 ALSndId  n_alSndpAllocate(ALSound *sound);
 void     n_alSndpDeallocate(ALSndId id);

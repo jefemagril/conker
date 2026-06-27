@@ -91,7 +91,7 @@
 #define ALSndpEvent             N_ALSndpEvent
 #define ALSndPlayer             N_ALSndPlayer
 
-#define alSndpNew( a, b)	        n_alSndpNew( a, b)
+#define alSndpNew( a, b)	        n_alSndpNew( b)
 #define alSndpDelete( a)	        n_alSndpDelete()
 #define alSndpAllocate( a, b)	        n_alSndpAllocate( b)
 #define alSndpDeallocate( a, b)	        n_alSndpDeallocate( b)
