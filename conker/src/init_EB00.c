@@ -446,7 +446,7 @@ void func_100111C8(u16 arg0) {
     if ((tmp->unk8 != 0) && (tmp->unk0 == arg0)) {
         tmp->unk0 = 0;
         tmp->unk4 = 0;
-        sndp_post_end_event(tmp->unk8);
+        sndp_post_stopall_event(tmp->unk8);
         tmp->unk8 = 0;
     }
 }
@@ -456,7 +456,7 @@ void func_1001123C(u16 arg0) {
 
     if ((tmp->unk8 != 0) && (tmp->unk0 == arg0)) {
         if (func_100112BC(arg0, 1) == 0) {
-            sndp_post_end_event(tmp->unk8);
+            sndp_post_stopall_event(tmp->unk8);
             tmp->unk8 = 0;
         }
     }

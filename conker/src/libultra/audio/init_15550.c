@@ -36,28 +36,47 @@ typedef struct {
     /* 0x54 */ s32 soundTableCount;
 } N_ALSndPlayerExtended;
 
-extern N_ALUnknownStruct1 *D_8002BA20;
-extern N_ALUnknownStruct1 *D_8002BA24;
-extern N_ALUnknownStruct1 *D_8002BA28;
-extern N_ALSndPlayer *D_8002BA2C;
+extern N_ALSndpSoundState *D_8002BA20;
+extern N_ALSndpSoundState *D_8002BA24;
+extern N_ALSndpSoundState *D_8002BA28;
+extern N_ALSndPlayerExtended *D_8002BA2C;
 extern s16 D_8002BA30;
 extern u16 *D_800428B8;
 
 s32 _n_sndpVoiceHandler(N_ALSndPlayer *sndp);
-N_ALUnknownStruct1 *sndp_alloc_state(s32 bank, s16 soundIndex);
-void sndp_free_state2(N_ALUnknownStruct1 *state);
-void n_alSndpFlushVoiceEvents(ALEventQueue *evtq, N_ALUnknownStruct1 *voice, u16 typeMask);
+N_ALSndpSoundState *sndp_alloc_state(s32 bank, s16 soundIndex);
+void sndp_free_state2(N_ALSndpSoundState *state);
+void n_alSndpFlushVoiceEvents(ALEventQueue *evtq, N_ALSndpSoundState *voice, u16 typeMask);
 
-#define SNDP_VOICE_UPDATE_EVT        0x400
-#define SNDP_VOICE_CHANNEL_EVT       0x800
-#define SNDP_ACTIVE_FLAG             0x01
+#define g_SndpAllocStatesHead        D_8002BA20
+#define g_SndpAllocStatesTail        D_8002BA24
+#define g_SndpFreeStatesHead         D_8002BA28
+#define g_SndPlayer                  D_8002BA2C
+#define g_SndpNumPlaying             D_8002BA30
+#define g_SndpVolumeTable            D_800428B8
+
+#define SNDP_PLAY_EVT                0x001
+#define SNDP_PITCH_EVT               0x010
+#define SNDP_API_EVT                 0x020
+#define SNDP_END_EVT                 0x080
+#define SNDP_STOPALL_EVT             0x400
+#define SNDP_VOLTBL_EVT              0x800
+#define SNDP_PLAY_SOUND_EVT          0x4000
+
+#define SNDP_LEAF_FLAG               0x01
 #define SNDP_STATE_READY_MASK        0x03
 #define SNDP_HAS_VOICE_FLAG          0x04
-#define SNDP_CLEAR_RESTART_FLAG_MASK -0x11
+#define SNDP_RELATIVE_DELAY_FLAG     0x10
+#define SNDP_PARENT_OF_LEAF_FLAG     0x10
+#define SNDP_HAS_DETUNE_PITCH_FLAG   0x20
+#define SNDP_CLEAR_PARENT_FLAG_MASK  (~SNDP_PARENT_OF_LEAF_FLAG)
 #define SNDP_CHANNEL_MASK            0x1F
 #define SNDP_ALL_EVENT_TYPES         0xFFFF
-#define SNDP_API_EVT                 0x20
-#define SNDP_PLAY_SOUND_EVT          0x4000
+#define SNDP_VOLUME_TABLE_FULL       0x7FFF
+#define SNDP_MAX_PRIORITY            0x40
+#define SNDP_INITIAL_RETRY_COUNT     2
+#define SNDP_STATE_READY             5
+#define SNDP_PITCH_UPDATE_DELAY      33333
 #define SNDP_STATE_VOICE(state)      ((N_ALVoice *) (state)->voice)
 
 void n_alCSPSetBank(N_ALCSPlayer *csp, ALBank *bank) {
@@ -77,22 +96,22 @@ void n_alSndpNew(N_ALSndpConfig *config) {
     N_ALSndpSoundState *state;
     N_ALSndpSoundState *prevState;
 
-    D_8002BA2C->maxSounds = config->maxSounds;
-    D_8002BA2C->target = 0;
-    D_8002BA2C->drvr = n_syn;
-    D_8002BA2C->frameTime = 16000;
+    g_SndPlayer->maxSounds = config->maxSounds;
+    g_SndPlayer->target = 0;
+    g_SndPlayer->drvr = n_syn;
+    g_SndPlayer->frameTime = AL_USEC_PER_FRAME;
 
     ptr = alHeapDBAlloc(0, 0, config->heap, config->maxStates, sizeof(N_ALSndpSoundState));
-    D_8002BA2C->sndState = ptr;
-    ((N_ALSndPlayerExtended *) D_8002BA2C)->soundTableCount = config->soundTableCount;
+    g_SndPlayer->sndState = ptr;
+    g_SndPlayer->soundTableCount = config->soundTableCount;
 
     ptr = alHeapDBAlloc(0, 0, config->heap, config->maxEvents, sizeof(N_ALEventListItem));
-    n_alEvtqNew(&D_8002BA2C->evtq, ptr, config->maxEvents);
+    n_alEvtqNew(&g_SndPlayer->evtq, ptr, config->maxEvents);
 
-    D_8002BA28 = (N_ALUnknownStruct1 *) D_8002BA2C->sndState;
+    g_SndpFreeStatesHead = g_SndPlayer->sndState;
 
     for (stateIndex = 1; stateIndex < (u32) config->maxStates; stateIndex++) {
-        states = (N_ALSndpSoundState *) D_8002BA2C->sndState;
+        states = g_SndPlayer->sndState;
         state = &states[stateIndex];
         prevState = &states[stateIndex - 1];
         state->node.next = prevState->node.next;
@@ -103,19 +122,19 @@ void n_alSndpNew(N_ALSndpConfig *config) {
         prevState->node.next = &state->node;
     }
 
-    D_800428B8 = alHeapDBAlloc(0, 0, config->heap, sizeof(u16), config->maxVolumes);
+    g_SndpVolumeTable = alHeapDBAlloc(0, 0, config->heap, sizeof(u16), config->maxVolumes);
     for (stateIndex = 0; stateIndex < config->maxVolumes; stateIndex++) {
-        D_800428B8[stateIndex] = 0x7FFF;
+        g_SndpVolumeTable[stateIndex] = SNDP_VOLUME_TABLE_FULL;
     }
 
-    D_8002BA2C->node.next = 0;
-    D_8002BA2C->node.handler = (ALVoiceHandler) _n_sndpVoiceHandler;
-    D_8002BA2C->node.clientData = D_8002BA2C;
-    n_alSynAddPlayer(&D_8002BA2C->node);
+    g_SndPlayer->node.next = 0;
+    g_SndPlayer->node.handler = (ALVoiceHandler) _n_sndpVoiceHandler;
+    g_SndPlayer->node.clientData = g_SndPlayer;
+    n_alSynAddPlayer(&g_SndPlayer->node);
 
     event.type = SNDP_API_EVT;
-    n_alEvtqPostEvent(&D_8002BA2C->evtq, &event, D_8002BA2C->frameTime, 3);
-    D_8002BA2C->nextDelta = n_alEvtqNextEvent(&D_8002BA2C->evtq, &D_8002BA2C->nextEvent);
+    n_alEvtqPostEvent(&g_SndPlayer->evtq, &event, g_SndPlayer->frameTime, 3);
+    g_SndPlayer->nextDelta = n_alEvtqNextEvent(&g_SndPlayer->evtq, &g_SndPlayer->nextEvent);
 }
 
 s32 _n_sndpVoiceHandler(N_ALSndPlayer *sp) {
@@ -125,8 +144,8 @@ s32 _n_sndpVoiceHandler(N_ALSndPlayer *sp) {
     alsp = sp;
     do {
         switch (alsp->nextEvent.type) {
-        case 32:
-            event.type = 32;
+        case SNDP_API_EVT:
+            event.type = SNDP_API_EVT;
             n_alEvtqPostEvent(&alsp->evtq, &event, alsp->frameTime, 3);
             break;
         default:
@@ -148,8 +167,8 @@ void sndp_free_state(N_ALSndpSoundState *state) {
         n_alSynStopVoice(SNDP_STATE_VOICE(state));
         n_alSynFreeVoice(SNDP_STATE_VOICE(state));
     }
-    sndp_free_state2((N_ALUnknownStruct1 *) state);
-    n_alSndpFlushVoiceEvents(&D_8002BA2C->evtq, (N_ALUnknownStruct1 *) state, SNDP_ALL_EVENT_TYPES);
+    sndp_free_state2(state);
+    n_alSndpFlushVoiceEvents(&g_SndPlayer->evtq, state, SNDP_ALL_EVENT_TYPES);
 }
 
 void sndp_apply_detune_pitch(N_ALSndpSoundState *state) {
@@ -158,15 +177,14 @@ void sndp_apply_detune_pitch(N_ALSndpSoundState *state) {
 
     res = alCents2Ratio(state->sound->keyMap->detune) * state->pitch;
 
-    event.type = 16;
-    /* TODO: check if this is the right struct */
+    event.type = SNDP_PITCH_EVT;
     event.msg.vol.voice = (N_ALVoice *) state;
     event.msg.vol.delta = *(s32*)&res;
 
-    n_alEvtqPostEvent(&D_8002BA2C->evtq, &event, 33333, 2);
+    n_alEvtqPostEvent(&g_SndPlayer->evtq, &event, SNDP_PITCH_UPDATE_DELAY, 2);
 }
 
-void n_alSndpFlushVoiceEvents(ALEventQueue *evtq, N_ALUnknownStruct1 *voice, u16 typeMask) {
+void n_alSndpFlushVoiceEvents(ALEventQueue *evtq, N_ALSndpSoundState *voice, u16 typeMask) {
     N_ALEventListItem *current;
     N_ALEventListItem *next;
     N_ALEventListItem *item;
@@ -185,7 +203,7 @@ void n_alSndpFlushVoiceEvents(ALEventQueue *evtq, N_ALUnknownStruct1 *voice, u16
             item = current;
             nextEvent = next;
             event = &item->evt;
-            if ((event->msg.unknown1.unk0 == voice) && (((u16) event->type & typeMask) != 0)) {
+            if ((event->msg.unknown1.unk0 == (N_ALUnknownStruct1 *) voice) && (((u16) event->type & typeMask) != 0)) {
                 if (nextEvent != 0) {
                     nextEvent->delta += item->delta;
                 }
@@ -211,99 +229,99 @@ void n_alSndpFlushVoiceEvents(ALEventQueue *evtq, N_ALUnknownStruct1 *voice, u16
     osSetIntMask(mask);
 }
 
-N_ALUnknownStruct1 *sndp_alloc_state(s32 bank, s16 soundIndex) {
-    N_ALUnknownStruct1 *sp24;
+N_ALSndpSoundState *sndp_alloc_state(s32 bank, s16 soundIndex) {
+    N_ALSndpSoundState *state;
     u32 mask;
-    N_ALUnknownStruct1 *sp1C;
+    N_ALSndpSoundState *unlink;
 
     mask = osSetIntMask(1);
-    sp24 = D_8002BA28;
-    if (sp24 != 0) {
-        D_8002BA28 = sp24->node.next;
-        sp1C = sp24;
-        if (sp1C->node.next) {
-            sp1C->node.next->prev = sp1C->node.prev;
+    state = g_SndpFreeStatesHead;
+    if (state != 0) {
+        g_SndpFreeStatesHead = (N_ALSndpSoundState *) state->node.next;
+        unlink = state;
+        if (unlink->node.next) {
+            unlink->node.next->prev = unlink->node.prev;
         }
-        if (sp1C->node.prev) {
-            sp1C->node.prev->next = sp1C->node.next;
+        if (unlink->node.prev) {
+            unlink->node.prev->next = unlink->node.next;
         }
-        if (D_8002BA20) {
-            sp24->node.next = D_8002BA20;
-            sp24->node.prev = NULL;
-            D_8002BA20->node.prev = sp24;
-            D_8002BA20 = sp24;
+        if (g_SndpAllocStatesHead) {
+            state->node.next = &g_SndpAllocStatesHead->node;
+            state->node.prev = NULL;
+            g_SndpAllocStatesHead->node.prev = &state->node;
+            g_SndpAllocStatesHead = state;
         } else {
-            sp24->node.prev = 0;
-            sp24->node.next = sp24->node.prev;
-            D_8002BA20 = sp24;
-            D_8002BA24 = sp24;
+            state->node.prev = 0;
+            state->node.next = state->node.prev;
+            g_SndpAllocStatesHead = state;
+            g_SndpAllocStatesTail = state;
         }
         osSetIntMask(mask);
-        sp24->unkC = 0;
-        sp24->unk4C = soundIndex;
-        sp24->unk3C = bank;
-        sp24->unk4E = 64;
-        sp24->unk54 = 5;
-        sp24->unk40 = 2;
-        sp24->unk53 = 0;
-        sp24->unk38 = 0;
-        sp24->unk30 = 1.0f;
+        state->sound = 0;
+        state->soundNum = soundIndex;
+        state->bank = (ALBank *) bank;
+        state->priority = SNDP_MAX_PRIORITY;
+        state->state = SNDP_STATE_READY;
+        state->retryCount = SNDP_INITIAL_RETRY_COUNT;
+        state->flags = 0;
+        state->handle = 0;
+        state->basePitch = 1.0f;
     } else {
         osSetIntMask(mask);
     }
-    return sp24;
+    return state;
 }
 
-void sndp_free_state2(N_ALUnknownStruct1 *arg0) {
-    N_ALUnknownStruct1 *sp4;
+void sndp_free_state2(N_ALSndpSoundState *state) {
+    N_ALSndpSoundState *unlink;
 
-    if (D_8002BA20 == arg0) {
-        D_8002BA20 = arg0->node.next;
+    if (g_SndpAllocStatesHead == state) {
+        g_SndpAllocStatesHead = (N_ALSndpSoundState *) state->node.next;
     }
-    if (D_8002BA24 == arg0) {
-        D_8002BA24 = arg0->node.prev;
-    }
-
-    sp4 = arg0;
-    if (sp4->node.next) {
-        sp4->node.next->prev = sp4->node.prev;
+    if (g_SndpAllocStatesTail == state) {
+        g_SndpAllocStatesTail = (N_ALSndpSoundState *) state->node.prev;
     }
 
-    if (sp4->node.prev) {
-        sp4->node.prev->next = sp4->node.next;
+    unlink = state;
+    if (unlink->node.next) {
+        unlink->node.next->prev = unlink->node.prev;
     }
 
-    if (D_8002BA28) {
-        arg0->node.next = D_8002BA28;
-        arg0->node.prev = NULL;
-        D_8002BA28->node.prev = arg0;
-        D_8002BA28 = arg0;
+    if (unlink->node.prev) {
+        unlink->node.prev->next = unlink->node.next;
+    }
+
+    if (g_SndpFreeStatesHead) {
+        state->node.next = &g_SndpFreeStatesHead->node;
+        state->node.prev = NULL;
+        g_SndpFreeStatesHead->node.prev = &state->node;
+        g_SndpFreeStatesHead = state;
     } else {
-        arg0->node.prev = NULL;
-        arg0->node.next = arg0->node.prev;
-        D_8002BA28 = arg0;
+        state->node.prev = NULL;
+        state->node.next = state->node.prev;
+        g_SndpFreeStatesHead = state;
     }
-    if (arg0->unk53 & 4) {
-        D_8002BA30 -= 1;
+    if (state->flags & SNDP_HAS_VOICE_FLAG) {
+        g_SndpNumPlaying -= 1;
     }
-    arg0->unk54 = 0;
-    if (arg0->unk38) {
-        if (*arg0->unk38 == (s32)arg0) {
-            *arg0->unk38 = 0;
+    state->state = AL_STOPPED;
+    if (state->handle) {
+        if (*state->handle == state) {
+            *state->handle = 0;
         }
-        arg0->unk38 = NULL;
+        state->handle = NULL;
     }
 }
 
-s32 sndp_get_state(N_ALUnknownEvent2 *arg0) {
+s32 sndp_get_state(N_ALSndpSoundState **handle) {
     s32 ret;
     s32 mask;
 
     ret = 0;
-    if (arg0->unk0) {
+    if (*handle) {
         mask = __osDisableInt();
-        if (arg0->unk0) {
-            ret = arg0->unk0->unk54;
+        if (*handle) {
+            ret = (*handle)->state;
         }
         __osRestoreInt(mask);
     }
@@ -329,9 +347,9 @@ N_ALSndpSoundState *n_alSndpPlaySound(ALBank *bank, s16 soundNum, u16 vol, ALPan
     done = 0;
     if (soundNum != 0) {
         do {
-            state = (N_ALSndpSoundState *) sndp_alloc_state((s32) bank, soundNum - 1);
+            state = sndp_alloc_state((s32) bank, soundNum - 1);
             if (state != 0) {
-                D_8002BA2C->target = (s32) state;
+                g_SndPlayer->target = (s32) state;
                 event.type = SNDP_PLAY_SOUND_EVT;
                 event.state = state;
                 state->pan = pan;
@@ -340,13 +358,13 @@ N_ALSndpSoundState *n_alSndpPlaySound(ALBank *bank, s16 soundNum, u16 vol, ALPan
                 state->fxmix = fxmix;
                 state->fxbus = fxbus;
                 delay = 0;
-                n_alEvtqPostEvent(&D_8002BA2C->evtq, (N_ALEvent *) &event, delay + 1, 2);
+                n_alEvtqPostEvent(&g_SndPlayer->evtq, (N_ALEvent *) &event, delay + 1, 2);
                 leafState = state;
             }
             soundNum = 0;
         } while ((soundNum != 0) && (state != 0));
         if (leafState != 0) {
-            leafState->flags |= SNDP_ACTIVE_FLAG;
+            leafState->flags |= SNDP_LEAF_FLAG;
             leafState->handle = handle;
             if (done != 0) {
             }
@@ -358,61 +376,61 @@ N_ALSndpSoundState *n_alSndpPlaySound(ALBank *bank, s16 soundNum, u16 vol, ALPan
     return leafState;
 }
 
-void sndp_post_end_event(N_ALUnknownStruct1 *arg0) {
+void sndp_post_stopall_event(N_ALSndpSoundState *state) {
     N_ALEvent event;
 
-    if (arg0) {
-        event.type = SNDP_VOICE_UPDATE_EVT;
-        event.msg.unknown1.unk0 = arg0;
-        event.msg.unknown1.unk0->unk53 &= SNDP_CLEAR_RESTART_FLAG_MASK;
-        n_alEvtqPostEvent(&D_8002BA2C->evtq, &event, 0, 2);
+    if (state) {
+        event.type = SNDP_STOPALL_EVT;
+        event.msg.unknown1.unk0 = (N_ALUnknownStruct1 *) state;
+        ((N_ALSndpSoundState *) event.msg.unknown1.unk0)->flags &= SNDP_CLEAR_PARENT_FLAG_MASK;
+        n_alEvtqPostEvent(&g_SndPlayer->evtq, &event, 0, 2);
     }
 }
 
-void n_alSndpPostVoiceUpdateEvents(u8 flags) {
+void sndp_post_stopall_event_bulk(u8 flags) {
     typedef struct N_ALVoiceEventFragment {
         s16 type;
         u8 pad2[2];
-        N_ALUnknownStruct1 *voice;
+        N_ALSndpSoundState *state;
         u8 pad8[8];
     } N_ALVoiceEventFragment;
 
     s32 mask;
     N_ALVoiceEventFragment event;
-    N_ALUnknownStruct1 *voice;
+    N_ALSndpSoundState *state;
 
     mask = osSetIntMask(1);
-    voice = D_8002BA20;
-    if (voice != 0) {
+    state = g_SndpAllocStatesHead;
+    if (state != 0) {
         do {
-            event.type = SNDP_VOICE_UPDATE_EVT;
-            event.voice = voice;
-            if ((voice->unk53 & flags) == flags) {
-                event.voice->unk53 &= SNDP_CLEAR_RESTART_FLAG_MASK;
-                n_alEvtqPostEvent(&D_8002BA2C->evtq, (N_ALEvent *) &event, 0, 2);
+            event.type = SNDP_STOPALL_EVT;
+            event.state = state;
+            if ((state->flags & flags) == flags) {
+                event.state->flags &= SNDP_CLEAR_PARENT_FLAG_MASK;
+                n_alEvtqPostEvent(&g_SndPlayer->evtq, (N_ALEvent *) &event, 0, 2);
             }
-            voice = voice->node.next;
-        } while (voice != 0);
+            state = (N_ALSndpSoundState *) state->node.next;
+        } while (state != 0);
     }
     osSetIntMask(mask);
 }
 
-void n_alSndpPostActiveVoiceUpdates(void) {
-    n_alSndpPostVoiceUpdateEvents(SNDP_ACTIVE_FLAG);
+void sndp_stop_all(void) {
+    sndp_post_stopall_event_bulk(SNDP_LEAF_FLAG);
 }
 
-void n_alSndpPostReadyVoiceUpdates(void) {
-    n_alSndpPostVoiceUpdateEvents(SNDP_STATE_READY_MASK);
+void sndp_stop_nodecays(void) {
+    sndp_post_stopall_event_bulk(SNDP_STATE_READY_MASK);
 }
 
-void sndp_post_event(N_ALUnknownStruct1 *state, s16 type, s32 data) {
+void sndp_post_event(N_ALSndpSoundState *state, s16 type, s32 data) {
     N_ALEvent event;
 
     if (state != 0) {
         event.type = type;
         event.msg.vol.voice = (N_ALVoice *) state;
         event.msg.vol.delta = data;
-        n_alEvtqPostEvent(&D_8002BA2C->evtq, &event, 0, 2);
+        n_alEvtqPostEvent(&g_SndPlayer->evtq, &event, 0, 2);
     }
 }
 
@@ -420,23 +438,23 @@ void n_alSndpSetChannelValue(u8 channel, u16 value) {
     typedef struct N_ALVoiceEventFragment {
         s16 type;
         u8 pad2[2];
-        N_ALUnknownStruct1 *voice;
+        N_ALSndpSoundState *state;
         u8 pad8[8];
     } N_ALVoiceEventFragment;
 
     s32 mask;
-    N_ALUnknownStruct1 *voice;
+    N_ALSndpSoundState *state;
     s32 voiceIndex;
     N_ALVoiceEventFragment event;
 
     mask = osSetIntMask(1);
-    voice = D_8002BA20;
-    D_800428B8[channel] = value;
-    for (voiceIndex = 0; voice != 0; voiceIndex++, voice = voice->node.next) {
-        if ((voice->unkC != 0) && ((((ALSound *) voice->unkC)->keyMap->keyMin & SNDP_CHANNEL_MASK) == channel)) {
-            event.type = SNDP_VOICE_CHANNEL_EVT;
-            event.voice = voice;
-            n_alEvtqPostEvent(&D_8002BA2C->evtq, (N_ALEvent *) &event, 0, 2);
+    state = g_SndpAllocStatesHead;
+    g_SndpVolumeTable[channel] = value;
+    for (voiceIndex = 0; state != 0; voiceIndex++, state = (N_ALSndpSoundState *) state->node.next) {
+        if ((state->sound != 0) && ((state->sound->keyMap->keyMin & SNDP_CHANNEL_MASK) == channel)) {
+            event.type = SNDP_VOLTBL_EVT;
+            event.state = state;
+            n_alEvtqPostEvent(&g_SndPlayer->evtq, (N_ALEvent *) &event, 0, 2);
         }
     }
     osSetIntMask(mask);
