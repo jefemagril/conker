@@ -27,6 +27,7 @@ extern s16 D_8002BA30;
 extern u16 *D_800428B8;
 
 void func_10017298(N_ALUnknownStruct1 *arg0);
+void n_alSndpFlushVoiceEvents(ALEventQueue *evtq, N_ALUnknownStruct1 *voice, u16 typeMask);
 
 #define SNDP_VOICE_UPDATE_EVT        0x400
 #define SNDP_VOICE_CHANNEL_EVT       0x800
@@ -34,6 +35,7 @@ void func_10017298(N_ALUnknownStruct1 *arg0);
 #define SNDP_STATE_READY_MASK        0x03
 #define SNDP_CLEAR_RESTART_FLAG_MASK -0x11
 #define SNDP_CHANNEL_MASK            0x1F
+#define SNDP_ALL_EVENT_TYPES         0xFFFF
 
 void func_10015550(N_ALCSPlayer *csp, s32 arg1) {
     N_ALEvent event;
@@ -77,7 +79,7 @@ void func_10016E90(N_ALUnknownStruct1 *arg0) {
         n_alSynFreeVoice(&arg0->unk10);
     }
     func_10017298(arg0);
-    func_10016F80(&D_8002BA2C->evtq, arg0, 0xFFFF);
+    n_alSndpFlushVoiceEvents(&D_8002BA2C->evtq, arg0, SNDP_ALL_EVENT_TYPES);
 }
 
 void func_10016F00(struct154 *arg0) {
@@ -94,53 +96,50 @@ void func_10016F00(struct154 *arg0) {
     n_alEvtqPostEvent(&D_8002BA2C->evtq, &event, 33333, 2);
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/init_15550/func_10016F80.s")
-// void func_10016F80(void *arg0, s32 arg1, u16 arg2) {
-//     void *sp3C;
-//     void *sp38;
-//     void *sp34;
-//     void *sp30;
-//     void *sp2C;
-//     s32 sp28;
-//     void *sp24;
-//     void *sp20;
-//     void *sp1C;
-//
-//     sp28 = osSetIntMask(1);
-//     sp3C = arg0->unk8;
-//     if (sp3C != 0) {
-// loop_1:
-//         sp38 = *sp3C;
-//         sp34 = sp3C;
-//         sp30 = sp38;
-//         sp2C = sp34 + 0xC;
-//         if ((sp2C->unk4 == arg1) && ((sp2C->unk0 & arg2) != 0)) {
-//             if (sp30 != 0) {
-//                 sp30->unk8 = (s32) (sp30->unk8 + sp34->unk8);
-//             }
-//             sp24 = sp3C;
-//             if (sp24->unk0 != 0) {
-//                 sp24->unk0->unk4 = (s32) sp24->unk4;
-//             }
-//             if (sp24->unk4 != 0) {
-//                 *sp24->unk4 = (s32) sp24->unk0;
-//             }
-//             sp20 = sp3C;
-//             sp1C = arg0;
-//             sp20->unk0 = (s32) *sp1C;
-//             sp20->unk4 = sp1C;
-//             if (*sp1C != 0) {
-//                 (*sp1C)->unk4 = sp20;
-//             }
-//             *sp1C = sp20;
-//         }
-//         sp3C = sp38;
-//         if (sp3C != 0) {
-//             goto loop_1;
-//         }
-//     }
-//     osSetIntMask(sp28);
-// }
+void n_alSndpFlushVoiceEvents(ALEventQueue *evtq, N_ALUnknownStruct1 *voice, u16 typeMask) {
+    N_ALEventListItem *current;
+    N_ALEventListItem *next;
+    N_ALEventListItem *item;
+    N_ALEventListItem *nextEvent;
+    N_ALEvent *event;
+    s32 mask;
+    ALLink *unlink;
+    ALLink *freeItem;
+    ALEventQueue *queue;
+
+    mask = osSetIntMask(1);
+    current = (N_ALEventListItem *) evtq->allocList.next;
+    if (current != 0) {
+        do {
+            next = (N_ALEventListItem *) current->node.next;
+            item = current;
+            nextEvent = next;
+            event = &item->evt;
+            if ((event->msg.unknown1.unk0 == voice) && (((u16) event->type & typeMask) != 0)) {
+                if (nextEvent != 0) {
+                    nextEvent->delta += item->delta;
+                }
+                unlink = (ALLink *) current;
+                if (unlink->next != 0) {
+                    unlink->next->prev = unlink->prev;
+                }
+                if (unlink->prev != 0) {
+                    unlink->prev->next = unlink->next;
+                }
+                freeItem = (ALLink *) current;
+                queue = evtq;
+                freeItem->next = queue->freeList.next;
+                freeItem->prev = &queue->freeList;
+                if (queue->freeList.next != 0) {
+                    queue->freeList.next->prev = freeItem;
+                }
+                queue->freeList.next = freeItem;
+            }
+            current = next;
+        } while (current != 0);
+    }
+    osSetIntMask(mask);
+}
 
 N_ALUnknownStruct1 *func_10017100(s32 arg0, s16 arg1) {
     N_ALUnknownStruct1 *sp24;
