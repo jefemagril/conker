@@ -110,7 +110,7 @@ s32 func_1000EF40(struct57 *arg0, struct57 *arg1, s32 *arg2, s32 arg3, s32 arg4,
 #pragma GLOBAL_ASM("asm/nonmatchings/init_EB00/func_1000EFB4.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/init_EB00/func_1000F1A8.s")
 
-void func_10017780(u8 arg0, u16 arg1);
+void n_alSndpSetChannelValue(u8 channel, u16 value);
 s32* allocate_memory(s32, s32, s32, s32);
 void func_1000F248(s32 arg0) {
     u16 tmp;
@@ -150,9 +150,9 @@ void func_1000F248(s32 arg0) {
     }
     func_10011E88(arg0);
     D_80041F60 = D_80041F61 = 0;
-    func_10017780(0, D_80041F56);
-    func_10017780(1, D_80041F56);
-    func_10017780(2, 23000);
+    n_alSndpSetChannelValue(0, D_80041F56);
+    n_alSndpSetChannelValue(1, D_80041F56);
+    n_alSndpSetChannelValue(2, 23000);
     // fakematch
     if (arg0) {}
 }

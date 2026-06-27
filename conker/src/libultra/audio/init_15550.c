@@ -24,13 +24,16 @@ extern N_ALUnknownStruct1 *D_8002BA24;
 extern N_ALUnknownStruct1 *D_8002BA28;
 extern N_ALSndPlayer *D_8002BA2C;
 extern s16 D_8002BA30;
+extern u16 *D_800428B8;
 
 void func_10017298(N_ALUnknownStruct1 *arg0);
 
 #define SNDP_VOICE_UPDATE_EVT        0x400
+#define SNDP_VOICE_CHANNEL_EVT       0x800
 #define SNDP_ACTIVE_FLAG             0x01
 #define SNDP_STATE_READY_MASK        0x03
 #define SNDP_CLEAR_RESTART_FLAG_MASK -0x11
+#define SNDP_CHANNEL_MASK            0x1F
 
 void func_10015550(N_ALCSPlayer *csp, s32 arg1) {
     N_ALEvent event;
@@ -339,35 +342,29 @@ void func_10017714(s32 arg0, s16 type, s32 arg2) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/init_15550/func_10017780.s")
-// NON-MATCHING: far from matching
-// void func_10017780(u8 arg0, u16 arg1) {
-//     s32 sp34;
-//     struct31 *sp30;
-//     s32 sp2C;
-//     struct31 *sp20;
-//     s16 sp1C;
-//     struct31 *temp_t4;
-//     struct31 *temp_t4_2;
-//
-//     sp34 = osSetIntMask(1);
-//     sp30 = D_8002BA20;
-//     D_800428B8[arg0] = arg1;
-//     sp2C = 0;
-//     if (sp30 != 0) {
-//         do
-//         {
-//             temp_t4 = sp30->unkC;
-//             // if ((temp_t4 != 0) && ((temp_t4->unk4->unk2 & 0x1F) == arg0)) {
-//             //     sp1C = 1024;
-//             //     sp20 = sp30;
-//             //     n_alEvtqPostEvent(D_8002BA2C + 20, &sp1C, 0, 2);
-//             // }
-//             sp2C = sp2C + 1;
-//             temp_t4_2 = sp30->unk0;
-//             sp30 = temp_t4_2;
-//         }
-//         while (temp_t4_2 != 0);
-//     }
-//     osSetIntMask(sp34);
-// }
+void n_alSndpSetChannelValue(u8 channel, u16 value) {
+    typedef struct N_ALVoiceEventFragment {
+        s16 type;
+        u8 pad2[2];
+        N_ALUnknownStruct1 *voice;
+        u8 pad8[8];
+    } N_ALVoiceEventFragment;
+
+    s32 mask;
+    N_ALUnknownStruct1 *voice;
+    s32 voiceIndex;
+    N_ALVoiceEventFragment event;
+
+    mask = osSetIntMask(1);
+    voice = D_8002BA20;
+    D_800428B8[channel] = value;
+    for (voiceIndex = 0; voice != 0; voiceIndex++, voice = voice->node.next) {
+        if ((voice->unkC != 0) &&
+            ((((N_ALUnknownEvent3 *) ((struct153 *) voice->unkC)->unk4)->unk2 & SNDP_CHANNEL_MASK) == channel)) {
+            event.type = SNDP_VOICE_CHANNEL_EVT;
+            event.voice = voice;
+            n_alEvtqPostEvent(&D_8002BA2C->evtq, (N_ALEvent *) &event, 0, 2);
+        }
+    }
+    osSetIntMask(mask);
+}

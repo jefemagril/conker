@@ -138,6 +138,7 @@ void func_10017594(struct31 *arg0);
 void n_alSndpPostActiveVoiceUpdates(void);
 void n_alSndpPostReadyVoiceUpdates(void);
 void func_10017714(s32 arg0, s16 arg1, s32 arg2);
+void n_alSndpSetChannelValue(u8 channel, u16 value);
 void func_10017870(u8 arg0);
 void func_10017944(s32 arg0, u32 arg1);
 s32  func_10017A80(struct26 *arg0);
