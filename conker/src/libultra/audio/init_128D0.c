@@ -7,6 +7,24 @@
 #include "functions.h"
 #include "variables.h"
 
+#define OSCTYPE_TREM             1
+#define OSCTYPE_VIB              128
+#define OSC_RATE_BASE            0x103
+#define OSC_DELAY_SHIFT          14
+#define OSC_TREM_BASE_VOLUME     0x7F
+#define OSC_TWO_PI               6.2831854820251465f
+#define OSC_STATE_SIZE           0x2C
+
+typedef struct124 ConkerOscState;
+
+#define oscNext                  unk0
+#define oscType                  unk4
+#define oscPeriod                unk22
+#define oscPhase                 unk24
+#define tremoloDepth             unk0
+#define tremoloBaseVolume        unk1
+#define vibratoDepthCents        unk0
+
 void alSeqFileNew(ALSeqFile *arg0, u8 *base) {
     s32 offset = base;
     s32 i;
@@ -113,48 +131,48 @@ void func_10012CFC(struct12 *arg0, s32 arg1, s32 arg2) {
     }
 }
 
-f32 func_10012D80(u8 arg0) {
+f32 n_alOscDepthToCents(u8 depth) {
     f32 sp4 = 1.0309929847717285f;
     f32 sp0 = 1.0f;
 
-    while (arg0)
+    while (depth)
     {
-        if (arg0 & 1) {
+        if (depth & 1) {
             sp0 *= sp4;
         }
         sp4 *= sp4;
-        arg0 = (u32)arg0 >> 1;
+        depth = (u32)depth >> 1;
     }
     return sp0;
 }
 
-s32 func_10012E04(s32 *arg0, f32 *arg1, u8 arg2, u8 arg3, u8 arg4, u8 arg5) {
-    struct124 *sp2C;
+s32 n_alOscInit(s32 *oscState, f32 *initValue, u8 oscType, u8 oscRate, u8 oscDepth, u8 oscDelay) {
+    ConkerOscState *state;
     s32 ret;
 
     ret = 0;
-    if (arg5 == 0) {
+    if (oscDelay == 0) {
         return 0;
     }
     if (D_80042800 != 0) {
-        sp2C = D_80042800;
-        D_80042800 = D_80042800->unk0;
-        sp2C->unk4 = arg2;
-        *arg0 = sp2C;
-        ret = arg5 << 0xE;
-        switch (arg2) {
-            case 1:
-                sp2C->unk24 = 0;
-                sp2C->unk22 = 0x103 - arg3;
-                sp2C->data.i.unk0 = arg4 >> 1;
-                sp2C->data.i.unk1 = 0x7F - sp2C->data.i.unk0;
-                *arg1 = sp2C->data.i.unk1;
+        state = D_80042800;
+        D_80042800 = D_80042800->oscNext;
+        state->oscType = oscType;
+        *oscState = state;
+        ret = oscDelay << OSC_DELAY_SHIFT;
+        switch (oscType) {
+            case OSCTYPE_TREM:
+                state->oscPhase = 0;
+                state->oscPeriod = OSC_RATE_BASE - oscRate;
+                state->data.i.tremoloDepth = oscDepth >> 1;
+                state->data.i.tremoloBaseVolume = OSC_TREM_BASE_VOLUME - state->data.i.tremoloDepth;
+                *initValue = state->data.i.tremoloBaseVolume;
                 break;
-            case 128:
-                sp2C->data.f.unk0 = func_10012D80(arg4);
-                sp2C->unk24 = 0;
-                sp2C->unk22 = 0x103 - arg3;
-                *arg1 = 1.0f;
+            case OSCTYPE_VIB:
+                state->data.f.vibratoDepthCents = n_alOscDepthToCents(oscDepth);
+                state->oscPhase = 0;
+                state->oscPeriod = OSC_RATE_BASE - oscRate;
+                *initValue = 1.0f;
                 break;
             default:
                 break;
@@ -163,35 +181,35 @@ s32 func_10012E04(s32 *arg0, f32 *arg1, u8 arg2, u8 arg3, u8 arg4, u8 arg5) {
     return ret;
 }
 
-s32 func_10012F94(struct124 *arg0, f32 *arg1) {
+s32 n_alOscUpdate(ConkerOscState *oscState, f32 *updateValue) {
     f32 sp2C;
-    struct124 *sp28;
+    ConkerOscState *state;
     s32 ret;
 
-    sp28 = arg0;
-    ret = 16000;
+    state = oscState;
+    ret = AL_USEC_PER_FRAME;
 
-    switch (sp28->unk4)
+    switch (state->oscType)
     {
-        case 1: // guess this means union is u8s
-            sp28->unk24 = (u16)sp28->unk24 + 1;
-            if ((u16)sp28->unk24 >= (u16)sp28->unk22) {
-                sp28->unk24 = 0;
+        case OSCTYPE_TREM:
+            state->oscPhase = (u16)state->oscPhase + 1;
+            if ((u16)state->oscPhase >= (u16)state->oscPeriod) {
+                state->oscPhase = 0;
             }
-            sp2C = (f32)(u16)sp28->unk24 / (f32) (u16)sp28->unk22;
-            sp2C = sinf(sp2C * 6.2831854820251465f); // 2 * PI
-            sp2C = sp28->data.i.unk0 * sp2C;
-            *arg1 = sp28->data.i.unk1 + sp2C;
+            sp2C = (f32)(u16)state->oscPhase / (f32) (u16)state->oscPeriod;
+            sp2C = sinf(sp2C * OSC_TWO_PI);
+            sp2C = state->data.i.tremoloDepth * sp2C;
+            *updateValue = state->data.i.tremoloBaseVolume + sp2C;
             break;
 
-        case 128: // guess this means float?
-            sp28->unk24 = (u16)sp28->unk24 + 1;
-            if ((u16)sp28->unk24 >= (u16)sp28->unk22) {
-                sp28->unk24 = 0;
+        case OSCTYPE_VIB:
+            state->oscPhase = (u16)state->oscPhase + 1;
+            if ((u16)state->oscPhase >= (u16)state->oscPeriod) {
+                state->oscPhase = 0;
             }
-            sp2C = (f32)(u16) sp28->unk24 / (f32)(u16) sp28->unk22;
-            sp2C = sinf(sp2C * 6.2831854820251465f) * sp28->data.f.unk0;
-            *arg1 = alCents2Ratio(sp2C);
+            sp2C = (f32)(u16) state->oscPhase / (f32)(u16) state->oscPeriod;
+            sp2C = sinf(sp2C * OSC_TWO_PI) * state->data.f.vibratoDepthCents;
+            *updateValue = alCents2Ratio(sp2C);
             break;
         default:
             break;
@@ -200,26 +218,26 @@ s32 func_10012F94(struct124 *arg0, f32 *arg1) {
     return ret;
 }
 
-void func_100131D8(s32 *arg0) {
-    *arg0 = (s32*)D_80042800;
-    D_80042800 = arg0;
+void n_alOscStop(s32 *oscState) {
+    *oscState = (s32*)D_80042800;
+    D_80042800 = oscState;
 }
 
-void func_100131FC(struct13 *arg0, s32 arg1) {
+void n_alOscSetCallbacks(struct13 *arg0, s32 arg1) {
     s32 *sp24;
     s32 i;
 
-    D_80042804 = alHeapDBAlloc(0, 0, arg0->unkC, arg1, 0x2C);
+    D_80042804 = alHeapDBAlloc(0, 0, arg0->unkC, arg1, OSC_STATE_SIZE);
     D_80042800 = (s32) D_80042804;
     D_80042800 = (s32) D_80042804; // ???
     sp24 = D_80042804;
 
     for (i = 0; i < (arg1 - 1); i++) {
-        *sp24 = (i * 0x2C) + D_80042804 + 0x2C; // is this an array?
+        *sp24 = (i * OSC_STATE_SIZE) + D_80042804 + OSC_STATE_SIZE; // is this an array?
         sp24 = *sp24;
     }
     *sp24 = 0;
-    arg0->unk10 = func_10012E04;
-    arg0->unk14 = func_10012F94;
-    arg0->unk18 = func_100131D8;
+    arg0->unk10 = n_alOscInit;
+    arg0->unk14 = n_alOscUpdate;
+    arg0->unk18 = n_alOscStop;
 }
