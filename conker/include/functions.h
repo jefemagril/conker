@@ -129,7 +129,6 @@ void func_100131D8(s32 *arg0);
 void func_100131FC(struct13 *arg0, s32 arg1);
 s32  _n_sndpVoiceHandler(struct04 *arg0);
 void sndp_free_state(struct31 *arg0);
-void sndp_apply_detune_pitch(struct154 *arg0);
 struct31 *sndp_alloc_state(s32 arg0, s16 arg1);
 void sndp_free_state2(struct31 *arg0);
 s32  sndp_get_state(struct31 **arg0);

@@ -1,24 +1,5 @@
 #include <n_libaudio.h>
 
-
-typedef struct {
-    s32 pad0;
-    u8  unk4;
-    s8  unk5; // used
-} struct152;
-
-typedef struct {
-    s32 pad0;
-    struct152 *unk4;
-} struct153;
-
-typedef struct {
-    u8  pad0[0xC];
-    struct153 *unkC;
-    u8  pad10[0x24];
-    f32 unk34;  // used
-} struct154;
-
 typedef struct N_ALSndpSoundState {
     /* 0x00 */ ALLink node;
     /* 0x08 */ u8 pad8[0x4];
@@ -169,15 +150,15 @@ void sndp_free_state(N_ALUnknownStruct1 *arg0) {
     n_alSndpFlushVoiceEvents(&D_8002BA2C->evtq, arg0, SNDP_ALL_EVENT_TYPES);
 }
 
-void sndp_apply_detune_pitch(struct154 *arg0) {
+void sndp_apply_detune_pitch(N_ALSndpSoundState *state) {
     N_ALEvent event;
     f32 res;
 
-    res = alCents2Ratio(arg0->unkC->unk4->unk5) * arg0->unk34;
+    res = alCents2Ratio(state->sound->keyMap->detune) * state->pitch;
 
     event.type = 16;
     /* TODO: check if this is the right struct */
-    event.msg.vol.voice = arg0;
+    event.msg.vol.voice = (N_ALVoice *) state;
     event.msg.vol.delta = *(s32*)&res;
 
     n_alEvtqPostEvent(&D_8002BA2C->evtq, &event, 33333, 2);
@@ -450,8 +431,7 @@ void n_alSndpSetChannelValue(u8 channel, u16 value) {
     voice = D_8002BA20;
     D_800428B8[channel] = value;
     for (voiceIndex = 0; voice != 0; voiceIndex++, voice = voice->node.next) {
-        if ((voice->unkC != 0) &&
-            ((((N_ALUnknownEvent3 *) ((struct153 *) voice->unkC)->unk4)->unk2 & SNDP_CHANNEL_MASK) == channel)) {
+        if ((voice->unkC != 0) && ((((ALSound *) voice->unkC)->keyMap->keyMin & SNDP_CHANNEL_MASK) == channel)) {
             event.type = SNDP_VOICE_CHANNEL_EVT;
             event.voice = voice;
             n_alEvtqPostEvent(&D_8002BA2C->evtq, (N_ALEvent *) &event, 0, 2);
