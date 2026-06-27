@@ -114,6 +114,10 @@ LDFLAGS = -T $(BUILD_DIR)/$(LD_SCRIPT) -Map $(TARGET).map -T undefined_syms.$(VE
 
 $(BUILD_DIR)/$(SRC_DIR)/libultra/audio/%.o: OPT_FLAGS := -g
 
+# n_alStreamCrc5Word was compiled at -O1 in the original (scheduled, register
+# locals), unlike the surrounding -g audio code, so it lives in its own TU.
+$(BUILD_DIR)/$(SRC_DIR)/libultra/audio/n_streamcrc.c.o: OPT_FLAGS := -O1
+
 # TODO: blindly move all of this into libultra/audio
 $(BUILD_DIR)/$(SRC_DIR)/init_17F10.c.o: OPT_FLAGS := -g
 $(BUILD_DIR)/$(SRC_DIR)/init_17F80.c.o: OPT_FLAGS := -g

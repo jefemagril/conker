@@ -102,35 +102,8 @@ typedef ALDMAproc (*N_ALStreamDMANew)(void *state);
 #define n_alStreamDmaNew() (((N_ALStreamDMANew *) n_syn->pad24)[0])
 
 
-#pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/game_21FC90/func_151F27E0.s")
-// NON-MATCHING: This is a CRC-5-style helper over a 16-bit word using polynomial
-// 0x15. Straight C matches the semantics, but IDO schedules the input-bit branch
-// and return epilogue differently than the original.
-//
-// u8 n_alStreamCrc5Word(u16 value) {
-//     u8 crc;
-//     u8 feedback;
-//     s32 bit;
-//     s32 i;
-//
-//     crc = 0;
-//     for (i = 0; i < 16; i++) {
-//         if (crc & 0x10) {
-//             feedback = 0x15;
-//         } else {
-//             feedback = 0;
-//         }
-//         if (value & 0x400) {
-//             bit = 1;
-//         } else {
-//             bit = 0;
-//         }
-//         crc = (crc << 1) | bit;
-//         value <<= 1;
-//         crc ^= feedback;
-//     }
-//     return crc & 0x1F;
-// }
+/* n_alStreamCrc5Word (func_151F27E0) lives in its own -O1 translation unit
+ * (src/libultra/audio/n_streamcrc.c); the rest of this file is -g/-O0. */
 
 #pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/game_21FC90/func_151F2890.s")
 // NON-MATCHING: CRC-8-style helper over 32 data bytes plus one final zero-byte
