@@ -1,41 +1,5 @@
 #include <n_libaudio.h>
 
-typedef struct N_ALSndpSoundState {
-    /* 0x00 */ ALLink node;
-    /* 0x08 */ u8 pad8[0x4];
-    /* 0x0C */ ALSound *sound;
-    /* 0x10 */ u8 voice[0x20]; /* Embedded N_ALVoice storage; Conker's local header is truncated to 0x20 bytes. */
-    /* 0x30 */ f32 basePitch;
-    /* 0x34 */ f32 pitch;
-    /* 0x38 */ struct N_ALSndpSoundState **handle;
-    /* 0x3C */ ALBank *bank;
-    /* 0x40 */ s32 retryCount;
-    /* 0x44 */ u16 vol;
-    /* 0x46 */ u8 pad46[0x6];
-    /* 0x4C */ s16 soundNum;
-    /* 0x4E */ s8 priority;
-    /* 0x4F */ u8 pan;
-    /* 0x50 */ u8 fxmix;
-    /* 0x51 */ u8 fxbus;
-    /* 0x52 */ u8 pad52;
-    /* 0x53 */ u8 flags;
-    /* 0x54 */ u8 state;
-} N_ALSndpSoundState;
-
-typedef struct {
-    /* 0x00 */ ALPlayer node;
-    /* 0x14 */ ALEventQueue evtq;
-    /* 0x28 */ N_ALEvent nextEvent;
-    /* 0x38 */ N_ALSynth *drvr;
-    /* 0x3C */ s32 target;
-    /* 0x40 */ N_ALSndpSoundState *sndState;
-    /* 0x44 */ s32 maxSounds;
-    /* 0x48 */ ALMicroTime frameTime;
-    /* 0x4C */ ALMicroTime nextDelta;
-    /* 0x50 */ ALMicroTime curTime;
-    /* 0x54 */ s32 soundTableCount;
-} N_ALSndPlayerExtended;
-
 extern N_ALSndpSoundState *D_8002BA20;
 extern N_ALSndpSoundState *D_8002BA24;
 extern N_ALSndpSoundState *D_8002BA28;
@@ -330,18 +294,11 @@ s32 sndp_get_state(N_ALSndpSoundState **handle) {
 
 N_ALSndpSoundState *n_alSndpPlaySound(ALBank *bank, s16 soundNum, u16 vol, ALPan pan, f32 pitch, u8 fxmix, u8 fxbus,
                                       N_ALSndpSoundState **handle) {
-    typedef struct N_ALSndpEventFragment {
-        s16 type;
-        u8 pad2[2];
-        N_ALSndpSoundState *state;
-        u8 pad8[8];
-    } N_ALSndpEventFragment;
-
     N_ALSndpSoundState *state;
     N_ALSndpSoundState *leafState;
     s16 done;
     s32 delay;
-    N_ALSndpEventFragment event;
+    N_ALSndpEventPayload event;
 
     leafState = NULL;
     done = 0;
@@ -388,15 +345,8 @@ void sndp_post_stopall_event(N_ALSndpSoundState *state) {
 }
 
 void sndp_post_stopall_event_bulk(u8 flags) {
-    typedef struct N_ALVoiceEventFragment {
-        s16 type;
-        u8 pad2[2];
-        N_ALSndpSoundState *state;
-        u8 pad8[8];
-    } N_ALVoiceEventFragment;
-
     s32 mask;
-    N_ALVoiceEventFragment event;
+    N_ALSndpEventPayload event;
     N_ALSndpSoundState *state;
 
     mask = osSetIntMask(1);
@@ -435,17 +385,10 @@ void sndp_post_event(N_ALSndpSoundState *state, s16 type, s32 data) {
 }
 
 void n_alSndpSetChannelValue(u8 channel, u16 value) {
-    typedef struct N_ALVoiceEventFragment {
-        s16 type;
-        u8 pad2[2];
-        N_ALSndpSoundState *state;
-        u8 pad8[8];
-    } N_ALVoiceEventFragment;
-
     s32 mask;
     N_ALSndpSoundState *state;
     s32 voiceIndex;
-    N_ALVoiceEventFragment event;
+    N_ALSndpEventPayload event;
 
     mask = osSetIntMask(1);
     state = g_SndpAllocStatesHead;

@@ -170,6 +170,33 @@ typedef struct {
     u8  pad4[0x8];
 } N_ALUnknownEvent2;
 
+typedef struct N_ALStreamState {
+    s32 dataStart;
+    s32 pad4;
+    s32 pad8;
+    s16 pan;
+    s16 volume;
+    s16 currentLeft;
+    s16 currentRight;
+    s16 pad14;
+    s16 pad16;
+    u16 leftRateFrac;
+    s16 leftRate;
+    s16 targetLeft;
+    u16 rightRateFrac;
+    s16 rightRate;
+    s16 targetRight;
+    s16 needsEnvelopeUpdate;
+    s16 pad26;
+    s32 rampSamplesDone;
+    s32 rampSamplesTotal;
+    u8 pad30[0x58];
+    s32 targetVolume;
+    u8 pad8C[0x4];
+    u32 requestedRampSamples;
+    s16 targetPan;
+} N_ALStreamState;
+
 typedef struct {
     u8  unk0;
     u8  unk1;
@@ -294,6 +321,12 @@ typedef struct {
     /* 0x8D */  u8  unk8D;
 } N_ALCSPlayer;
 
+typedef struct N_ALCSPExtraChanState {
+    u8 pad0[0x24];
+    s32 releaseTime;
+    u8 useCustomReleaseTime;
+} N_ALCSPExtraChanState;
+
 
 /*
  * Sequence data representation routines
@@ -378,6 +411,49 @@ typedef struct {
     /* 0x4C */  ALMicroTime         nextDelta;      /* microseconds to next callback    */
     /* 0x50 */  ALMicroTime         curTime;
 } N_ALSndPlayer;
+
+typedef struct N_ALSndpSoundState {
+    /* 0x00 */ ALLink node;
+    /* 0x08 */ u8 pad8[0x4];
+    /* 0x0C */ ALSound *sound;
+    /* 0x10 */ u8 voice[0x20]; /* Embedded N_ALVoice storage; Conker's local header is truncated to 0x20 bytes. */
+    /* 0x30 */ f32 basePitch;
+    /* 0x34 */ f32 pitch;
+    /* 0x38 */ struct N_ALSndpSoundState **handle;
+    /* 0x3C */ ALBank *bank;
+    /* 0x40 */ s32 retryCount;
+    /* 0x44 */ u16 vol;
+    /* 0x46 */ u8 pad46[0x6];
+    /* 0x4C */ s16 soundNum;
+    /* 0x4E */ s8 priority;
+    /* 0x4F */ u8 pan;
+    /* 0x50 */ u8 fxmix;
+    /* 0x51 */ u8 fxbus;
+    /* 0x52 */ u8 pad52;
+    /* 0x53 */ u8 flags;
+    /* 0x54 */ u8 state;
+} N_ALSndpSoundState;
+
+typedef struct {
+    /* 0x00 */ ALPlayer node;
+    /* 0x14 */ ALEventQueue evtq;
+    /* 0x28 */ N_ALEvent nextEvent;
+    /* 0x38 */ N_ALSynth *drvr;
+    /* 0x3C */ s32 target;
+    /* 0x40 */ N_ALSndpSoundState *sndState;
+    /* 0x44 */ s32 maxSounds;
+    /* 0x48 */ ALMicroTime frameTime;
+    /* 0x4C */ ALMicroTime nextDelta;
+    /* 0x50 */ ALMicroTime curTime;
+    /* 0x54 */ s32 soundTableCount;
+} N_ALSndPlayerExtended;
+
+typedef struct {
+    s16 type;
+    u8 pad2[2];
+    N_ALSndpSoundState *state;
+    u8 pad8[8];
+} N_ALSndpEventPayload;
 
 typedef struct {
     /* 0x00 */  s32                 maxStates;

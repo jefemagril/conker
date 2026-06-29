@@ -3,6 +3,15 @@
 #include "functions.h"
 #include "variables.h"
 
+typedef struct {
+    u8 pad0[0x25];
+    u8 unk25;
+    u8 pad26[0x6];
+    s8 unk2C;
+    u8 pad2D;
+    s8 unk2E;
+} Game1897A0Ring;
+
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1897A0/func_1515C2F0.s")
 // void *func_1515C2F0(void *arg0, void *arg1, s32 arg2, s32 arg3, u8 arg4, s32 arg5) {
@@ -47,20 +56,9 @@
 //     return 1;
 // }
 
-// s32 func_1515D030(u8 *arg0_raw, s32 arg1) {
-//     typedef struct {
-//         u8 pad0[0x25];
-//         u8 unk25;
-//         u8 pad26[0x6];
-//         s8 unk2C;
-//         u8 pad2D;
-//         s8 unk2E;
-//     } Game1897A0Ring;
-//
-//     Game1897A0Ring *arg0;
+// s32 func_1515D030(Game1897A0Ring *arg0, s32 arg1) {
 //     s32 ret;
 //
-//     arg0 = (Game1897A0Ring *)arg0_raw;
 //     ret = 1;
 //     if (arg0->unk2C >= 3) {
 //         arg0->unk2C = arg0->unk2C - 1;

@@ -1,10 +1,8 @@
+#include <ultra64.h>
 #include <n_libaudio.h>
 
 #include "macros.h"
-
-typedef struct {
-  u8 pad0[0x760];
-} struct247; // something naudio related?
+#include "structs.h"
 
 extern N_ALCSPlayer *D_8003C900[];
 extern ALCSeq        D_8003CA58[];

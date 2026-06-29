@@ -4,6 +4,8 @@
 #include "structs.h"
 #include "sched.h"
 
+struct N_ALStreamState;
+
 /* defined */
 
 // 0x0002C200
@@ -1367,7 +1369,7 @@ extern s32  D_800E0964;
 extern s16  D_800E0968[];
 extern s32  D_800E0990[];
 extern u8   D_800E0A10;
-extern struct186 D_800E0D80; // libaudio struct?
+extern struct N_ALStreamState D_800E0D80;
 
 // end of zero'd out section
 

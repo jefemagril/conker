@@ -15,7 +15,7 @@ extern s32  D_800E0E20;
 extern s32  D_800E0E24;
 extern s32  D_800E0E28;
 extern s32  *D_800E0E30; // 0x8000
-extern s32  D_800E0D80; // libaudio struct?
+extern s32  D_800E0D80; // First word of N_ALStreamState.
 extern s16  D_800E0DB0;
 extern s16  D_800E0DB2;
 extern s32  D_800E0DD8;
@@ -26,31 +26,6 @@ extern s16  D_8002BC10[];
 extern s16  D_8002BD0E[];
 extern u8   D_800428C1;
 extern u8   D_800428C2;
-
-typedef struct N_ALStreamState {
-    u8 pad0[0xC];
-    s16 pan;
-    s16 volume;
-    s16 currentLeft;
-    s16 currentRight;
-    s16 pad14;
-    s16 pad16;
-    u16 leftRateFrac;
-    s16 leftRate;
-    s16 targetLeft;
-    u16 rightRateFrac;
-    s16 rightRate;
-    s16 targetRight;
-    s16 needsEnvelopeUpdate;
-    s16 pad26;
-    s32 rampSamplesDone;
-    s32 rampSamplesTotal;
-    u8 pad30[0x58];
-    s32 targetVolume;
-    u8 pad8C[0x4];
-    u32 requestedRampSamples;
-    s16 targetPan;
-} N_ALStreamState;
 
 #define STREAM_VOLUME_LIMIT 0x8000
 #define STREAM_VOLUME_MAX   0x7FFF

@@ -270,7 +270,7 @@ typedef struct {
     s32 unk2C;
     s32 unk30;
     s16 unk34;
-    s8  unk36;
+    u8  streamFileGroup;
 } struct24;
 
 struct struct27 {

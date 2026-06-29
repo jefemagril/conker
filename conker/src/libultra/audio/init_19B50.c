@@ -1,4 +1,6 @@
+#include <ultra64.h>
 #include <n_libaudio.h>
+#include "structs.h"
 #include "n_sndp.h"
 #include "n_seqp.h"
 
@@ -12,12 +14,6 @@ extern f32 fabsf(f32);
 #define CSP_DEFAULT_CHL_FADE_SPEED 0x88
 #define CSP_CHL_FADE_DURATION_MASK 0x7F
 #define CSP_CHL_FADE_STEP_EVENT 0xFE
-
-typedef struct N_ALCSPExtraChanState {
-    u8 pad0[0x24];
-    s32 releaseTime;
-    u8 useCustomReleaseTime;
-} N_ALCSPExtraChanState;
 
 void n_alCSPHandleChlVolCtrl(N_ALCSPlayer *seqp, s32 arg1, s32 chan, s32 vol) {
     N_ALSoundState *voiceState;
@@ -158,11 +154,6 @@ void n_alCSPSetChlFXBus(N_ALCSPlayer *seqp, s32 arg1, s32 chan, u32 fxbus) {
         seqp->chanState[chan].unkB = fxbus;
     }
 }
-
-typedef struct {
-    u8 pad0[0x36];
-    u8 streamFileGroup;
-} struct24;
 
 void n_alCSPSetStreamFileGroup(struct24 *state, s32 arg1, s32 arg2, s32 group) {
     state->streamFileGroup = group;
