@@ -33,6 +33,15 @@ typedef struct {
     u8 unk4;
 } Game1944C0StackPayload;
 
+typedef struct {
+    u8 pad0[0xC];
+    u8 unkC;
+} Game1944C0EventObject;
+
+typedef struct {
+    u8 unk0;
+} Game1944C0EventPayloadHeader;
+
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15167010.s")
 // NON-MATCHING: not hugely far away
 // void func_15167010(void) {
@@ -195,9 +204,9 @@ s32 func_15169668(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     D_800D2DAB = 1;
     return arg0;
 }
-// void func_1516968C(void *arg0, u8 *arg1, u8 arg2) {
+// void func_1516968C(Game1944C0EventObject *arg0, Game1944C0EventPayloadHeader *arg1, u8 arg2) {
 //     if ((arg2 == 0xF) || (arg2 == 0x10)) {
-//         if (*arg1 == ((u8 *)arg0)[0xC]) {
+//         if (arg1->unk0 == arg0->unkC) {
 //             func_1516972C(arg0);
 //         }
 //     }
