@@ -1,14 +1,15 @@
 # Conker's Bad Fur Day Decompilation
 
-![Conker's Bad Fur Day (US) Progress](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fconker.deco.mp%2Flatest.json&color=critical&label=Conker's%20Bad%20Fur%20Day%20(US)&query=$.progress[0].sections[3].percent&suffix=%25) ![all Functions](https://img.shields.io/badge/funcs-1365%2F5916-blue) ![Build Status](https://github.com/mkst/conker/workflows/build/badge.svg)
+![Conker's Bad Fur Day (US)](progress/badge_total.svg)
+![init](progress/badge_init.svg)
+![game](progress/badge_game.svg)
+![debugger](progress/badge_debugger.svg)
 
-| Progress                                                                                                                                           | Functions                                                |
-|----------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------|
-| ![init Progress](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fconker.deco.mp%2Flatest.json&color=yellow&label=init&query=$.progress[0].sections[0].percent&suffix=%25)      | ![init Functions](https://img.shields.io/badge/funcs-231%2F536-blue)      |
-| ![game Progress](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fconker.deco.mp%2Flatest.json&color=critical&label=game&query=$.progress[0].sections[1].percent&suffix=%25)     | ![game Functions](https://img.shields.io/badge/funcs-1114%2F5338-blue) |
-| ![debugger Progress](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fconker.deco.mp%2Flatest.json&color=orange&label=debugger&query=$.progress[0].sections[2].percent&suffix=%25) | ![debugger Functions](https://img.shields.io/badge/funcs-20%2F42-blue) |
+### Progress over time
 
-A WIP decompilation of Conker's Bad Fur Day.
+![Decomp progress over time](progress/chart.svg)
+
+A WIP decompilation of Conker's Bad Fur Day. Originally forked from [mkst/conker](https://github.com/mkst/conker).
 
 Note: To use this repository, you must already have a copy of the game.
 
@@ -26,7 +27,7 @@ See the [Quickstart](https://github.com/mkst/conker/wiki/Quickstart) for more in
 **Clone repository**
 
 ```sh
-git clone https://github.com/mkst/conker.git --recursive
+git clone https://github.com/jefemagril/conker.git --recursive
 cd conker
 ```
 
@@ -85,6 +86,14 @@ build/conker.us.z64: OK
 ```
 
 # Progress
+
+Percentages are byte-weighted (decompiled `.text` bytes vs total). After a successful code build, refresh the badges and chart:
+
+```sh
+make -C conker progress-report
+git add progress/
+git commit -m "Update decomp progress"
+```
 
 This project is in its infancy; there are multiple tasks being worked on:
 
@@ -149,6 +158,4 @@ This repo makes use of the following open-source tools without which, there woul
 
 # Contributing
 
-The [wiki](https://github.com/mkst/conker/wiki) will eventually contain discoveries as they are made.
-
-In the meantime, if you wish to contribute in any way, get stuck in and raise a PR or find me on Discord `mkst#4741`.
+Pull requests and issues are welcome. Background material and discoveries from the original project are on the [mkst/conker wiki](https://github.com/mkst/conker/wiki).

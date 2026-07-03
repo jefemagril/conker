@@ -183,6 +183,9 @@ verify: $(TARGET).ok
 
 progress: $(VERIFY) progress.csv
 
+progress-report: progress
+	$(PYTHON) ../tools/progress_report.py
+
 # replace original binaries
 replace: $(VERIFY) $(TARGET).header.bin $(TARGET).boot.bin $(TARGET).init.bin $(TARGET_GAME_BIN) $(TARGET).debugger.bin
 	cp $(TARGET).header.bin ../assets/header.$(VERSION).bin
@@ -305,5 +308,5 @@ progress.debugger.csv: $(TARGET).elf
 
 
 # settings
-.PHONY: all clean default
+.PHONY: all clean default progress progress-report
 SHELL = /bin/bash -e -o pipefail
