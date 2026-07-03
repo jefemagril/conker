@@ -6,6 +6,7 @@ from __future__ import annotations
 import csv
 import json
 import os
+import re
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -116,6 +117,38 @@ def git_commit(repo_root: Path) -> str:
         return result.stdout.strip()
     except (subprocess.CalledProcessError, FileNotFoundError):
         return "unknown"
+
+
+def git_snapshot_meta(repo_root: Path) -> Tuple[str, str]:
+    """Commit and timestamp for the snapshot.
+
+    Prefer the latest commit that touches decomp sources so progress-tooling
+    commits do not move the point on the chart.
+    """
+    try:
+        result = subprocess.run(
+            ["git", "log", "-1", "--format=%h %cI", "--", "conker/src", "src"],
+            cwd=repo_root,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        parts = result.stdout.strip().split()
+        if len(parts) >= 2:
+            commit = parts[0][:12]
+            timestamp = parts[1]
+            if timestamp.endswith("+00:00"):
+                timestamp = timestamp[:-6] + "Z"
+            elif re.match(r".*[+-]\d{2}:\d{2}$", timestamp):
+                # Normalize any offset to a UTC Z timestamp.
+                dt = datetime.fromisoformat(timestamp)
+                timestamp = dt.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+            return commit, timestamp
+    except (subprocess.CalledProcessError, FileNotFoundError, ValueError):
+        pass
+    commit = git_commit(repo_root)
+    timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    return commit, timestamp
 
 
 def snapshot_row(sections: Dict[str, Dict[str, int]], commit: str, timestamp: str) -> Dict[str, str]:
@@ -244,6 +277,8 @@ def parse_timestamp(value: str) -> datetime:
 def chart_points(
     rows: List[Dict[str, str]],
     key: str,
+    t_min: float,
+    t_max: float,
     left: float,
     top: float,
     width: float,
@@ -252,18 +287,11 @@ def chart_points(
 ) -> List[Tuple[float, float]]:
     if not rows:
         return []
-    if len(rows) == 1:
-        x = left + width / 2
-        y = top + height - (float(rows[0][key]) / y_max) * height
-        return [(x, y)]
 
-    times = [parse_timestamp(row["timestamp"]).timestamp() for row in rows]
-    t_min = min(times)
-    t_max = max(times)
     span = t_max - t_min if t_max > t_min else 1.0
-
     points: List[Tuple[float, float]] = []
-    for row, t in zip(rows, times):
+    for row in rows:
+        t = parse_timestamp(row["timestamp"]).timestamp()
         x = left + ((t - t_min) / span) * width
         y = top + height - (float(row[key]) / y_max) * height
         points.append((x, y))
@@ -272,6 +300,28 @@ def chart_points(
 
 def polyline(points: List[Tuple[float, float]]) -> str:
     return " ".join(f"{x:.2f},{y:.2f}" for x, y in points)
+
+
+def methodology_segments(rows: List[Dict[str, str]]) -> List[List[Dict[str, str]]]:
+    """Split history where inventory size jumps (tooling/metric changes)."""
+    if not rows:
+        return []
+
+    segments: List[List[Dict[str, str]]] = [[rows[0]]]
+    for prev, row in zip(rows, rows[1:]):
+        prev_funcs = int(prev.get("total_funcs") or 0)
+        funcs = int(row.get("total_funcs") or 0)
+        prev_bytes = int(prev.get("total_bytes") or 0)
+        total_bytes = int(row.get("total_bytes") or 0)
+
+        func_ratio = funcs / prev_funcs if prev_funcs else 1.0
+        byte_ratio = total_bytes / prev_bytes if prev_bytes else 1.0
+        # Upstream's Aug 2025 Docker rebuild re-inventoryed functions (~5916 -> 8075).
+        if func_ratio > 1.1 or func_ratio < 0.9 or byte_ratio > 1.05 or byte_ratio < 0.95:
+            segments.append([row])
+        else:
+            segments[-1].append(row)
+    return segments
 
 
 def x_axis_ticks(t_min: float, t_max: float, count: int = 8) -> List[Tuple[float, str]]:
@@ -335,12 +385,14 @@ def write_chart(rows: List[Dict[str, str]]) -> None:
             f'  <text x="{plot_left - 8}" y="{y + 4:.2f}" text-anchor="end" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="11" fill="#666666">{value:.0f}%</text>'
         )
 
+    segments = methodology_segments(rows)
+    times = [parse_timestamp(row["timestamp"]).timestamp() for row in rows] if rows else [0.0]
+    t_min = min(times)
+    t_max = max(times)
+    span = t_max - t_min if t_max > t_min else 1.0
+
     # X-axis labels: evenly spaced across the time range.
     if rows:
-        times = [parse_timestamp(row["timestamp"]).timestamp() for row in rows]
-        t_min = min(times)
-        t_max = max(times)
-        span = t_max - t_min if t_max > t_min else 1.0
         for t, label in x_axis_ticks(t_min, t_max, count=8):
             x = plot_left + ((t - t_min) / span) * plot_width
             lines.append(
@@ -350,19 +402,33 @@ def write_chart(rows: List[Dict[str, str]]) -> None:
                 f'  <text x="{x:.2f}" y="{plot_top + plot_height + 18}" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="10" fill="#666666">{label}</text>'
             )
 
+    # Mark metric/inventory discontinuities so tooling changes are not read as progress.
+    for prev_seg, seg in zip(segments, segments[1:]):
+        break_t = parse_timestamp(seg[0]["timestamp"]).timestamp()
+        x = plot_left + ((break_t - t_min) / span) * plot_width
+        lines.append(
+            f'  <line x1="{x:.2f}" y1="{plot_top}" x2="{x:.2f}" y2="{plot_top + plot_height}" stroke="#999999" stroke-width="1" stroke-dasharray="4 3"/>'
+        )
+        lines.append(
+            f'  <text x="{x + 4:.2f}" y="{plot_top + 12}" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="9" fill="#666666">metric change</text>'
+        )
+
     for key, label, color in CHART_SERIES:
-        points = chart_points(rows, key, plot_left, plot_top, plot_width, plot_height, y_max)
-        if not points:
-            continue
-        if len(points) == 1:
-            x, y = points[0]
-            lines.append(f'  <circle cx="{x:.2f}" cy="{y:.2f}" r="4" fill="{color}"/>')
-        else:
-            lines.append(
-                f'  <polyline fill="none" stroke="{color}" stroke-width="2" points="{polyline(points)}"/>'
+        for segment in segments:
+            points = chart_points(
+                segment, key, t_min, t_max, plot_left, plot_top, plot_width, plot_height, y_max
             )
-            x, y = points[-1]
-            lines.append(f'  <circle cx="{x:.2f}" cy="{y:.2f}" r="3" fill="{color}"/>')
+            if not points:
+                continue
+            if len(points) == 1:
+                x, y = points[0]
+                lines.append(f'  <circle cx="{x:.2f}" cy="{y:.2f}" r="3.5" fill="{color}"/>')
+            else:
+                lines.append(
+                    f'  <polyline fill="none" stroke="{color}" stroke-width="2" points="{polyline(points)}"/>'
+                )
+                x, y = points[-1]
+                lines.append(f'  <circle cx="{x:.2f}" cy="{y:.2f}" r="3" fill="{color}"/>')
 
     # Legend
     legend_x = plot_left
@@ -392,8 +458,7 @@ def print_summary(sections: Dict[str, Dict[str, int]]) -> None:
 
 def main() -> None:
     sections = collect_stats()
-    commit = git_commit(REPO_ROOT)
-    timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    commit, timestamp = git_snapshot_meta(REPO_ROOT)
     row = snapshot_row(sections, commit, timestamp)
 
     history = load_history()
