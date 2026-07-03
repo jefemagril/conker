@@ -274,6 +274,30 @@ def polyline(points: List[Tuple[float, float]]) -> str:
     return " ".join(f"{x:.2f},{y:.2f}" for x, y in points)
 
 
+def x_axis_ticks(t_min: float, t_max: float, count: int = 8) -> List[Tuple[float, str]]:
+    """Evenly spaced time ticks across the plot range."""
+    if t_max <= t_min:
+        dt = datetime.fromtimestamp(t_min, timezone.utc)
+        return [(t_min, dt.strftime("%Y-%m-%d"))]
+
+    span_days = (t_max - t_min) / 86400.0
+    # Prefer month labels on long histories so more ticks fit.
+    if span_days > 180:
+        fmt = "%Y-%m"
+    else:
+        fmt = "%Y-%m-%d"
+
+    ticks: List[Tuple[float, str]] = []
+    for i in range(count):
+        t = t_min + (t_max - t_min) * (i / (count - 1))
+        label = datetime.fromtimestamp(t, timezone.utc).strftime(fmt)
+        # Drop duplicate labels when ticks land in the same month/day.
+        if ticks and ticks[-1][1] == label:
+            continue
+        ticks.append((t, label))
+    return ticks
+
+
 def write_chart(rows: List[Dict[str, str]]) -> None:
     width = 760
     height = 320
@@ -311,21 +335,19 @@ def write_chart(rows: List[Dict[str, str]]) -> None:
             f'  <text x="{plot_left - 8}" y="{y + 4:.2f}" text-anchor="end" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="11" fill="#666666">{value:.0f}%</text>'
         )
 
-    # X-axis labels (first / middle / last).
+    # X-axis labels: evenly spaced across the time range.
     if rows:
-        label_indexes = sorted({0, len(rows) // 2, len(rows) - 1})
         times = [parse_timestamp(row["timestamp"]).timestamp() for row in rows]
         t_min = min(times)
         t_max = max(times)
         span = t_max - t_min if t_max > t_min else 1.0
-        for index in label_indexes:
-            if len(rows) == 1:
-                x = plot_left + plot_width / 2
-            else:
-                x = plot_left + ((times[index] - t_min) / span) * plot_width
-            label = parse_timestamp(rows[index]["timestamp"]).strftime("%Y-%m-%d")
+        for t, label in x_axis_ticks(t_min, t_max, count=8):
+            x = plot_left + ((t - t_min) / span) * plot_width
             lines.append(
-                f'  <text x="{x:.2f}" y="{plot_top + plot_height + 20}" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="11" fill="#666666">{label}</text>'
+                f'  <line x1="{x:.2f}" y1="{plot_top + plot_height}" x2="{x:.2f}" y2="{plot_top + plot_height + 4}" stroke="#aaaaaa"/>'
+            )
+            lines.append(
+                f'  <text x="{x:.2f}" y="{plot_top + plot_height + 18}" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="10" fill="#666666">{label}</text>'
             )
 
     for key, label, color in CHART_SERIES:
