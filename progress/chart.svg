@@ -16,7 +16,7 @@
   <line x1="48.00" y1="264" x2="48.00" y2="268" stroke="#aaaaaa"/>
   <text x="48.00" y="282" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="10" fill="#666666">2020-12</text>
   <line x1="146.29" y1="264" x2="146.29" y2="268" stroke="#aaaaaa"/>
-  <text x="146.29" y="282" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="10" fill="#666666">2021-09</text>
+  <text x="146.29" y="282" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="10" fill="#666666">2021-10</text>
   <line x1="244.57" y1="264" x2="244.57" y2="268" stroke="#aaaaaa"/>
   <text x="244.57" y="282" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="10" fill="#666666">2022-07</text>
   <line x1="342.86" y1="264" x2="342.86" y2="268" stroke="#aaaaaa"/>
@@ -24,38 +24,38 @@
   <line x1="441.14" y1="264" x2="441.14" y2="268" stroke="#aaaaaa"/>
   <text x="441.14" y="282" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="10" fill="#666666">2024-02</text>
   <line x1="539.43" y1="264" x2="539.43" y2="268" stroke="#aaaaaa"/>
-  <text x="539.43" y="282" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="10" fill="#666666">2024-11</text>
+  <text x="539.43" y="282" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="10" fill="#666666">2024-12</text>
   <line x1="637.71" y1="264" x2="637.71" y2="268" stroke="#aaaaaa"/>
   <text x="637.71" y="282" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="10" fill="#666666">2025-09</text>
   <line x1="736.00" y1="264" x2="736.00" y2="268" stroke="#aaaaaa"/>
-  <text x="736.00" y="282" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="10" fill="#666666">2026-06</text>
-  <line x1="59.12" y1="24" x2="59.12" y2="264" stroke="#999999" stroke-width="1" stroke-dasharray="4 3"/>
-  <text x="63.12" y="36" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="9" fill="#666666">metric change</text>
-  <line x1="623.74" y1="24" x2="623.74" y2="264" stroke="#999999" stroke-width="1" stroke-dasharray="4 3"/>
-  <text x="627.74" y="36" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="9" fill="#666666">metric change</text>
-  <polyline fill="none" stroke="#4c78a8" stroke-width="2" points="48.00,258.10 51.68,256.75 52.37,253.58 54.64,252.77 55.48,252.67 56.68,249.50 57.74,249.26 58.52,248.40 58.69,248.40 58.80,248.06"/>
-  <circle cx="58.80" cy="248.06" r="3" fill="#4c78a8"/>
-  <polyline fill="none" stroke="#4c78a8" stroke-width="2" points="59.12,240.62 59.28,240.29 59.48,240.29 59.57,239.95 59.89,239.66 60.40,239.09 60.89,237.17 61.93,239.18 61.94,239.18 62.27,239.09 63.31,238.13 64.59,236.98 64.59,236.98 64.93,236.88 65.54,236.11 69.77,235.68 126.22,235.68 126.22,235.68 135.60,235.63 136.34,235.58 623.51,235.58 623.53,235.58 623.53,235.49 623.68,235.49 623.74,235.49"/>
-  <circle cx="623.74" cy="235.49" r="3" fill="#4c78a8"/>
-  <polyline fill="none" stroke="#4c78a8" stroke-width="2" points="623.74,225.22 623.89,225.22 719.02,225.22 736.00,224.98"/>
-  <circle cx="736.00" cy="224.98" r="3" fill="#4c78a8"/>
-  <polyline fill="none" stroke="#f58518" stroke-width="2" points="48.00,264.00 51.68,264.00 52.37,264.00 54.64,264.00 55.48,264.00 56.68,264.00 57.74,264.00 58.52,264.00 58.69,264.00 58.80,264.00"/>
-  <circle cx="58.80" cy="264.00" r="3" fill="#f58518"/>
-  <polyline fill="none" stroke="#f58518" stroke-width="2" points="59.12,151.44 59.28,151.44 59.48,151.44 59.57,151.44 59.89,151.44 60.40,151.44 60.89,151.44 61.93,181.97 61.94,181.97 62.27,181.97 63.31,177.22 64.59,175.20 64.59,175.20 64.93,175.20 65.54,170.35 69.77,168.72 126.22,168.72 126.22,168.72 135.60,168.72 136.34,168.72 623.51,168.72 623.53,168.72 623.53,167.23 623.68,167.23 623.74,167.23"/>
-  <circle cx="623.74" cy="167.23" r="3" fill="#f58518"/>
-  <polyline fill="none" stroke="#f58518" stroke-width="2" points="623.74,114.77 623.89,114.77 719.02,114.77 736.00,114.77"/>
-  <circle cx="736.00" cy="114.77" r="3" fill="#f58518"/>
-  <polyline fill="none" stroke="#e45756" stroke-width="2" points="48.00,258.10 51.68,256.75 52.37,253.58 54.64,252.77 55.48,252.67 56.68,249.50 57.74,249.26 58.52,248.40 58.69,248.40 58.80,248.06"/>
-  <circle cx="58.80" cy="248.06" r="3" fill="#e45756"/>
-  <polyline fill="none" stroke="#e45756" stroke-width="2" points="59.12,248.06 59.28,247.68 59.48,247.68 59.57,247.30 59.89,247.01 60.40,246.38 60.89,244.27 61.93,244.08 61.94,244.08 62.27,243.94 63.31,243.31 64.59,242.21 64.59,242.21 64.93,242.11 65.54,241.63 69.77,241.30 126.22,241.30 126.22,241.30 135.60,241.30 136.34,241.20 623.51,241.20 623.53,241.20 623.53,241.20 623.68,241.20 623.74,241.20"/>
-  <circle cx="623.74" cy="241.20" r="3" fill="#e45756"/>
-  <polyline fill="none" stroke="#e45756" stroke-width="2" points="623.74,235.44 623.89,235.44 719.02,235.44 736.00,235.15"/>
-  <circle cx="736.00" cy="235.15" r="3" fill="#e45756"/>
-  <polyline fill="none" stroke="#54a24b" stroke-width="2" points="48.00,264.00 51.68,264.00 52.37,264.00 54.64,264.00 55.48,264.00 56.68,264.00 57.74,264.00 58.52,264.00 58.69,264.00 58.80,264.00"/>
-  <circle cx="58.80" cy="264.00" r="3" fill="#54a24b"/>
-  <polyline fill="none" stroke="#54a24b" stroke-width="2" points="59.12,186.82 59.28,186.82 59.48,186.82 59.57,186.82 59.89,186.82 60.40,186.82 60.89,186.82 61.93,186.82 61.94,186.82 62.27,186.82 63.31,186.82 64.59,186.82 64.59,186.82 64.93,186.82 65.54,186.82 69.77,186.82 126.22,186.82 126.22,186.82 135.60,186.82 136.34,186.82 623.51,186.82 623.53,186.82 623.53,186.82 623.68,186.82 623.74,186.82"/>
-  <circle cx="623.74" cy="186.82" r="3" fill="#54a24b"/>
-  <polyline fill="none" stroke="#54a24b" stroke-width="2" points="623.74,70.08 623.89,70.08 719.02,70.08 736.00,70.08"/>
+  <text x="736.00" y="282" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="10" fill="#666666">2026-07</text>
+  <line x1="59.02" y1="24" x2="59.02" y2="264" stroke="#999999" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="63.02" y="36" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="9" fill="#666666">metric change</text>
+  <line x1="618.68" y1="24" x2="618.68" y2="264" stroke="#999999" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="622.68" y="36" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="9" fill="#666666">metric change</text>
+  <polyline fill="none" stroke="#4c78a8" stroke-width="2" points="48.00,258.10 51.65,256.75 52.33,253.58 54.58,252.77 55.41,252.67 56.60,249.50 57.65,249.26 58.43,248.40 58.60,248.40 58.70,248.06"/>
+  <circle cx="58.70" cy="248.06" r="3" fill="#4c78a8"/>
+  <polyline fill="none" stroke="#4c78a8" stroke-width="2" points="59.02,240.62 59.18,240.29 59.38,240.29 59.47,239.95 59.79,239.66 60.29,239.09 60.78,237.17 61.81,239.18 61.81,239.18 62.14,239.09 63.18,238.13 64.45,236.98 64.45,236.98 64.79,236.88 65.38,236.11 69.58,235.68 125.53,235.68 125.53,235.68 134.83,235.63 135.56,235.58 618.44,235.58 618.46,235.58 618.46,235.49 618.62,235.49 618.67,235.49"/>
+  <circle cx="618.67" cy="235.49" r="3" fill="#4c78a8"/>
+  <polyline fill="none" stroke="#4c78a8" stroke-width="2" points="618.68,225.22 618.82,225.22 713.11,225.22 729.94,224.98 736.00,222.48"/>
+  <circle cx="736.00" cy="222.48" r="3" fill="#4c78a8"/>
+  <polyline fill="none" stroke="#f58518" stroke-width="2" points="48.00,264.00 51.65,264.00 52.33,264.00 54.58,264.00 55.41,264.00 56.60,264.00 57.65,264.00 58.43,264.00 58.60,264.00 58.70,264.00"/>
+  <circle cx="58.70" cy="264.00" r="3" fill="#f58518"/>
+  <polyline fill="none" stroke="#f58518" stroke-width="2" points="59.02,151.44 59.18,151.44 59.38,151.44 59.47,151.44 59.79,151.44 60.29,151.44 60.78,151.44 61.81,181.97 61.81,181.97 62.14,181.97 63.18,177.22 64.45,175.20 64.45,175.20 64.79,175.20 65.38,170.35 69.58,168.72 125.53,168.72 125.53,168.72 134.83,168.72 135.56,168.72 618.44,168.72 618.46,168.72 618.46,167.23 618.62,167.23 618.67,167.23"/>
+  <circle cx="618.67" cy="167.23" r="3" fill="#f58518"/>
+  <polyline fill="none" stroke="#f58518" stroke-width="2" points="618.68,114.77 618.82,114.77 713.11,114.77 729.94,114.77 736.00,88.03"/>
+  <circle cx="736.00" cy="88.03" r="3" fill="#f58518"/>
+  <polyline fill="none" stroke="#e45756" stroke-width="2" points="48.00,258.10 51.65,256.75 52.33,253.58 54.58,252.77 55.41,252.67 56.60,249.50 57.65,249.26 58.43,248.40 58.60,248.40 58.70,248.06"/>
+  <circle cx="58.70" cy="248.06" r="3" fill="#e45756"/>
+  <polyline fill="none" stroke="#e45756" stroke-width="2" points="59.02,248.06 59.18,247.68 59.38,247.68 59.47,247.30 59.79,247.01 60.29,246.38 60.78,244.27 61.81,244.08 61.81,244.08 62.14,243.94 63.18,243.31 64.45,242.21 64.45,242.21 64.79,242.11 65.38,241.63 69.58,241.30 125.53,241.30 125.53,241.30 134.83,241.30 135.56,241.20 618.44,241.20 618.46,241.20 618.46,241.20 618.62,241.20 618.67,241.20"/>
+  <circle cx="618.67" cy="241.20" r="3" fill="#e45756"/>
+  <polyline fill="none" stroke="#e45756" stroke-width="2" points="618.68,235.44 618.82,235.44 713.11,235.44 729.94,235.15 736.00,234.58"/>
+  <circle cx="736.00" cy="234.58" r="3" fill="#e45756"/>
+  <polyline fill="none" stroke="#54a24b" stroke-width="2" points="48.00,264.00 51.65,264.00 52.33,264.00 54.58,264.00 55.41,264.00 56.60,264.00 57.65,264.00 58.43,264.00 58.60,264.00 58.70,264.00"/>
+  <circle cx="58.70" cy="264.00" r="3" fill="#54a24b"/>
+  <polyline fill="none" stroke="#54a24b" stroke-width="2" points="59.02,186.82 59.18,186.82 59.38,186.82 59.47,186.82 59.79,186.82 60.29,186.82 60.78,186.82 61.81,186.82 61.81,186.82 62.14,186.82 63.18,186.82 64.45,186.82 64.45,186.82 64.79,186.82 65.38,186.82 69.58,186.82 125.53,186.82 125.53,186.82 134.83,186.82 135.56,186.82 618.44,186.82 618.46,186.82 618.46,186.82 618.62,186.82 618.67,186.82"/>
+  <circle cx="618.67" cy="186.82" r="3" fill="#54a24b"/>
+  <polyline fill="none" stroke="#54a24b" stroke-width="2" points="618.68,70.08 618.82,70.08 713.11,70.08 729.94,70.08 736.00,70.08"/>
   <circle cx="736.00" cy="70.08" r="3" fill="#54a24b"/>
   <rect x="48" y="293" width="12" height="12" fill="#4c78a8"/>
   <text x="64" y="302" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="12" fill="#333333">total</text>
