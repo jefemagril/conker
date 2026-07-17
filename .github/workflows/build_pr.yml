@@ -5,9 +5,26 @@ on:
     branches: [master]
 
 jobs:
+  check-secrets:
+    runs-on: ubuntu-latest
+    outputs:
+      ready: ${{ steps.check.outputs.ready }}
+    steps:
+      - id: check
+        env:
+          BASEROM_URL: ${{ secrets.BASEROM_URL }}
+        run: |
+          if [ -n "$BASEROM_URL" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          fi
+
   build_pr:
-    # Requires private baserom secrets; skip until configured on this fork.
-    if: ${{ secrets.CONKER_BASEROM_US != '' && secrets.PRIVATE_REPO_ACCESS != '' && github.event.pull_request.head.repo.full_name != github.repository }}
+    needs: check-secrets
+    # Requires BASEROM_URL secret; skip until configured.
+    # Only runs for PRs from other repos (fork PRs).
+    if: ${{ needs.check-secrets.outputs.ready == 'true' && github.event.pull_request.head.repo.full_name != github.repository }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout this repo
@@ -16,15 +33,10 @@ jobs:
           submodules: recursive
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
-      - name: Checkout baserom
-        uses: actions/checkout@v4
-        with:
-          repository: mkst/conker-private
-          token: ${{ secrets.PRIVATE_REPO_ACCESS }}
-          path: baserom
-          persist-credentials: false
-      - name: Decrypt baserom
-        run: echo ${{ secrets.CONKER_BASEROM_US }} | openssl enc -d -aes-256-cbc -pass stdin -pbkdf2 -in baserom/baserom.us.z64.aes -out baserom.us.z64
+      - name: Download baserom
+        env:
+          BASEROM_URL: ${{ secrets.BASEROM_URL }}
+        run: curl -fsSL "$BASEROM_URL" -o baserom.us.z64
 
       - name: Perform make extract (rom)
         uses: docker://ghcr.io/mkst/conker:latest
