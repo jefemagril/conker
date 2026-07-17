@@ -10,7 +10,7 @@
 
        ALMicroTime      __n_CSPVoiceHandler(void *node);
 static void              __n_CSPHandleNextSeqEvent(N_ALCSPlayer *seqp);
-static void             __n_CSPHandleMIDIMsg(N_ALCSPlayer *seqp, N_ALEvent *event);
+       void             __n_CSPHandleMIDIMsg(N_ALCSPlayer *seqp, N_ALEvent *event);
 static void             __n_CSPHandleMetaMsg(N_ALCSPlayer *seqp, N_ALEvent *event);
        void             __n_CSPRepostEvent(ALEventQueue *evtq, N_ALEventListItem *item);
        void              __n_setUsptFromTempo(N_ALCSPlayer *seqp, f32 tempo);
@@ -99,9 +99,46 @@ void n_alCSPNew(N_ALCSPlayer *seqp, ALSeqpConfig *c)
 // jump table
 #pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/n_csplayer/__n_CSPVoiceHandler.s")
 
-extern void (*jtbl_8002C4CC[])(void);
-// jump table
-#pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/n_csplayer/__n_CSPHandleNextSeqEvent.s")
+static void __n_CSPHandleNextSeqEvent(N_ALCSPlayer *seqp)
+{
+    N_ALEvent evt;
+
+    /* Conker: also bail if state == 3 (custom stop-pending). */
+    if (seqp->target == NULL || seqp->state == 3) {
+        return;
+    }
+
+    n_alCSeqNextEvent(seqp->target, &evt, 1);
+
+    switch (evt.type) {
+    case AL_SEQ_MIDI_EVT:
+        __n_CSPHandleMIDIMsg(seqp, &evt);
+        __n_CSPPostNextSeqEvent(seqp);
+        break;
+
+    case AL_TEMPO_EVT:
+        __n_CSPHandleMetaMsg(seqp, &evt);
+        __n_CSPPostNextSeqEvent(seqp);
+        break;
+
+    case AL_SEQ_END_EVT:
+        /* Conker posts AL_SEQP_STOPPING_EVT (siblings use AL_SEQP_STOP_EVT). */
+        seqp->state = AL_STOPPING;
+        evt.type = AL_SEQP_STOPPING_EVT;
+        n_alEvtqPostEvent(&seqp->evtq, &evt, AL_EVTQ_END, 0);
+        break;
+
+    case AL_CSP_LOOPSTART:
+    case AL_CSP_LOOPEND:
+    case AL_CSP_NOTEOFF_EVT:
+        __n_CSPPostNextSeqEvent(seqp);
+        break;
+
+    default:
+        break;
+    }
+}
+
 // jump table
 #pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/n_csplayer/__n_CSPHandleMIDIMsg.s")
 

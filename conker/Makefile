@@ -97,6 +97,8 @@ endif
 GREP := grep -rl
 GLOBAL_ASM_C_FILES := $(shell $(GREP) GLOBAL_ASM $(SRC_DIR) </dev/null)
 GLOBAL_ASM_O_FILES := $(foreach file,$(GLOBAL_ASM_C_FILES),$(BUILD_DIR)/$(file:.c=.c.o))
+# n_csplayer has a custom recipe (rodata jtbl truncate); exclude from pattern rule.
+GLOBAL_ASM_PATTERN_O_FILES := $(filter-out $(BUILD_DIR)/$(SRC_DIR)/libultra/audio/n_csplayer.c.o,$(GLOBAL_ASM_O_FILES))
 
 INCLUDE_CFLAGS := -I . -I include -I include/2.0L -I include/2.0L/PR -I include/libc -I src/libultra/os -I src/libultra/audio -I src/libultra/io
 
@@ -204,12 +206,22 @@ $(TARGET).elf: $(O_FILES) $(BUILD_DIR)/$(LD_SCRIPT) $(GLOBAL_ASM_O_FILES)
 	$(LD) $(LDFLAGS) -o $@
 
 ifndef PERMUTER
-$(GLOBAL_ASM_O_FILES): $(BUILD_DIR)/%.c.o: %.c include/variables.h include/structs.h include/functions.h
+$(GLOBAL_ASM_PATTERN_O_FILES): $(BUILD_DIR)/%.c.o: %.c include/variables.h include/structs.h include/functions.h
 	$(PYTHON) $(ASM_PROCESSOR_DIR)/asm_processor.py $(OPT_FLAGS) $< > $(BUILD_DIR)/$<
 	$(CC) -c -32 $(CFLAGS) $(OPT_FLAGS) $(LOOP_UNROLL) $(MIPSBIT) -o $@ $(BUILD_DIR)/$<
 	$(PYTHON) $(ASM_PROCESSOR_DIR)/asm_processor.py $(OPT_FLAGS) $< --post-process $@ \
 		--assembler "$(AS) $(ASFLAGS)" --asm-prelude $(ASM_PROCESSOR_DIR)/prelude.inc
 endif
+
+# IDO pads .rodata to 16; CSP HandleNextSeqEvent jtbl is 0x54 and must abut
+# jtbl_8002C520. Explicit recipe overrides the GLOBAL_ASM pattern above.
+$(BUILD_DIR)/$(SRC_DIR)/libultra/audio/n_csplayer.c.o: $(SRC_DIR)/libultra/audio/n_csplayer.c include/variables.h include/structs.h include/functions.h
+	mkdir -p $(BUILD_DIR)/$(SRC_DIR)/libultra/audio
+	$(PYTHON) $(ASM_PROCESSOR_DIR)/asm_processor.py $(OPT_FLAGS) $< > $(BUILD_DIR)/$<
+	$(CC) -c -32 $(CFLAGS) $(OPT_FLAGS) $(LOOP_UNROLL) $(MIPSBIT) -o $@ $(BUILD_DIR)/$<
+	$(PYTHON) $(ASM_PROCESSOR_DIR)/asm_processor.py $(OPT_FLAGS) $< --post-process $@ \
+		--assembler "$(AS) $(ASFLAGS)" --asm-prelude $(ASM_PROCESSOR_DIR)/prelude.inc
+	$(PYTHON) tools/truncate_elf_rodata.py $@ 0x54 4
 
 $(BUILD_DIR)/%.c.o: %.c
 	$(CC) -c -32 $(CFLAGS) $(OPT_FLAGS) $(MIPSBIT) -o $@ $<
