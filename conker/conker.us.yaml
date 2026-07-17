@@ -204,6 +204,9 @@ segments:
     start: 0x000290D0
     vram:  0x800290D0 # rom is at 0x1000000
     bss_size: 0x16690
+    # jtbl_8002C4CC is not 16-aligned; SUBALIGN(16) inserts 0x10 of *fill*
+    # around n_csplayer .rodata (0x54) and shifts the rest of the bin.
+    subalign: 4
     subsegments:
       - [0x290D0, data] # could be larger/smaller
 
