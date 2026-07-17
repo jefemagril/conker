@@ -27,11 +27,15 @@ jobs:
     # Requires BASEROM_URL secret; skip until configured.
     if: ${{ needs.check-secrets.outputs.ready == 'true' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'push') }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
     - name: Checkout this repo
       uses: actions/checkout@v4
       with:
         submodules: recursive
+        # Needed so progress_report can resolve the latest decomp-source commit.
+        fetch-depth: 0
     - name: Download baserom
       env:
         BASEROM_URL: ${{ secrets.BASEROM_URL }}
@@ -59,3 +63,22 @@ jobs:
       uses: docker://ghcr.io/mkst/conker:latest
       with:
         args: make --jobs
+
+    - name: Update progress chart
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      uses: docker://ghcr.io/mkst/conker:latest
+      with:
+        args: sh -c "cd conker && make progress-report"
+
+    - name: Commit progress artifacts
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git add progress/
+        if git diff --staged --quiet; then
+          echo "No progress changes"
+          exit 0
+        fi
+        git commit -m "Update decomp progress [skip ci]"
+        git push
