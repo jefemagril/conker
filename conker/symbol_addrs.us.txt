@@ -353,8 +353,12 @@ n_alGlobals       = 0x8002BA40;
 n_syn             = 0x8002BA44;
 osViClock         = 0x8002BDE8;
 hdwrBugFlag       = 0x8002AB40;
-
+__osPiDevMgr      = 0x8002AB50;
+piThread          = 0x80035910;
+piThreadStack     = 0x80035B40;
 piEventQueue      = 0x80036B40;
+piEventBuf        = 0x80036B58;
+tmp_task          = 0x80036B60;
 __osPiAccessQueueEnabled = 0x8002BD60;
 __osPiAccessQueue = 0x800428F8;
 

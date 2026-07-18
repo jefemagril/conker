@@ -211,6 +211,8 @@ segments:
     subalign: 4
     subsegments:
       - [0x290D0, data] # could be larger/smaller
+      - [0x2AB40, .data, libultra/io/aisetnextbuf]
+      - [0x2AB50, data]
 
       - [0x2BF20, rodata]
       - [0x2C080, rodata]
