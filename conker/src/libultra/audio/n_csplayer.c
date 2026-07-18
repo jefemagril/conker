@@ -96,6 +96,16 @@ void n_alCSPNew(N_ALCSPlayer *seqp, ALSeqpConfig *c)
 #endif
 }
 
+/* NON-MATCHING: __n_CSPVoiceHandler (PD sibling + Conker jtbl).
+ * Conker event slots vs common Rare enum:
+ *  0x10 STOP_EVT     soft-stop to state 3 (flush REF, save delta at unk88)
+ *  0x11 STOPPING_EVT free voices when AL_STOPPING (PD STOP body)
+ *  0x12              begin stopping (PD STOPPING); TRACK_END slot
+ *  0x16              queued note-off MIDI (enum AL_CSP_NOTEOFF is 0x15)
+ *  0x17/0x18         trem/vib; 0x19/0x1A FXMIX/FXPARAM
+ * Remaining: stack frame 0x90, empty-case jtbl split (13FD4 vs 13FDC),
+ * STOP channel cleanup via drvr->unk34, PLAY resume via __alCSeqNextDelta.
+ */
 // jump table
 #pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/n_csplayer/__n_CSPVoiceHandler.s")
 

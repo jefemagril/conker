@@ -317,7 +317,7 @@ typedef struct {
     /* 0x7C */  f32 unk7C;
     /* 0x80 */  f32 unk80;
     /* 0x84 */  s32 unk84;
-    /* 0x88 */  u8  unk88[0x4];
+    /* 0x88 */  s32 unk88;             /* soft-stop: saved REF flush delta */
     /* 0x8C */  u8  unk8C;
     /* 0x8D */  u8  unk8D;
 } N_ALCSPlayer;
