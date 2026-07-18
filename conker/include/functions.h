@@ -1003,13 +1003,13 @@ void func_100114D0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
 // void n_alSndpSetOutputMode(u8 outputMode);
 void n_alCSeqNewLoopStartMarkers(ALCSeq *seq, ALCSeqMarker *m, u32 markerCount, u32 firstLoopIndex);
 // void n_alCSPApplyChlFilterPitch(struct26 *arg0, u8 arg1);
-//func_1001AAE0
+// __n_unmapVoice
 //func_1001ADA4
-//func_1001AFEC
+// __n_lookupVoice
 //func_1001B07C
-//func_1001B200
+// __n_vsVol
 // s32  __n_vsMix(N_ALVoiceState *vs, N_ALCSPlayer *seqp);
-// u8   func_1001B450(void *arg0, void *arg1);
+// __n_vsPan
 void func_1001E530(s32 arg0, void *arg1, s32 arg2);
 //func_1019EA88
 //func_1019EAB0
