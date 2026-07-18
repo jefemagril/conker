@@ -73,8 +73,8 @@ extern u8   D_800428C2;
 
 typedef ALDMAproc (*N_ALStreamDMANew)(void *state);
 
-/* Conker stores a stream DMA-new callback in N_ALSynth's custom pad at 0x24. */
-#define n_alStreamDmaNew() (((N_ALStreamDMANew *) n_syn->pad24)[0])
+/* Conker stores a stream DMA-new callback at N_ALSynth.dma (0x24). */
+#define n_alStreamDmaNew() (((N_ALStreamDMANew *) &n_syn->dma)[0])
 
 
 /* The CRC-5/CRC-8 stream helpers (func_151F27E0, func_151F2890) live in their

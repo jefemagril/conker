@@ -124,13 +124,27 @@ typedef struct N_ALMainBus_s {
     N_ALFilter           filter;
 } N_ALMainBus;
 
+/* Output LP / pole filter state hanging off each aux bus (PD auxbus44). */
+struct auxbus44 {
+    s16 unk00;
+    s16 unk02;
+    s32 unk04;
+    s16 unk08[16];
+    u32 unk28;
+    POLEF_STATE *unk2c;
+    POLEF_STATE *unk30;
+    u32 unk34;
+};
+
 typedef struct N_ALAuxBus_s {
     ALFilter            filter;
+    /* sourceCount/maxSources are used as an ALLink head for voiceLink lists */
     s32                 sourceCount;
     s32                 maxSources;
+    /* Conker also stores the FX pointer returned by func_1001E4A0 here (0x1C) */
     N_PVoice           **sources;
     /* 0x20 */  ALFx                *fx;
-    ALFx    *fx_array[AL_MAX_AUX_BUS_SOURCES];
+    ALFx    *fx_array[AL_MAX_AUX_BUS_SOURCES]; /* [7] is struct auxbus44 * */
 } N_ALAuxBus;
 
 void alN_PVoiceNew(N_PVoice *mv, ALDMANew dmaNew, ALHeap *hp);

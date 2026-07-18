@@ -56,19 +56,20 @@ typedef struct {
     ALLink      pLameList;      /* list of voices ready to be freed     */
     /* 0x1C */  s32         paramSamples;
     /* 0x20 */  s32         curSamples;     /* samples from start of game           */
-    /* 0x24 */  u8          pad24[0x8];
-    /* 0x2C */  ALDMANew    dma;
-    ALHeap      *heap;
-    u8 pad[0xC];
+    /* 0x24 */  ALDMANew    dma;            /* also used as stream DMA-new slot */
+    /* 0x28 */  void        *unk28;
+    /* 0x2C */  void        *unk2C;
+    /* 0x30 */  void        *unk30;
+    /* 0x34 */  void        *unk34;
+    /* 0x38 */  void        *unk38;
+    /* 0x3C */  ALHeap      *heap;
     /* 0x40 */  struct ALParam_s      *paramList;
     /* 0x44 */  struct N_ALMainBus_s  *mainBus;
     /* 0x48 */  struct N_ALAuxBus_s   *auxBus;
-    s32         numPVoices;
-    s32         maxAuxBusses;
-    /* 0x54 */ s32         outputRate;
-    s32         maxOutSamples;
-    s32         sv_dramout;
-    s32         sv_first;
+    /* 0x4C */  s32         numPVoices;
+    /* 0x50 */  s32         maxAuxBusses;
+    /* 0x54 */  s32         outputRate;
+    /* 0x58 */  s32         maxOutSamples;
 } N_ALSynth;
 
 

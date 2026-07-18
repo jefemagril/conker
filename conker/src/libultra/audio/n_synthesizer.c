@@ -2,6 +2,8 @@
 
 extern f32 D_8002C750;
 Acmd *func_1001FB40(s32 sampleOffset, Acmd *p);
+Acmd *func_1001E530(s32 sampleOffset, Acmd *p);
+s32 func_1001E4A0(s16 bus, ALSynConfig *c, ALHeap *hp);
 s32 __n_nextSampleTime(ALPlayer **client);
 s32 _n_timeToSamplesNoRound(s32 micros);
 
@@ -9,119 +11,110 @@ s32 _n_timeToSamplesNoRound(s32 micros);
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 #endif
 
-#pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/n_synthesizer/n_alSynNew.s")
-// void n_alSynNew(struct07 *arg0) {
-//     s32 sp44;
-//     // s32 sp40;
-//     // void *sp3C;
-//     // s32 sp38;
-//     s32 sp34;
-//     // s32 sp30;
-//     // void *sp2C;
-//     // void *sp28;
-//     // void *sp24;
-//     // s32 temp_t2;
-//     // s32 temp_t3;
-//     // s32 temp_t4;
-//     // s32 temp_t9;
-//
-//     sp34 = arg0->unk28;
-//     D_8002BA44->unk0 = 0;
-//     D_8002BA44->unk4C = arg0->unk4;
-//     D_8002BA44->unk20 = 0;
-//     D_8002BA44->unk1C = 0;
-//     D_8002BA44->unk54 = arg0->unk2C;
-//     D_8002BA44->unk58 = 184;
-//     D_8002BA44->unk24 = arg0->unk10;
-//     D_8002BA44->unk28 = arg0->unk14;
-//     D_8002BA44->unk2C = arg0->unk18;
-//     D_8002BA44->unk30 = arg0->unk1C;
-//     D_8002BA44->unk34 = arg0->unk20;
-//     D_8002BA44->unk38 = arg0->unk24;
-//     if (arg0->unkC >= 3) {
-//         D_8002BA44->unk50 = 2;
-//     } else if (arg0->unkC <= 0) {
-//         D_8002BA44->unk50 = 1;
-//     } else {
-//         D_8002BA44->unk50 = (s32) arg0->unkC;
-//     }
-//     D_8002BA44->unk48 = alHeapDBAlloc(0, 0, sp34, D_8002BA44->unk50, 0x44);
-//     sp44 = 0;
-//     if (D_8002BA44->unk50 > 0) {
-// loop_6:
-//         (D_8002BA44->unk48 + (sp44 * 0x44))->unk14 = 0;
-//         (D_8002BA44->unk48 + (sp44 * 0x44))->unk18 = 0;
-//         if ((arg0 + sp44)->unk30 != 0) {
-//             (D_8002BA44->unk48 + (sp44 * 0x44))->unk1C = func_1001E4A0(sp44, arg0, sp34);
-//         } else {
-//             (D_8002BA44->unk48 + (sp44 * 0x44))->unk1C = 0;
-//         }
-//         (D_8002BA44->unk48 + (sp44 * 0x44))->unk40 = alHeapDBAlloc(0, 0, sp34, 1, 0x38);
-//         (D_8002BA44->unk48 + (sp44 * 0x44))->unk40->unk2 = (u16)0;
-//         (D_8002BA44->unk48 + (sp44 * 0x44))->unk40->unk2C = alHeapDBAlloc(0, 0, sp34, 1, 8);
-//         (D_8002BA44->unk48 + (sp44 * 0x44))->unk40->unk30 = alHeapDBAlloc(0, 0, sp34, 1, 8);
-//         temp_t4 = sp44 + 1;
-//         sp44 = temp_t4;
-//         if (temp_t4 < D_8002BA44->unk50) {
-//             goto loop_6;
-//         }
-//     }
-//     D_8002BA44->unk44 = alHeapDBAlloc(0, 0, sp34, 1, 0x14);
-//     D_8002BA44->unk44->unk4 = (s32)func_1001E530;
-//     D_8002BA44->unk4 = 0;
-//     D_8002BA44->unk8 = 0;
-//     D_8002BA44->unk14 = 0;
-//     D_8002BA44->unk18 = 0;
-//     D_8002BA44->unkC = 0;
-//     D_8002BA44->unk10 = 0;
-//     sp38 = alHeapDBAlloc(0, 0, sp34, arg0->unk4, 0xD0);
-//     sp44 = 0;
-//     if (arg0->unk4 > 0) {
-// loop_11:
-//         sp3C = (sp44 * 0xD0) + sp38;
-//         sp28 = sp3C;
-//         sp24 = D_8002BA44 + 4;
-//         sp28->unk0 = (s32) *sp24;
-//         sp28->unk4 = sp24;
-//         if (*sp24 != 0) {
-//             (*sp24)->unk4 = sp28;
-//         }
-//         *sp24 = sp28;
-//         sp3C->unk10 = 0;
-//         func_1001D6E8(sp3C, D_8002BA44->unk24, sp34);
-//         temp_t3 = sp44 + 1;
-//         sp44 = temp_t3;
-//         if (temp_t3 < arg0->unk4) {
-//             goto loop_11;
-//         }
-//     }
-//     sp40 = 0;
-//     if (D_8002BA44->unk50 > 0) {
-// loop_15:
-//         (D_8002BA44->unk48 + (sp40 * 0x44))->unk14 = 0;
-//         (D_8002BA44->unk48 + (sp40 * 0x44))->unk18 = 0;
-//         temp_t2 = sp40 + 1;
-//         sp40 = temp_t2;
-//         if (temp_t2 < D_8002BA44->unk50) {
-//             goto loop_15;
-//         }
-//     }
-//     sp30 = alHeapDBAlloc(0, 0, sp34, arg0->unk8, 0x24);
-//     D_8002BA44->unk40 = 0;
-//     sp44 = 0;
-//     if (arg0->unk8 > 0) {
-// loop_17:
-//         sp2C = (sp44 * 0x24) + sp30;
-//         *sp2C = (s32) D_8002BA44->unk40;
-//         D_8002BA44->unk40 = sp2C;
-//         temp_t9 = sp44 + 1;
-//         sp44 = temp_t9;
-//         if (temp_t9 < arg0->unk8) {
-//             goto loop_17;
-//         }
-//     }
-//     D_8002BA44->unk3C = sp34;
-// }
+/* Conker free-list ALParam nodes are 0x24 bytes (larger than vanilla ALParam). */
+#define N_ALPARAM_SIZE 0x24
+
+void n_alSynNew(ALSynConfig *c)
+{
+    s32 i;
+    s32 j;
+    N_PVoice *pv;
+    N_PVoice *pvoices;
+    ALHeap *hp = c->heap;
+    ALParam *params;
+    ALParam *paramPtr;
+    ALLink *element;
+    ALLink *after;
+
+    n_syn->head = NULL;
+    n_syn->numPVoices = c->maxPVoices;
+    n_syn->curSamples = 0;
+    n_syn->paramSamples = 0;
+    n_syn->outputRate = c->outputRate;
+    n_syn->maxOutSamples = FIXED_SAMPLE;
+    n_syn->dma = (ALDMANew)c->dmaproc;
+    n_syn->unk28 = c->unk14;
+    n_syn->unk2C = c->unk18;
+    n_syn->unk30 = c->unk1C;
+    n_syn->unk34 = c->unk20;
+    n_syn->unk38 = c->unk24;
+
+    if (c->maxFXbusses > 2) {
+        n_syn->maxAuxBusses = 2;
+    } else if (c->maxFXbusses < 1) {
+        n_syn->maxAuxBusses = 1;
+    } else {
+        n_syn->maxAuxBusses = c->maxFXbusses;
+    }
+
+    n_syn->auxBus = (N_ALAuxBus *)alHeapDBAlloc(0, 0, hp, n_syn->maxAuxBusses, sizeof(N_ALAuxBus));
+
+    for (i = 0; i < n_syn->maxAuxBusses; i++) {
+        n_syn->auxBus[i].sourceCount = 0;
+        n_syn->auxBus[i].maxSources = 0;
+
+        if (c->fxTypes[i]) {
+            /* func_1001E4A0 / n_alFxNew write FX at +0x20; return also stored at +0x1C */
+            n_syn->auxBus[i].sources = (N_PVoice **)func_1001E4A0(i, c, hp);
+        } else {
+            n_syn->auxBus[i].sources = 0;
+        }
+
+        n_syn->auxBus[i].fx_array[7] =
+            (ALFx *)alHeapDBAlloc(0, 0, hp, 1, sizeof(struct auxbus44));
+        ((struct auxbus44 *)n_syn->auxBus[i].fx_array[7])->unk02 = 0;
+        ((struct auxbus44 *)n_syn->auxBus[i].fx_array[7])->unk2c =
+            alHeapDBAlloc(0, 0, hp, 1, sizeof(POLEF_STATE));
+        ((struct auxbus44 *)n_syn->auxBus[i].fx_array[7])->unk30 =
+            alHeapDBAlloc(0, 0, hp, 1, sizeof(POLEF_STATE));
+    }
+
+    n_syn->mainBus = (N_ALMainBus *)alHeapDBAlloc(0, 0, hp, 1, sizeof(N_ALMainBus));
+    n_syn->mainBus->filter.handler = (N_ALCmdHandler)func_1001E530;
+
+    n_syn->pFreeList.next = 0;
+    n_syn->pFreeList.prev = 0;
+    n_syn->pLameList.next = 0;
+    n_syn->pLameList.prev = 0;
+    n_syn->pAllocList.next = 0;
+    n_syn->pAllocList.prev = 0;
+
+    pvoices = alHeapDBAlloc(0, 0, hp, c->maxPVoices, sizeof(N_PVoice));
+
+    for (i = 0; i < c->maxPVoices; i++) {
+        pv = &pvoices[i];
+
+        /* inlined alLink(pv, &n_syn->pFreeList) */
+        element = (ALLink *)pv;
+        after = &n_syn->pFreeList;
+        element->next = after->next;
+        element->prev = after;
+        if (after->next != 0) {
+            after->next->prev = element;
+        }
+        after->next = element;
+
+        pv->vvoice = 0;
+        alN_PVoiceNew(pv, n_syn->dma, hp);
+    }
+
+    /* Reset aux-bus voice-list heads (no sources[] pre-registration like PD) */
+    for (j = 0; j < n_syn->maxAuxBusses; j++) {
+        n_syn->auxBus[j].sourceCount = 0;
+        n_syn->auxBus[j].maxSources = 0;
+    }
+
+    params = alHeapDBAlloc(0, 0, hp, c->maxUpdates, N_ALPARAM_SIZE);
+    n_syn->paramList = 0;
+
+    for (i = 0; i < c->maxUpdates; i++) {
+        paramPtr = (ALParam *)((i * N_ALPARAM_SIZE) + (s32)params);
+        paramPtr->next = n_syn->paramList;
+        n_syn->paramList = paramPtr;
+    }
+
+    n_syn->heap = hp;
+}
 
 Acmd *n_alAudioFrame(Acmd *cmdList, s32 *cmdLen, s16 *outBuf, s32 outLen) {
     ALPlayer *client;
