@@ -1,39 +1,38 @@
 #include <n_libaudio.h>
+#include "n_seqp.h"
 
 void __n_resetPerfChanState(N_ALSeqPlayer *seqp, s32 chan);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/init_1AAE0/func_1001AAE0.s")
-// void func_1001AAE0(void *arg0, s32 arg1) {
-//     void *sp4;
-//     void *sp0;
-//     void *temp_t6;
-//
-//     sp4 = NULL;
-//     sp0 = arg0->unk64;
-//     if (sp0 != 0) {
-// loop_1:
-//         if ((sp0 + 4) == arg1) {
-//             if (sp4 != 0) {
-//                 *sp4 = (s32) *sp0;
-//             } else {
-//                 arg0->unk64 = (void *) *sp0;
-//             }
-//             if (arg0->unk68 == sp0) {
-//                 arg0->unk68 = sp4;
-//             }
-//             *sp0 = (void *) arg0->unk6C;
-//             arg0->unk6C = sp0;
-//             arg0->unk8D = (u8) (arg0->unk8D - 1);
-//             return;
-//         }
-//         sp4 = sp0;
-//         temp_t6 = *sp0;
-//         sp0 = temp_t6;
-//         if (temp_t6 != 0) {
-//             goto loop_1;
-//         }
-//     }
-// }
+void __n_unmapVoice(N_ALSeqPlayer *seqp, N_ALVoice *voice)
+{
+    N_ALVoiceState *prev = 0;
+    N_ALVoiceState *vs;
+
+    /*
+     * we could use doubly linked lists here and save some code and
+     * execution time, but time spent here in negligible, so it won't
+     * make much difference.
+     */
+    for (vs = seqp->vAllocHead; vs != 0; vs = vs->next) {
+        if (&vs->voice == voice) {
+            if (prev) {
+                prev->next = vs->next;
+            } else {
+                seqp->vAllocHead = vs->next;
+            }
+
+            if (vs == seqp->vAllocTail) {
+                seqp->vAllocTail = prev;
+            }
+
+            vs->next = seqp->vFreeList;
+            seqp->vFreeList = vs;
+            seqp->usedVoices--;
+            return;
+        }
+        prev = vs;
+    }
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/init_1AAE0/__n_seqpReleaseVoice.s")
 // void __n_seqpReleaseVoice(void *arg0, void *arg1, s32 arg2) {
@@ -128,8 +127,22 @@ N_ALVoiceState *__n_mapVoice(N_ALSeqPlayer *seqp, u8 key, u8 vel, u8 channel)
     return vs;
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/init_1AAE0/func_1001AFEC.s")
+N_ALVoiceState *__n_lookupVoice(N_ALSeqPlayer *seqp, u8 key, u8 channel)
+{
+    N_ALVoiceState *vs = seqp->vAllocHead;
 
+    while (vs != 0) {
+        if ((vs->key == key)
+                && (vs->channel == channel)
+                && (vs->phase != AL_PHASE_RELEASE)
+                && (vs->phase != AL_PHASE_SUSTREL)) {
+            return vs;
+        }
+        vs = vs->next;
+    }
+
+    return 0;
+}
 #pragma GLOBAL_ASM("asm/nonmatchings/init_1AAE0/func_1001B07C.s")
 
 s16 __n_vsVol(N_ALVoiceState *vs, N_ALSeqPlayer *seqp)

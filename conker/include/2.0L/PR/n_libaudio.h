@@ -237,7 +237,7 @@ typedef struct {
 void            n_alEvtqNew(ALEventQueue *evtq, N_ALEventListItem *items, s32 itemCount);
 ALMicroTime     n_alEvtqNextEvent(ALEventQueue *evtq, N_ALEvent *evt);
 void            n_alEvtqPostEvent(ALEventQueue *evtq, N_ALEvent *evt, ALMicroTime delta, s32 foo);
-void            n_alEvtqFlushType(ALEventQueue *evtq, s16 type);
+ALMicroTime     n_alEvtqFlushType(ALEventQueue *evtq, s16 type);
 
 
 typedef struct N_ALVoiceState_s {
