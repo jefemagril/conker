@@ -5,7 +5,7 @@
  *
  * These two functions form their own translation unit because the original
  * game compiled them at -O1 (instruction scheduling, register-resident locals)
- * while the rest of game_21FC90.c is -g/-O0. They are contiguous in the ROM
+ * while the rest of n_streamplayer.c is -g/-O0. They are contiguous in the ROM
  * (0x151F27E0..0x151F2960); the -O0 stream code resumes at n_alStreamStart.
  */
 

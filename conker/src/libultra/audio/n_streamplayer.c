@@ -216,7 +216,7 @@ void n_alStreamSetLoadInfo(s32 commandCount, s32 sampleRate) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/game_21FC90/func_151F2E88.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/n_streamplayer/func_151F2E88.s")
 
 void n_alStreamUpdateEnvelope(N_ALStreamState *state) {
     if ((state->volume != state->targetVolume) || (state->pan != state->targetPan)) {

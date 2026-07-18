@@ -2,17 +2,18 @@
 #include <ultraerror.h>
 #include "n_synthInternals.h"
 
-void n_alSynSetPan(N_ALVoice *v, u8 pan) {
-    ALParam *update;
+
+void n_alSynSetFXMix( N_ALVoice *v, u8 fxmix) {
+    ALParam  *update;
 
     if (v->pvoice) {
         update = __n_allocParam();
         ALFailIf(update == 0, ERR_ALSYN_NO_UPDATE);
 
-        update->delta = n_syn->paramSamples + v->pvoice->offset;
-        update->type = AL_FILTER_SET_PAN;
-        update->data.i = pan;
-        update->next = 0;
+        update->delta  = n_syn->paramSamples + v->pvoice->offset;
+        update->type   = AL_FILTER_SET_FXAMT;
+        update->data.i = fxmix;
+        update->next   = 0;
         n_alEnvmixerParam(v->pvoice, AL_FILTER_ADD_UPDATE, update);
     }
 }

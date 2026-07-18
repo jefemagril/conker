@@ -124,7 +124,7 @@ s32 _n_sndpVoiceHandler(N_ALSndPlayer *sp) {
 }
 
 // jump table
-#pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/init_15550/_n_handleEvent.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/n_sndplayer/_n_handleEvent.s")
 
 void sndp_free_state(N_ALSndpSoundState *state) {
     if ((state->flags & SNDP_HAS_VOICE_FLAG) != 0) {

@@ -64,27 +64,27 @@ segments:
       - [0x12560, c, init_12560]
       # -g from here (libultra (n)audio code)
       - [0x12820, c, libultra/audio/heap]
-      - [0x128D0, c, libultra/audio/init_128D0]
+      - [0x128D0, c, libultra/audio/bnkf]
+      - [0x12D80, c, libultra/audio/osc] # split out of bnkf
       - [0x13320, c, libultra/audio/n_csplayer]
-      - [0x15550, c, libultra/audio/init_15550]
-      - [0x17870, c, libultra/audio/init_17870]
+      - [0x15550, c, libultra/audio/n_sndplayer]
+      - [0x17870, c, libultra/audio/n_sndpsetoutput]
       - [0x17A80, c, libultra/audio/n_cspgetstate]
-      - [0x17AA0, c, libultra/audio/code_17AA0]
-      - [0x17AF0, c, libultra/audio/init_17AF0]
-      - [0x17C00, c, libultra/audio/init_17C00]
-      - [0x17D80, c, libultra/audio/code_17D80]
-      - [0x17DF0, c, libultra/audio/init_17DF0]
+      - [0x17AA0, c, libultra/audio/n_cspplay]
+      - [0x17AF0, c, libultra/audio/n_cspchan]
+      - [0x17D80, c, libultra/audio/n_cspsetchlpan]
+      - [0x17DF0, c, libultra/audio/n_cspsetfx]
       - [0x17EC0, c, libultra/audio/n_cspgettempo]
-      - [0x17F10, c, libultra/audio/init_17F10]
+      - [0x17F10, c, libultra/audio/n_cspsetfxparam]
       - [0x17F80, c, libultra/audio/n_csq]
-      - [0x18C60, c, libultra/audio/code_18C60]
-      - [0x18CB0, c, libultra/audio/code_18CB0]
-      - [0x18D00, c, libultra/audio/init_18D00]
-      - [0x18D50, c, libultra/audio/init_18D50]
+      - [0x18C60, c, libultra/audio/n_cspposttrackend]
+      - [0x18CB0, c, libultra/audio/n_cspsetseq]
+      - [0x18D00, c, libultra/audio/n_cspsetvol]
+      - [0x18D50, c, libultra/audio/n_seqpstop]
       - [0x18DA0, c, libultra/audio/n_sl]
       - [0x18E60, c, libultra/audio/n_synthesizer]
       - [0x19AB0, c, libultra/audio/cents2ratio]
-      - [0x19B50, c, libultra/audio/init_19B50]
+      - [0x19B50, c, libultra/audio/n_cspchlctrl]
       - [0x1AAE0, c, init_1AAE0]
       - [0x1C060, c, init_1C060]
       - [0x1C690, c, libultra/audio/n_synaddplayer]
@@ -92,16 +92,18 @@ segments:
       - [0x1C810, c, libultra/audio/n_synfreevoice]
       - [0x1C910, c, libultra/audio/n_synsetvol]
       - [0x1C9E0, c, libultra/audio/n_synsetpitch]
-      - [0x1CA90, c, libultra/audio/n_synsetpitch2]
-      - [0x1CB40, c, libultra/audio/n_synsetpan]
-      - [0x1CBF0, c, libultra/audio/init_1CBF0] # contains n_drvrNew.c + other
-      - [0x1D900, c, libultra/audio/init_1D900] #, libultra/audio/n_synsetfxmix
+      - [0x1CA90, c, libultra/audio/n_synfilter13]
+      - [0x1CB40, c, libultra/audio/n_synfilter12]
+      - [0x1CBF0, c, libultra/audio/n_drvrNew]
+      - [0x1D900, c, libultra/audio/n_synsetfxmix]
+      - [0x1D9B0, c, libultra/audio/n_syngetfxref] # split out of n_synsetfxmix
+      - [0x1DAA0, c, libultra/audio/n_synsetfxparam] # split out of n_synsetfxmix
       - [0x1DBA0, c, libultra/audio/n_cseqnextdelta] # split out of cseq
       - [0x1DC80, c, libultra/audio/n_synallocvoice]
       - [0x1E170, c, libultra/audio/n_synstartvoiceparam]
-      - [0x1E2A0, c, libultra/audio/init_1E2A0]
-      - [0x1E350, c, libultra/audio/init_1E350]
-      - [0x1E400, c, libultra/audio/init_1E400]
+      - [0x1E2A0, c, libultra/audio/n_synsetpan]
+      - [0x1E350, c, libultra/audio/n_synfilter11]
+      - [0x1E400, c, libultra/audio/n_cspsendmidi]
       - [0x1E480, c, init_1E480]
       - [0x1E4A0, c, init_1E4A0]
       - [0x1E530, c, init_1E530]
@@ -219,7 +221,7 @@ segments:
       - [0x2C200, rodata]
       - [0x2C240, rodata]
       - [0x2C250, rodata]
-      - [0x2C450, .rodata, libultra/audio/init_128D0]
+      - [0x2C450, .rodata, libultra/audio/osc]
       - [0x2C460, rodata]
       - [0x2C4CC, .rodata, libultra/audio/n_csplayer]
       - [0x2C520, rodata]
@@ -227,7 +229,7 @@ segments:
       - [0x2C750, rodata]
       - [0x2C760, .rodata, libultra/audio/cents2ratio]
       - [0x2C770, rodata]
-      - [0x2C790, .rodata, libultra/audio/init_1D900]
+      - [0x2C790, .rodata, libultra/audio/n_synsetfxparam]
       - [0x2C7A0, rodata]
       - [0x2C820, rodata]
       - [0x2C830, rodata]
@@ -779,8 +781,8 @@ segments:
       - [0x21F1C0, c,   libultra/io/pfsisplug2]      # dupe of libultra/io/pfsisplug
       - [0x21F530, asm, libultra/io/contramread2]    # dupe of libultra/io/contramread
       - [0x21f8e0, asm, libultra/io/contramwrite2]   # dupe of libultra/io/contramwrite
-      - [0x21fc90, c,   libultra/audio/n_streamcrc]  # -O1 (CRC-5/CRC-8 helpers, split out of game_21FC90)
-      - [0x21fe10, c,   libultra/audio/game_21FC90]  # -g
+      - [0x21fc90, c,   libultra/audio/n_streamcrc]  # -O1 (CRC-5/CRC-8 helpers, split out of n_streamplayer)
+      - [0x21fe10, c,   libultra/audio/n_streamplayer]  # -g
       - [0x221290, c, game_221290]
       - [0x225d20, asm]
       - [0x2270a0, asm]
