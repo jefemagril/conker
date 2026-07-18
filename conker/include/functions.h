@@ -1008,7 +1008,7 @@ void n_alCSeqNewLoopStartMarkers(ALCSeq *seq, ALCSeqMarker *m, u32 markerCount, 
 //func_1001AFEC
 //func_1001B07C
 //func_1001B200
-// s32  func_1001B310(void *arg0, void *arg1);
+// s32  __n_vsMix(N_ALVoiceState *vs, N_ALCSPlayer *seqp);
 // u8   func_1001B450(void *arg0, void *arg1);
 void func_1001E530(s32 arg0, void *arg1, s32 arg2);
 //func_1019EA88

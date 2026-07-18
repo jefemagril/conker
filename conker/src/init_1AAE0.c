@@ -34,64 +34,78 @@ void __n_unmapVoice(N_ALSeqPlayer *seqp, N_ALVoice *voice)
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/init_1AAE0/__n_seqpReleaseVoice.s")
-// void __n_seqpReleaseVoice(void *arg0, void *arg1, s32 arg2) {
-//     void *sp3C;
-//     s16 sp38;
-//     void *sp34;
-//     void *sp30;
-//     void *sp2C;
-//     void *sp28;
-//     void *sp24;
-//     void *sp20;
-//     void *sp1C;
-//     void *sp18;
-//
-//     sp34 = arg1->unk10;
-//     if (sp34->unk38 == 0) {
-//         sp30 = arg0->unk50;
-//         if (sp30 != 0) {
-// loop_2:
-//             sp2C = *sp30;
-//             sp28 = sp30;
-//             sp24 = sp2C;
-//             if ((sp28->unkC == 6) && (sp28->unk10 == arg1)) {
-//                 if (sp24 != 0) {
-//                     sp24->unk8 = (s32) (sp24->unk8 + sp28->unk8);
-//                 }
-//                 sp20 = sp30;
-//                 if (sp20->unk0 != 0) {
-//                     sp20->unk0->unk4 = (s32) sp20->unk4;
-//                 }
-//                 if (sp20->unk4 != 0) {
-//                     *sp20->unk4 = (s32) sp20->unk0;
-//                 }
-//                 sp1C = sp30;
-//                 sp18 = arg0 + 0x48;
-//                 sp1C->unk0 = (s32) *sp18;
-//                 sp1C->unk4 = sp18;
-//                 if (*sp18 != 0) {
-//                     (*sp18)->unk4 = sp1C;
-//                 }
-//                 *sp18 = sp1C;
-//             }
-//             sp30 = sp2C;
-//             if (sp30 != 0) {
-//                 goto loop_2;
-//             }
-//         }
-//     }
-//     sp34->unk37 = (u8)0;
-//     sp34->unk38 = (u8)3;
-//     sp34->unk34 = (u8)0;
-//     sp34->unk28 = (s32) (arg0->unk1C + arg2);
-//     n_alSynSetPriority(arg1, 0);
-//     n_alSynSetVol(arg1, 0, arg2);
-//     sp38 = 5;
-//     sp3C = arg1;
-//     arg2 = arg2 + 0x7D00;
-//     n_alEvtqPostEvent(arg0 + 0x48, &sp38, arg2, 0);
-// }
+void __n_seqpReleaseVoice(N_ALSeqPlayer *seqp, N_ALVoice *voice, ALMicroTime deltaTime)
+{
+    N_ALEvent evt;
+    N_ALVoiceState *vs;
+    ALLink *thisNode;
+    ALLink *nextNode;
+    N_ALEventListItem *thisItem;
+    N_ALEventListItem *nextItem;
+    ALLink *element;
+    ALLink *linkElement;
+    ALLink *after;
+
+    vs = (N_ALVoiceState *)voice->unk10;
+
+    /*
+     * if in attack phase, remove all pending volume
+     * events for this voice from the queue
+     */
+    if (vs->envPhase == AL_PHASE_ATTACK) {
+        thisNode = seqp->evtq.allocList.next;
+
+        while (thisNode != 0) {
+            nextNode = thisNode->next;
+            thisItem = (N_ALEventListItem *)thisNode;
+            nextItem = (N_ALEventListItem *)nextNode;
+
+            if (thisItem->evt.type == AL_SEQP_ENV_EVT) {
+                if (thisItem->evt.msg.vol.voice == voice) {
+                    if (nextItem) {
+                        nextItem->delta += thisItem->delta;
+                    }
+
+                    /* inlined alUnlink(thisNode) */
+                    element = thisNode;
+                    if (element->next != 0) {
+                        element->next->prev = element->prev;
+                    }
+                    if (element->prev != 0) {
+                        element->prev->next = element->next;
+                    }
+
+                    /* inlined alLink(thisNode, &seqp->evtq.freeList) */
+                    linkElement = thisNode;
+                    after = &seqp->evtq.freeList;
+                    linkElement->next = after->next;
+                    linkElement->prev = after;
+                    if (after->next != 0) {
+                        after->next->prev = linkElement;
+                    }
+                    after->next = linkElement;
+                }
+            }
+
+            thisNode = nextNode;
+        }
+    }
+
+    vs->velocity = 0;
+    vs->envPhase = AL_PHASE_RELEASE;
+    vs->envGain = 0;
+    vs->envEndTime = seqp->curTime + deltaTime;
+
+    n_alSynSetPriority(voice, 0); /* make candidate for stealing */
+    n_alSynSetVol(voice, 0, deltaTime);
+
+    evt.type = AL_NOTE_END_EVT;
+    evt.msg.note.voice = voice;
+
+    deltaTime += AL_USEC_PER_FRAME * 2;
+
+    n_alEvtqPostEvent(&seqp->evtq, &evt, deltaTime, 0);
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/init_1AAE0/func_1001ADA4.s")
 
@@ -163,17 +177,16 @@ s16 __n_vsVol(N_ALVoiceState *vs, N_ALSeqPlayer *seqp)
     return t1;
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/init_1AAE0/func_1001B310.s")
-// NON-MATCHING: missing a move
-// s32 func_1001B310(struct25 *arg0, struct26 *arg1) {
-//     s32 sp14;
-//     s32 sp10;
-//
-//     sp14 = arg1->unk60[arg0->unk35].unkA & 0x80;
-//     sp10 = ((arg1->unk60[arg0->unk35].unkA & 0x7F) + (s32) (arg1->unk7C * 127.0f)) * arg1->unk80;
-//
-//     return (MAX(0, MIN(127, sp10)) | sp14) & 0xff;
-// }
+s32 __n_vsMix(N_ALVoiceState *vs, N_ALCSPlayer *seqp)
+{
+    s32 sign;
+    s32 fxmix;
+
+    sign = seqp->chanState[vs->channel].fxmix & 0x80;
+    fxmix = ((seqp->chanState[vs->channel].fxmix & 0x7f) + (s32)(seqp->unk7C * 127.0f)) * seqp->unk80;
+
+    return (MAX(0, MIN(127, fxmix)) | sign) & 0xff;
+}
 
 ALMicroTime __n_vsDelta(N_ALVoiceState *vs, ALMicroTime t) {
   /*
@@ -204,8 +217,26 @@ ALPan __n_vsPan(N_ALVoiceState *vs, N_ALSeqPlayer *seqp)
     return (ALPan) tmp;
 }
 
-// not vanilla
-#pragma GLOBAL_ASM("asm/nonmatchings/init_1AAE0/__n_initFromBank.s")
+/* Conker: find first instrument from instArray[1], reset channels only
+ * (no __n_setInstChanState). PD/libreultra also setInst from the found
+ * instrument and percussion. */
+void __n_initFromBank(N_ALSeqPlayer *seqp, ALBank *b)
+{
+    s32 i;
+    ALInstrument *inst = 0;
+
+    for (i = 1; !inst; i++) {
+        inst = b->instArray[i];
+    }
+
+    for (i = 0; i < seqp->maxChannels; i++) {
+        __n_resetPerfChanState(seqp, i);
+    }
+
+    if (b->percussion) {
+        __n_resetPerfChanState(seqp, i);
+    }
+}
 
 void __n_initChanState(N_ALSeqPlayer *seqp)
 {
@@ -261,13 +292,75 @@ void __n_resetPerfChanState(N_ALSeqPlayer *seqp, s32 chan) {
 //     return sp18;
 // }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/init_1AAE0/func_1001BE1C.s")
-// void func_1001BE1C(void *arg0, s32 arg1, s32 arg2) {
-//     if (arg2 == -1) {
-//         arg0->unk30(arg1);
-//     } else {
-//         arg0->unk30((arg1 + (arg2 * 4))->unk10);
-//     }
-// }
+/* Conker synth helper: invoke n_syn->unk30 (config unk1C) as a free/stop
+ * callback. index == -1 passes state directly; otherwise state+index*4+0x10. */
+void func_1001BE1C(N_ALSynth *syn, void *state, s32 index)
+{
+    if (index == -1) {
+        ((void (*)(void *))syn->unk30)(state);
+    } else {
+        ((void (*)(void *))syn->unk30)(*(void **)((u8 *)state + (index * 4) + 0x10));
+    }
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/init_1AAE0/__n_seqpStopOsc.s")
+/* Conker osc event ids (header AL_TREM/VIB_OSC_EVT are off by one). */
+#define CONKER_AL_TREM_OSC_EVT 0x17
+#define CONKER_AL_VIB_OSC_EVT  0x18
+
+void __n_seqpStopOsc(N_ALSeqPlayer *seqp, N_ALVoiceState *vs)
+{
+    N_ALEventListItem *thisNode;
+    N_ALEventListItem *nextNode;
+    s16 evtType;
+    ALLink *element;
+    ALLink *linkElement;
+    ALLink *after;
+
+    thisNode = (N_ALEventListItem *)seqp->evtq.allocList.next;
+
+    while (thisNode) {
+        nextNode = (N_ALEventListItem *)thisNode->node.next;
+        evtType = thisNode->evt.type;
+
+        if (evtType == CONKER_AL_TREM_OSC_EVT || evtType == CONKER_AL_VIB_OSC_EVT) {
+            if (thisNode->evt.msg.osc.vs == vs) {
+                (*seqp->stopOsc)(thisNode->evt.msg.osc.oscState);
+
+                /* inlined alUnlink */
+                element = (ALLink *)thisNode;
+                if (element->next != 0) {
+                    element->next->prev = element->prev;
+                }
+                if (element->prev != 0) {
+                    element->prev->next = element->next;
+                }
+
+                if (nextNode) {
+                    nextNode->delta += thisNode->delta;
+                }
+
+                /* inlined alLink to freeList */
+                linkElement = (ALLink *)thisNode;
+                after = &seqp->evtq.freeList;
+                linkElement->next = after->next;
+                linkElement->prev = after;
+                if (after->next != 0) {
+                    after->next->prev = linkElement;
+                }
+                after->next = linkElement;
+
+                if (evtType == CONKER_AL_TREM_OSC_EVT) {
+                    vs->flags &= 0xfe;
+                } else { /* must be a AL_VIB_OSC_EVT */
+                    vs->flags &= 0xfd;
+                }
+
+                if (!vs->flags) {
+                    return;  /* there should be no more events */
+                }
+            }
+        }
+
+        thisNode = nextNode;
+    }
+}

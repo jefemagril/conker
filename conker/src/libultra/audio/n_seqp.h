@@ -43,6 +43,7 @@ N_ALVoiceState   *__n_lookupVoice(N_ALSeqPlayer *, u8, u8);
 ALSound          *__n_lookupSound(N_ALSeqPlayer *, u8, u8, u8);
 ALSound          *__n_lookupSoundQuick(N_ALSeqPlayer *, u8, u8, u8);
 s16               __n_vsVol(N_ALVoiceState *voice, N_ALSeqPlayer *seqp);
+s32               __n_vsMix(N_ALVoiceState *vs, N_ALCSPlayer *seqp);
 ALMicroTime       __n_vsDelta(N_ALVoiceState *voice, ALMicroTime t);
 ALPan             __n_vsPan(N_ALVoiceState *voice, N_ALSeqPlayer *seqp);
 void		  __n_initFromBank(N_ALSeqPlayer *seqp, ALBank *b);
