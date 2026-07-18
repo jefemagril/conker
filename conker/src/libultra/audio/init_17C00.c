@@ -1,20 +1,20 @@
 #include <n_libaudio.h>
 
 
-void func_10017C00(N_ALCSPlayer *seqp, s32 arg1) {
-    seqp->chanMask |= 1 << arg1;
-    func_1001E400(seqp, 0, arg1 | 0xB0, 0xFC, 0xFF);
+void n_alCSPChanOn(N_ALCSPlayer *seqp, s32 chan) {
+    seqp->chanMask |= 1 << chan;
+    n_alCSPSendMidi(seqp, 0, chan | 0xB0, 0xFC, 0xFF);
 }
 
-void func_10017C68(N_ALCSPlayer *seqp, s32 arg1, u8 arg2, u8 arg3) {
-    func_1001E400(seqp, 0, arg1 | 0xB0, 0xFD, arg3);
-    func_1001E400(seqp, 0, arg1 | 0xB0, 0xFF, arg2);
+void n_alCSPChanFade(N_ALCSPlayer *seqp, s32 chan, u8 targetvol, u8 incvol) {
+    n_alCSPSendMidi(seqp, 0, chan | 0xB0, 0xFD, incvol);
+    n_alCSPSendMidi(seqp, 0, chan | 0xB0, 0xFF, targetvol);
 }
 
-void func_10017CE0(N_ALCSPlayer *seqp, s32 arg1, u8 arg2) {
-    func_1001E400(seqp, 0, arg1 | 0xB0, 0x41, arg2);
+void n_alCSPChanSurround(N_ALCSPlayer *seqp, s32 chan, u8 fxmix80) {
+    n_alCSPSendMidi(seqp, 0, chan | 0xB0, 0x41, fxmix80);
 }
 
-void func_10017D30(N_ALCSPlayer *seqp, s32 arg1, u8 arg2) {
-    func_1001E400(seqp, 0, arg1 | 0xB0, 0xFC, arg2);
+void n_alCSPChanFadeForce(N_ALCSPlayer *seqp, s32 chan, u8 vol) {
+    n_alCSPSendMidi(seqp, 0, chan | 0xB0, 0xFC, vol);
 }

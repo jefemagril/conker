@@ -22,7 +22,7 @@
 #include "n_libaudio.h"
 
 
-void func_10018CB0(N_ALCSPlayer *seqp, ALCSeq *seq)
+void n_alCSPSetSeq(N_ALCSPlayer *seqp, ALCSeq *seq)
 {
     N_ALEvent evt;
 

@@ -22,102 +22,103 @@ extern f32 D_8002C78C;
 
 f32 func_150484A0(f32, f32);
 
+/* RBJ-style low-pass biquad coefficients (PD: func0003b710). */
+void n_alFxCalcBiquadCoefs(f32 outputRate, f32 cutoff, f32 q, f32 b[3], f32 a[3]) {
+    f32 w;
+    f32 w2;
+    f32 alpha;
 
-void func_1001CBF0(f32 arg0, f32 arg1, f32 arg2, f32 arg3[3], f32 arg4[3]) {
-    f32 sp24;
-    f32 sp20;
-    f32 sp1C;
-
-    if (arg1 >= (arg0 - 200.0f)) {
-        arg1 = arg0 - 200.0f;
+    if (cutoff >= (outputRate - 200.0f)) {
+        cutoff = outputRate - 200.0f;
     }
 
-    sp24 = func_150484A0(arg1 * D_8002C770, arg0);
-    sp20 = sp24 * sp24;
-    sp1C = (sp24 * D_8002C774) / arg2;
-    arg3[0] = sp20 / (1.0f + sp20 + sp1C);
-    arg3[1] = arg3[0] * 2.0f;
-    arg3[2] = arg3[0];
-    arg4[1] = ((sp20 - 1.0f) * 2.0f) / (1.0f + sp20 + sp1C);
-    arg4[2] = ((1.0f + sp20) - sp1C) / (1.0f + sp20 + sp1C);
+    w = func_150484A0(cutoff * D_8002C770, outputRate);
+    w2 = w * w;
+    alpha = (w * D_8002C774) / q;
+    b[0] = w2 / (1.0f + w2 + alpha);
+    b[1] = b[0] * 2.0f;
+    b[2] = b[0];
+    a[1] = ((w2 - 1.0f) * 2.0f) / (1.0f + w2 + alpha);
+    a[2] = ((1.0f + w2) - alpha) / (1.0f + w2 + alpha);
 }
 
-void init_lpfilter(ALLowPass *arg0) {
+void init_lpfilter(ALLowPass *lp) {
     s32 i;
-    s32 sp10;
-    s16 spE;
-    f32 temp_f8;
-    f32 sp4;
-    f32 sp0;
+    s32 temp;
+    s16 fc;
+    f32 ffc;
+    f32 fcoef;
+    f32 scale;
 
-    sp10 = arg0->fc * 16384.0f;
-    spE = sp10 >> 15;
-    arg0->fgain = 16384.0f - spE;
-    arg0->first = 0;
+    temp = lp->fc * 16384.0f;
+    fc = temp >> 15;
+    lp->fgain = 16384.0f - fc;
+    lp->first = 0;
 
     for (i = 0; i < 8; i++)
     {
-        arg0->fcvec.fccoef[i] = 0;
+        lp->fcvec.fccoef[i] = 0;
     }
-    arg0->fcvec.fccoef[i++] = spE;
+    lp->fcvec.fccoef[i++] = fc;
 
-    sp0 = 16384.0f;
-    sp4 = temp_f8 = spE / sp0;
+    scale = 16384.0f;
+    fcoef = ffc = fc / scale;
 
     for (;i < 16; i++)
     {
-        sp4 *= temp_f8;
-        arg0->fcvec.fccoef[i] = sp4 * sp0;
+        fcoef *= ffc;
+        lp->fcvec.fccoef[i] = fcoef * scale;
     }
 }
 
-f32 func_1001CEA4(s32 arg0) {
-    f32 sp4;
-    f32 sp0 = 1.0f;
+/* Pitch ratio from semitone offset: 2^(semitones/12). Not alCents2Ratio. */
+f32 alSemitones2Ratio(s32 semitones) {
+    f32 mult;
+    f32 ratio = 1.0f;
 
-    if (arg0 >= 0) {
-        sp4 = D_8002C778;
+    if (semitones >= 0) {
+        mult = D_8002C778;
     } else {
-        sp4 = D_8002C77C;
-        arg0 = -arg0;
+        mult = D_8002C77C;
+        semitones = -semitones;
     }
 
-    while (arg0 != 0) {
-        if ((arg0 & 1) != 0) {
-            sp0 = sp0 * sp4;
+    while (semitones != 0) {
+        if ((semitones & 1) != 0) {
+            ratio = ratio * mult;
         }
-        sp4 *= sp4;
-        arg0 = arg0 >> 1;
+        mult *= mult;
+        semitones = semitones >> 1;
     };
 
-    return sp0;
+    return ratio;
 }
 
-void func_1001CF38(ALLowPass *arg0, f32 arg1) {
+void n_alFxInitlpfilter_mono(ALLowPass *lp, f32 outputRate) {
     s32 i;
-    f32 sp30[3];
-    f32 sp24[3];
+    f32 b[3];
+    f32 a[3];
 
-    if (arg0->fgain == 0) {
+    if (lp->fgain == 0) {
         return;
     }
-    if (arg0->fgain < 10) {
-        arg0->fgain = 10;
+    if (lp->fgain < 10) {
+        lp->fgain = 10;
     }
-    func_1001CBF0(arg1,  arg0->fc + 10.0f, arg0->fgain / 10.0f, &sp30, &sp24);
+    n_alFxCalcBiquadCoefs(outputRate, lp->fc + 10.0f, lp->fgain / 10.0f, b, a);
 
     for(i = 3; i < 8; i++) {
-        arg0->fcvec.fccoef[i] = 0;
+        lp->fcvec.fccoef[i] = 0;
     }
-    arg0->fcvec.fccoef[0] = sp30[0] * (D_8002C780 - (arg0->fgain * 128.0f));
-    arg0->fcvec.fccoef[1] = sp30[1] * (D_8002C784 - (arg0->fgain * 128.0f));
-    arg0->fcvec.fccoef[2] = 0;
+    lp->fcvec.fccoef[0] = b[0] * (D_8002C780 - (lp->fgain * 128.0f));
+    lp->fcvec.fccoef[1] = b[1] * (D_8002C784 - (lp->fgain * 128.0f));
+    lp->fcvec.fccoef[2] = 0;
 
-    arg0->fcvec.fccoef[8] = sp24[1] * -16384.0f;
-    arg0->fcvec.fccoef[9] = sp24[2] * -16384.0f;
+    lp->fcvec.fccoef[8] = a[1] * -16384.0f;
+    lp->fcvec.fccoef[9] = a[2] * -16384.0f;
 
     for (i = 10; i < 16; i++) {
-        arg0->fcvec.fccoef[i] = 0;
+        lp->fcvec.fccoef[i] = 0;
     }
 }
 
@@ -233,7 +234,7 @@ void alN_PVoiceNew(N_PVoice *mv, ALDMANew dmaNew, ALHeap *hp) {
     mv->em_pan = 0;
     mv->em_ctrlList = 0;
     mv->em_ctrlTail = 0;
-    // non-vanilla
+    /* Rare extras: per-voice LP / filter11 (PD: unk8c / fx / unkb8 / unkbc) */
     mv->unk99 = 0;
     mv->unkA2 = 0;
     mv->unkA0 = 0;

@@ -10,28 +10,28 @@ extern struct247     D_8003CD48[];
 
 // FIXME: create header file for audio related functions
 s32  func_10017A80(N_ALCSPlayer *csp);
-void func_10017AF0(N_ALCSPlayer *csp, s32 arg1);
-void func_10017B04(N_ALCSPlayer *arg0, s32 arg1, u8 arg2);
-void func_10017B30(N_ALCSPlayer *csp);
-void func_10017BB8(N_ALCSPlayer *csp, s32 arg1);
-void func_10017C00(N_ALCSPlayer *csp, s32 arg1);
-void func_10017C68(N_ALCSPlayer *arg0, s32 arg1, u8 arg2, u8 arg3);
-void func_10017CE0(N_ALCSPlayer *arg0, s32 arg1, u8 arg2);
-void func_10017D30(N_ALCSPlayer *arg0, s32 arg1, u8 arg2);
-void func_10017D80(N_ALCSPlayer *arg0, u8 arg1, u8 arg2);
-void func_10017DF0(N_ALCSPlayer *csp, f32 arg1, f32 arg2);
-void func_10017E4C(N_ALCSPlayer *csp, u8 chan, u8 arg2);
-void func_10017F10(N_ALCSPlayer *arg0, u8 arg1, u8 arg2, u8 arg3, s32 arg4);
+void n_alCSPSetQueue(N_ALCSPlayer *csp, s32 arg1);
+void n_alCSPSetChlNoteMesgFlags(N_ALCSPlayer *arg0, s32 arg1, u8 arg2);
+void n_alCSPAllChanOn(N_ALCSPlayer *csp);
+void n_alCSPChanOff(N_ALCSPlayer *csp, s32 arg1);
+void n_alCSPChanOn(N_ALCSPlayer *csp, s32 arg1);
+void n_alCSPChanFade(N_ALCSPlayer *arg0, s32 arg1, u8 arg2, u8 arg3);
+void n_alCSPChanSurround(N_ALCSPlayer *arg0, s32 arg1, u8 arg2);
+void n_alCSPChanFadeForce(N_ALCSPlayer *arg0, s32 arg1, u8 arg2);
+void n_alCSPSetChlPan(N_ALCSPlayer *arg0, u8 arg1, u8 arg2);
+void n_alCSPSetFxMix(N_ALCSPlayer *csp, f32 arg1, f32 arg2);
+void n_alCSPSetChlFxBus(N_ALCSPlayer *csp, u8 chan, u8 arg2);
+void n_alCSPSetFxParam(N_ALCSPlayer *arg0, u8 arg1, u8 arg2, u8 arg3, s32 arg4);
 void n_alCSeqNewLoopStartMarkers(ALCSeq *seq, ALCSeqMarker *m, u32 markerCount, u32 firstLoopIndex);
-void func_10018D00(N_ALCSPlayer *arg0, s16 arg1);
-void func_10018D50(N_ALCSPlayer *seqp);
+void n_alCSPSetVol(N_ALCSPlayer *arg0, s16 arg1);
+void n_alCSPStop(N_ALCSPlayer *seqp);
 
 // this one is a monster
 #pragma GLOBAL_ASM("asm/nonmatchings/init_8180/func_10008180.s")
 
 void func_100084D8(u8 idx) {
     if ((n_alCSPGetState(D_8003C900[idx]) == 0) || (n_alCSPGetState(D_8003C900[idx]) == 3)) {
-        func_10017AA0(D_8003C900[idx]);
+        n_alCSPPlay(D_8003C900[idx]);
     }
 }
 
@@ -40,22 +40,22 @@ s32 func_1000853C(u8 idx) {
 }
 
 void func_10008570(u8 idx, s32 arg1) { // arg1 is OSMesgQueue ?
-    func_10017AF0(D_8003C900[idx], arg1);
+    n_alCSPSetQueue(D_8003C900[idx], arg1);
 }
 
 void func_100085A4(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 void func_100085B8(u8 idx, s32 arg1, u8 arg2) {
-    func_10017B04(D_8003C900[idx], arg1, arg2);
+    n_alCSPSetChlNoteMesgFlags(D_8003C900[idx], arg1, arg2);
 }
 
 void func_100085F8(u8 idx, s32 arg1) {
-    func_10017BB8(D_8003C900[idx], arg1);
+    n_alCSPChanOff(D_8003C900[idx], arg1);
 }
 
 void func_1000862C(u8 idx, s32 arg1) {
-    func_10017C00(D_8003C900[idx], arg1);
+    n_alCSPChanOn(D_8003C900[idx], arg1);
 }
 
 void func_10008660(u8 idx, u8 chan, u8 arg2, s32 arg3) {
@@ -69,15 +69,15 @@ void func_10008660(u8 idx, u8 chan, u8 arg2, s32 arg3) {
     } else {
         arg3 = 0; // empty?
     }
-    func_10017C68(D_8003C900[idx], chan, arg2, arg3);
+    n_alCSPChanFade(D_8003C900[idx], chan, arg2, arg3);
 }
 
 void func_100086FC(u8 idx, u8 arg1, u8 arg2) {
-    func_10017CE0(D_8003C900[idx], arg1, arg2);
+    n_alCSPChanSurround(D_8003C900[idx], arg1, arg2);
 }
 
 void func_10008744(u8 idx, u8 arg1, u8 arg2) {
-    func_10017D80(D_8003C900[idx], arg1, arg2);
+    n_alCSPSetChlPan(D_8003C900[idx], arg1, arg2);
 }
 
 void func_10008790(u8 idx, s32 mask, u8 arg2, s32 arg3) {
@@ -92,7 +92,7 @@ void func_10008790(u8 idx, s32 mask, u8 arg2, s32 arg3) {
 }
 
 void func_10008824(u8 idx, u8 arg1, u8 arg2) {
-    func_10017D30(D_8003C900[idx], arg1, arg2);
+    n_alCSPChanFadeForce(D_8003C900[idx], arg1, arg2);
 }
 
 void func_1000886C(u8 idx, s32 mask, u8 arg2) {
@@ -147,7 +147,7 @@ void func_10008A94(u8 idx, s32 mask, s32 arg2) {
     for(chan = 0; chan < 16; chan++)
     {
         if (((1 << chan) & mask) != 0) {
-            func_10017E4C(D_8003C900[idx], chan, arg2);
+            n_alCSPSetChlFxBus(D_8003C900[idx], chan, arg2);
         }
     }
 }
@@ -157,11 +157,11 @@ void func_10008B2C(u8 idx) {
 }
 
 void func_10008B60(u8 idx, u8 arg1, u8 arg2, u8 arg3, s32 arg4) {
-    func_10017F10(D_8003C900[idx], arg1, arg2, arg3, arg4);
+    n_alCSPSetFxParam(D_8003C900[idx], arg1, arg2, arg3, arg4);
 }
 
 void func_10008BC0(u8 idx, f32 arg1, f32 arg2) {
-    func_10017DF0(D_8003C900[idx], arg1, arg2);
+    n_alCSPSetFxMix(D_8003C900[idx], arg1, arg2);
 }
 
 void func_10008C04(u8 idx, u8 arg1, s32 arg2) {
@@ -182,13 +182,13 @@ void func_10008C04(u8 idx, u8 arg1, s32 arg2) {
 //     u32 i;
 //
 //     i = 0;
-//     func_10018C60(&D_8003C900[idx]);
+//     n_alCSPPostTrackEnd(&D_8003C900[idx]);
 //     while ((n_alCSPGetState(&D_8003C900[idx]) != 0) && (i < 2000000)) {
 //         i++;
 //     };
 //
 //     if (i >= 2000000) {
-//         func_10018C60(&D_8003C900[idx]);
+//         n_alCSPPostTrackEnd(&D_8003C900[idx]);
 //         while ((n_alCSPGetState(&D_8003C900[idx]) != 0) && (i < 4000000)) {
 //             i++;
 //         }
@@ -210,21 +210,21 @@ void func_10008C04(u8 idx, u8 arg1, s32 arg2) {
 //       }
 //
 //     n_alCSeqNew(&D_8003CA58[idx], &D_8003CA48[idx]);
-//     func_10018CB0(&D_8003C900[idx], &D_8003CA58[idx]);
-//     func_10017B30(&D_8003C900[idx]);
+//     n_alCSPSetSeq(&D_8003C900[idx], &D_8003CA58[idx]);
+//     n_alCSPAllChanOn(&D_8003C900[idx]);
 //
 //     return 0;
 // }
 
 void func_10008EE0(u8 idx, s32 arg1) {
-    func_10018D00(D_8003C900[idx], arg1);
+    n_alCSPSetVol(D_8003C900[idx], arg1);
 }
 
 void func_10008F24(u8 idx) {
     // AL_TRACK_END
-    func_10018C60(D_8003C900[idx]);
+    n_alCSPPostTrackEnd(D_8003C900[idx]);
 }
 
 void func_10008F58(u8 idx) {
-    func_10018D50(D_8003C900[idx]);
+    n_alCSPStop(D_8003C900[idx]);
 }

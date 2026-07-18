@@ -1,7 +1,7 @@
 #include "n_libaudio.h"
 
 
-void func_10018D00(N_ALCSPlayer *seqp, s16 vol)
+void n_alCSPSetVol(N_ALCSPlayer *seqp, s16 vol)
 {
     N_ALEvent evt;
 

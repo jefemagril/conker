@@ -2,8 +2,7 @@
 #include <ultraerror.h>
 #include "n_synthInternals.h"
 
-// n_alSynSetPan
-void func_1001E2A0(N_ALVoice *v, u8 pan) {
+void n_alSynSetPan(N_ALVoice *v, u8 pan) {
     ALParam *update;
 
     if (v->pvoice) {

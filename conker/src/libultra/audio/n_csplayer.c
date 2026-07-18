@@ -32,7 +32,7 @@ void n_alCSPNew(N_ALCSPlayer *seqp, ALSeqpConfig *c)
     seqp->target        = NULL;
     seqp->drvr          = n_syn;
     seqp->chanMask      = 0xffff;
-    func_10017B30(seqp);
+    n_alCSPAllChanOn(seqp);
     seqp->uspt          = 488;
     seqp->nextDelta     = 0;
     seqp->state         = AL_STOPPED;

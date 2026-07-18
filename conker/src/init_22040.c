@@ -28,7 +28,7 @@
 //     }
 //     if ((s16)arg0->unkA2 > 0) {
 //         if (arg0->unkC8 != 0) {
-//             func_1001CF38(&arg0->unkA0, 22050.0f);
+//             n_alFxInitlpfilter_mono(&arg0->unkA0, 22050.0f);
 //         }
 //         sp20 = sp2C = &sp2C->unk8;
 //         sp20->unk0 = 0xB000020;

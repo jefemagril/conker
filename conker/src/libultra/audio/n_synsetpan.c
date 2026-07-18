@@ -3,8 +3,8 @@
 #include "n_synthInternals.h"
 
 
-/* NOTE: might not actually be pan! */
-void n_alSynSetPan( N_ALVoice *v, u8 pan)
+/* Conker Filter12 (type 18); was misnamed n_alSynSetPan. */
+void n_alSynFilter12(N_ALVoice *v, u8 filter12)
 {
     ALParam  *update;
 
@@ -24,8 +24,8 @@ void n_alSynSetPan( N_ALVoice *v, u8 pan)
 #else
         update->delta  = n_syn->paramSamples + v->pvoice->offset;
 #endif
-        update->type   = 18; /* custom */
-        update->data.i = pan;
+        update->type   = 18; /* custom Filter12 */
+        update->data.i = filter12;
         update->next   = 0;
 
 	n_alEnvmixerParam(v->pvoice, AL_FILTER_ADD_UPDATE, update);

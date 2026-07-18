@@ -1,25 +1,25 @@
 #include <n_libaudio.h>
 
 
-void func_10017AF0(N_ALCSPlayer *seqp, s32 arg1) {
-    seqp->unk84 = arg1;
+void n_alCSPSetQueue(N_ALCSPlayer *seqp, s32 queue) {
+    seqp->unk84 = queue;
 }
 
-void func_10017B04(N_ALCSPlayer *seqp, s32 chan, u8 arg2) {
-    seqp->chanState[chan].unk17 = arg2;
+void n_alCSPSetChlNoteMesgFlags(N_ALCSPlayer *seqp, s32 chan, u8 flags) {
+    seqp->chanState[chan].unk17 = flags;
 }
 
-void func_10017B30(N_ALCSPlayer *seqp) {
+void n_alCSPAllChanOn(N_ALCSPlayer *seqp) {
     s32 chan;
 
     seqp->chanMask = 0xFFFF;
     for (chan = 0; chan < seqp->maxChannels; chan++)
     {
-        seqp->chanState[chan].unkE = 0xFF;
-        seqp->chanState[chan].unkD = 0xFF;
+        seqp->chanState[chan].unkE = 0xFF; /* fadevoltarget */
+        seqp->chanState[chan].unkD = 0xFF; /* fadevolcurrent */
     }
 }
 
-void func_10017BB8(N_ALCSPlayer *seqp, s32 arg1) {
-    func_1001E400(seqp, 0, arg1 | 0xB0, 252, 0);
+void n_alCSPChanOff(N_ALCSPlayer *seqp, s32 chan) {
+    n_alCSPSendMidi(seqp, 0, chan | 0xB0, 252, 0);
 }

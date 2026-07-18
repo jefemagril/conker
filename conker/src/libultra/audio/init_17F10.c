@@ -1,10 +1,10 @@
 #include <n_libaudio.h>
 
 
-void func_10017F10(N_ALCSPlayer *seqp, u8 arg1, u8 arg2, u8 arg3, s32 arg4) {
+void n_alCSPSetFxParam(N_ALCSPlayer *seqp, u8 arg1, u8 arg2, u8 arg3, s32 arg4) {
 
     N_ALEvent evt;
-    evt.type = 0x1A;
+    evt.type = 0x1A; /* Conker FXPARAM event (PD uses 0x19) */
     evt.msg.unknown2.unk0 = arg1;
     evt.msg.unknown2.unk1 = arg2;
     evt.msg.unknown2.unk2 = arg3;

@@ -109,7 +109,7 @@
 //         if ((s32) D_8002BA44->unk48[sp4C]->unk40->unk2 > 0) {
 //             sp28 = D_8002BA44->unk48[sp4C]->unk40;
 //             if (sp28->unk28 != 0) {
-//                 func_1001CF38(sp28, (f32) D_8002BA44->unk54);
+//                 n_alFxInitlpfilter_mono(sp28, (f32) D_8002BA44->unk54);
 //             }
 //             temp_t2_2 = sp54;
 //             sp54 = temp_t2_2 + 8;

@@ -6,7 +6,7 @@
 
 u8 __getTrackByte(ALCSeq *seq, s32 track);
 u32 __readVarLen(ALCSeq *seq, s32 track);
-u32 __n_alCSeqGetTrackEvent(ALCSeq *seq, u32 track, N_ALEvent *event, s32 arg3);
+u32 __n_alCSeqGetTrackEvent(ALCSeq *seq, u32 track, N_ALEvent *event, s32 allowLoop);
 
 void n_alCSeqNew(ALCSeq *seq, u8 *ptr) {
     u32 i;
@@ -37,7 +37,7 @@ void n_alCSeqNew(ALCSeq *seq, u8 *ptr) {
 
     seq->qnpt = 1.0f / (f32)seq->base->division;
 }
-void n_alCSeqNextEvent(ALCSeq *seq, N_ALEvent *evt, s32 arg2) {
+void n_alCSeqNextEvent(ALCSeq *seq, N_ALEvent *evt, s32 allowLoop) {
     u32 i;
     u32 firstTime = -1;
     u32 firstTrack = -1;
@@ -57,7 +57,7 @@ void n_alCSeqNextEvent(ALCSeq *seq, N_ALEvent *evt, s32 arg2) {
     }
 
     if (firstTrack != -1) {
-        __n_alCSeqGetTrackEvent(seq, firstTrack, evt, arg2);
+        __n_alCSeqGetTrackEvent(seq, firstTrack, evt, allowLoop);
     } else {
         evt->type = CONKER_AL_TRACK_END;
     }
@@ -72,7 +72,7 @@ void n_alCSeqNextEvent(ALCSeq *seq, N_ALEvent *evt, s32 arg2) {
 
     seq->deltaFlag = 1;
 }
-u32 __n_alCSeqGetTrackEvent(ALCSeq *seq, u32 track, N_ALEvent *event, s32 arg3) {
+u32 __n_alCSeqGetTrackEvent(ALCSeq *seq, u32 track, N_ALEvent *event, s32 allowLoop) {
     u32 offset;
     u8 status;
     u8 loopCt;
@@ -112,7 +112,7 @@ u32 __n_alCSeqGetTrackEvent(ALCSeq *seq, u32 track, N_ALEvent *event, s32 arg3) 
             tmpPtr = seq->curLoc[track];
             loopCt = *tmpPtr++;
             curLpCt = *tmpPtr;
-            if (curLpCt == 0 || arg3 == 0) {
+            if (curLpCt == 0 || allowLoop == 0) {
                 *tmpPtr = loopCt;
                 seq->curLoc[track] = tmpPtr + 5;
             } else {

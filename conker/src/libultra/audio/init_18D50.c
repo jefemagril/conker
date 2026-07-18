@@ -1,7 +1,7 @@
 #include "n_libaudio.h"
 
 
-void func_10018D50(N_ALCSPlayer *seqp)
+void n_alCSPStop(N_ALCSPlayer *seqp)
 {
     N_ALEvent evt;
 

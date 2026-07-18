@@ -3,7 +3,8 @@
 #include "n_seqp.h"
 
 
-void func_10018C60(N_ALSeqPlayer *seqp) {
+/* Posts AL_TRACK_END — Conker begin-stop (PD STOPPING slot). */
+void n_alCSPPostTrackEnd(N_ALCSPlayer *seqp) {
     N_ALEvent evt;
 
     evt.type = AL_TRACK_END;

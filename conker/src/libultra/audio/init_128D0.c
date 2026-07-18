@@ -41,14 +41,15 @@ typedef struct11 ConkerWaveBaseList;
 void n_alBnkfPatchBank(ConkerBank *bank, s32 bankFileOffset, s32 sampleTableOffset, s32 sampleBankBase);
 void n_alBnkfPatchSingleWaveBaseList(ConkerWaveBaseList *waveList, s32 sampleBankBase);
 void n_alBnkfPatchWaveBaseList(ConkerWaveBaseList *waveList, s32 sampleBankBase);
+void _bnkfPatchWaveTable(struct12 *w, s32 offset, s32 table);
 
-void alSeqFileNew(ALSeqFile *arg0, u8 *base) {
-    s32 offset = base;
+void alSeqFileNew(ALSeqFile *file, u8 *base) {
+    s32 offset = (s32)base;
     s32 i;
 
-    for (i = 0; i < arg0->seqCount; i++)
+    for (i = 0; i < file->seqCount; i++)
     {
-        arg0->seqArray[i].offset += offset;
+        file->seqArray[i].offset += offset;
     }
 }
 
@@ -123,44 +124,49 @@ void n_alBnkfPatchWaveBaseList(ConkerWaveBaseList *waveList, s32 sampleBankBase)
     }
 }
 
-void func_10012C5C(struct9 *arg0, s32 arg1, s32 arg2) {
-    if (arg0->unkE) {
+/* Vanilla ALSound layout; Conker opaque typedef is struct9. */
+void _bnkfPatchSound(struct9 *s, s32 offset, s32 table) {
+    if (s->unkE) { /* flags */
         return;
     }
-    arg0->unkE = 1;
-    arg0->unk0 += arg1;
-    arg0->unk4 += arg1;
-    arg0->unk8 += arg1;
-    func_10012CFC(arg0->unk8, arg1, arg2);
+    s->unkE = 1;
+    s->unk0 += offset; /* envelope */
+    s->unk4 += offset; /* keyMap */
+    s->unk8 += offset; /* wavetable */
+    _bnkfPatchWaveTable((struct12 *)s->unk8, offset, table);
 }
 
-void func_10012CFC(struct12 *arg0, s32 arg1, s32 arg2) {
-    arg0->unk9 = 1;
-    arg0->unk0 += arg2;
-    if (arg0->unk8 == 0) {
-        arg0->unk10 += arg1;
-        if (arg0->unkC != 0) {
-            arg0->unkC += arg1;
+/*
+ * Conker wave-table patcher. Layout differs from vanilla ALWaveTable:
+ * ADPCM book is at +0x10 and loop at +0xC (swapped vs libreultra).
+ */
+void _bnkfPatchWaveTable(struct12 *w, s32 offset, s32 table) {
+    w->unk9 = 1; /* flags */
+    w->unk0 += table; /* base */
+    if (w->unk8 == 0) { /* AL_ADPCM_WAVE */
+        w->unk10 += offset; /* book */
+        if (w->unkC != 0) {
+            w->unkC += offset; /* loop */
         }
-        arg0->unk14 = 0;
-    } else if ((arg0->unk8 == 1) && (arg0->unkC != 0)) {
-        arg0->unkC = (s32) (arg0->unkC + arg1);
+        w->unk14 = 0;
+    } else if ((w->unk8 == 1) && (w->unkC != 0)) { /* AL_RAW16_WAVE */
+        w->unkC = (s32) (w->unkC + offset);
     }
 }
 
 f32 n_alOscDepthToCents(u8 depth) {
-    f32 sp4 = 1.0309929847717285f;
-    f32 sp0 = 1.0f;
+    f32 mult = 1.0309929847717285f;
+    f32 ratio = 1.0f;
 
     while (depth)
     {
         if (depth & 1) {
-            sp0 *= sp4;
+            ratio *= mult;
         }
-        sp4 *= sp4;
+        mult *= mult;
         depth = (u32)depth >> 1;
     }
-    return sp0;
+    return ratio;
 }
 
 s32 n_alOscInit(s32 *oscState, f32 *initValue, u8 oscType, u8 oscRate, u8 oscDepth, u8 oscDelay) {
@@ -199,7 +205,7 @@ s32 n_alOscInit(s32 *oscState, f32 *initValue, u8 oscType, u8 oscRate, u8 oscDep
 }
 
 s32 n_alOscUpdate(ConkerOscState *oscState, f32 *updateValue) {
-    f32 sp2C;
+    f32 phase;
     ConkerOscState *state;
     s32 ret;
 
@@ -213,10 +219,10 @@ s32 n_alOscUpdate(ConkerOscState *oscState, f32 *updateValue) {
             if ((u16)state->oscPhase >= (u16)state->oscPeriod) {
                 state->oscPhase = 0;
             }
-            sp2C = (f32)(u16)state->oscPhase / (f32) (u16)state->oscPeriod;
-            sp2C = sinf(sp2C * OSC_TWO_PI);
-            sp2C = state->data.i.tremoloDepth * sp2C;
-            *updateValue = state->data.i.tremoloBaseVolume + sp2C;
+            phase = (f32)(u16)state->oscPhase / (f32) (u16)state->oscPeriod;
+            phase = sinf(phase * OSC_TWO_PI);
+            phase = state->data.i.tremoloDepth * phase;
+            *updateValue = state->data.i.tremoloBaseVolume + phase;
             break;
 
         case OSCTYPE_VIB:
@@ -224,9 +230,9 @@ s32 n_alOscUpdate(ConkerOscState *oscState, f32 *updateValue) {
             if ((u16)state->oscPhase >= (u16)state->oscPeriod) {
                 state->oscPhase = 0;
             }
-            sp2C = (f32)(u16) state->oscPhase / (f32)(u16) state->oscPeriod;
-            sp2C = sinf(sp2C * OSC_TWO_PI) * state->data.f.vibratoDepthCents;
-            *updateValue = alCents2Ratio(sp2C);
+            phase = (f32)(u16) state->oscPhase / (f32)(u16) state->oscPeriod;
+            phase = sinf(phase * OSC_TWO_PI) * state->data.f.vibratoDepthCents;
+            *updateValue = alCents2Ratio(phase);
             break;
         default:
             break;
@@ -240,21 +246,21 @@ void n_alOscStop(s32 *oscState) {
     D_80042800 = oscState;
 }
 
-void n_alOscSetCallbacks(struct13 *arg0, s32 arg1) {
-    s32 *sp24;
+void n_alOscSetCallbacks(ALSeqpConfig *config, s32 oscStateCount) {
+    s32 *link;
     s32 i;
 
-    D_80042804 = alHeapDBAlloc(0, 0, arg0->unkC, arg1, OSC_STATE_SIZE);
+    D_80042804 = alHeapDBAlloc(0, 0, config->heap, oscStateCount, OSC_STATE_SIZE);
     D_80042800 = (s32) D_80042804;
     D_80042800 = (s32) D_80042804; // ???
-    sp24 = D_80042804;
+    link = D_80042804;
 
-    for (i = 0; i < (arg1 - 1); i++) {
-        *sp24 = (i * OSC_STATE_SIZE) + D_80042804 + OSC_STATE_SIZE; // is this an array?
-        sp24 = *sp24;
+    for (i = 0; i < (oscStateCount - 1); i++) {
+        *link = (i * OSC_STATE_SIZE) + D_80042804 + OSC_STATE_SIZE; // is this an array?
+        link = *link;
     }
-    *sp24 = 0;
-    arg0->unk10 = n_alOscInit;
-    arg0->unk14 = n_alOscUpdate;
-    arg0->unk18 = n_alOscStop;
+    *link = 0;
+    config->initOsc = n_alOscInit;
+    config->updateOsc = n_alOscUpdate;
+    config->stopOsc = n_alOscStop;
 }

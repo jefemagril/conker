@@ -1,8 +1,7 @@
 #include "n_synthInternals.h"
 
 
-// non-vanilla n_alCSPSendMidi or n_alSeqpSendMidi
-void func_1001E400(N_ALCSPlayer *seqp, s32 deltaTime, u8 status, u8 byte1, u8 byte2) {
+void n_alCSPSendMidi(N_ALCSPlayer *seqp, s32 ticks, u8 status, u8 byte1, u8 byte2) {
     N_ALEvent evt;
     ALMicroTime delta;
 
@@ -13,6 +12,6 @@ void func_1001E400(N_ALCSPlayer *seqp, s32 deltaTime, u8 status, u8 byte1, u8 by
     evt.msg.midi.byte2  = byte2;
     evt.msg.midi.duration = 0;
 
-    delta = deltaTime;
+    delta = ticks; /* Conker: usec as-is (no ticks*uspt) */
     n_alEvtqPostEvent(&seqp->evtq, &evt, delta, 2);
 }

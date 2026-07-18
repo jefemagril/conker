@@ -3,8 +3,9 @@
 #include "n_synthInternals.h"
 
 
-void func_1001CF38(s32, f32);
+void n_alFxInitlpfilter_mono(ALLowPass *, f32);
 extern Acmd *(func_1001E530)(s32, Acmd *);
+void func_1001ED6C(ALFxRef fx, s16 paramID, void *param);
 
 
 void n_alSynSetFXMix( N_ALVoice *v, u8 fxmix) {
@@ -22,38 +23,38 @@ void n_alSynSetFXMix( N_ALVoice *v, u8 fxmix) {
     }
 }
 
-s32 func_1001D9B0(s16 arg0) {
-    N_ALMainBus *sp4;
+ALFxRef n_alSynGetFXRef(s16 bus) {
+    N_ALMainBus *mainBus;
 
-    sp4 = n_syn->mainBus;
-    if (sp4->filter.handler == func_1001E530) {
-        return n_syn->auxBus[arg0].sources;
+    mainBus = n_syn->mainBus;
+    if (mainBus->filter.handler == func_1001E530) {
+        return n_syn->auxBus[bus].sources;
     } else {
         return 0;
     }
 }
 
 ALFxRef n_alSynGetOutputLPRef(s16 bus) {
-    N_ALMainBus *sp4;
+    N_ALMainBus *mainBus;
 
-    sp4 = n_syn->mainBus;
-    if (sp4->filter.handler == func_1001E530) {
+    mainBus = n_syn->mainBus;
+    if (mainBus->filter.handler == func_1001E530) {
         return n_syn->auxBus[bus].fx_array[7];
     } else {
         return 0;
     }
 }
 
-void func_1001DAA0(s32 arg0, s16 arg1, s32 arg2) {
-    s32 sp1C = arg0;
-    func_1001ED6C(sp1C, arg1, arg2);
+void n_alSynSetFXParam(ALFxRef fx, s16 paramID, void *param) {
+    ALFxRef fxRef = fx;
+    func_1001ED6C(fxRef, paramID, param);
 }
 
-void func_1001DAE4(ALVoiceConfig *arg0, s16 arg1, s32 *arg2) {
-    if (arg1 == 8) {
-        arg0->fxBus = (f32) *arg2 * 0.1f;
-    } else if (arg1 == 9) {
-        arg0->priority = *arg2;
+void n_alSynSetOutputLPParam(ALLowPass *lp, s16 paramID, s32 *param) {
+    if (paramID == 8) {
+        lp->fgain = (f32) *param * 0.1f;
+    } else if (paramID == 9) {
+        lp->fc = *param;
     }
-    func_1001CF38(arg0, n_syn->outputRate);
+    n_alFxInitlpfilter_mono(lp, n_syn->outputRate);
 }

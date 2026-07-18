@@ -24,7 +24,7 @@
 
 // custom n_alSynStartVoiceParams
 void n_alSynStartVoiceParams(N_ALVoice *v, ALWaveTable *w, f32 pitch, s16 vol, u8 pan, u8 fxmix,
-                   u8 arg6, f32 arg7, u8 arg8, ALMicroTime t) {
+                   u8 fgain, f32 fc, u8 filter11, ALMicroTime t) {
     ALStartParamAlt *update;
 
     if (v->pvoice) {
@@ -43,9 +43,9 @@ void n_alSynStartVoiceParams(N_ALVoice *v, ALWaveTable *w, f32 pitch, s16 vol, u
         update->volume = vol;
         update->fxMix  = fxmix;
         update->pitch  = pitch;
-        update->unk14  = arg8;
-        update->unk15  = arg6;
-        update->unk18  = arg7;
+        update->unk14  = filter11;
+        update->unk15  = fgain;
+        update->unk18  = fc;
 #ifdef SAMPLE_ROUND
         update->samples = SAMPLE184( _n_timeToSamples( t) );
 #else

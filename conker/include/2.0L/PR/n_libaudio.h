@@ -82,13 +82,14 @@ s32     n_alSynAllocVoice( N_ALVoice *voice, ALVoiceConfig *vc);
 
 
 void    n_alSynFreeVoice(N_ALVoice *voice);
-ALFxRef n_alSynGetFXRef( s16 bus, s16 index);
+ALFxRef n_alSynGetFXRef(s16 bus);
 s16     n_alSynGetPriority( N_ALVoice *voice);
 void    n_alSynRemovePlayer( ALPlayer *client);
 void    n_alSynSetFXMix(N_ALVoice *v, u8 fxmix);
 void    n_alSynSetFXParam(ALFxRef fx, s16 paramID, void *param);
 void    n_alSynFreeFX(ALFxRef *fx);
 void    n_alSynFilter11(N_ALVoice *v, u8 arg1);
+void    n_alSynFilter12(N_ALVoice *v, u8 filter12);
 void    n_alSynFilter13(N_ALVoice *v, f32 arg1);
 void    n_alSynSetPan(N_ALVoice *v, u8 pan);
 void    n_alSynSetPitch( N_ALVoice *v, f32 pitch);
@@ -96,7 +97,7 @@ void    n_alSynSetPriority( N_ALVoice *voice, s16 priority);
 void    n_alSynSetVol( N_ALVoice *v, s16 volume, ALMicroTime t);
 void    n_alSynStartVoice(N_ALVoice *v, ALWaveTable *table);
 void    n_alSynStartVoiceParams(N_ALVoice *v, ALWaveTable *w,f32 pitch, s16 vol,
-                                ALPan pan, u8 fxmix, u8 arg6, f32 arg7, u8 arg8,
+                                ALPan pan, u8 fxmix, u8 fgain, f32 fc, u8 filter11,
                                 ALMicroTime t);
 void    n_alSynStopVoice( N_ALVoice *v);
 
@@ -336,7 +337,7 @@ void    n_alSeqNextEvent(ALSeq *seq, N_ALEvent *event);
 void    n_alSeqNewMarker(ALSeq *seq, ALSeqMarker *m, u32 ticks);
 
 void    n_alCSeqNew(ALCSeq *seq, u8 *ptr);
-void    n_alCSeqNextEvent(ALCSeq *seq, N_ALEvent *evt, s32 arg2);
+void    n_alCSeqNextEvent(ALCSeq *seq, N_ALEvent *evt, s32 allowLoop);
 void    n_alCSeqNewMarker(ALCSeq *seq, ALCSeqMarker *m, u32 ticks);
 
 
