@@ -1,19 +1,19 @@
 {
-  "timestamp": "2026-07-18T04:33:45Z",
-  "commit": "7942c0a",
+  "timestamp": "2026-07-18T13:53:48Z",
+  "commit": "d431739",
   "sections": {
     "total": {
-      "percent": 8.7879,
-      "c_bytes": 198320,
+      "percent": 8.9342,
+      "c_bytes": 201620,
       "bytes": 2256728,
-      "c_funcs": 1950,
+      "c_funcs": 1960,
       "funcs": 8072
     },
     "init": {
-      "percent": 38.5302,
-      "c_bytes": 63208,
+      "percent": 40.5418,
+      "c_bytes": 66508,
       "bytes": 164048,
-      "c_funcs": 326,
+      "c_funcs": 336,
       "funcs": 616
     },
     "game": {
