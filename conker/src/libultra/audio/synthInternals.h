@@ -175,50 +175,50 @@ s32     alLoadParam(void *filter, s32 paramID, void *param);
 
 typedef struct ALResampler_s {
     ALFilter            filter;
-    RESAMPLE_STATE      *state;
+    RESAMPLE_STATE      *state[2];
     f32                 ratio;
-    s32			upitch;
-    f32		        delta;
-    s32			first;
-    ALParam		*ctrlList;
-    ALParam		*ctrlTail;
+    s32                 upitch;
+    f32                 delta;
+    s32                 first;
+    ALParam             *ctrlList;
+    ALParam             *ctrlTail;
     s32                 motion;
 } ALResampler;
 
 typedef struct {
-    s16		        fc;
-    s16		        fgain;
+    s16                 fc;
+    s16                 fgain;
     union {
-        s16		fccoef[16];
+        s16             fccoef[16];
         s64             force_aligned;
     } fcvec;
-    POLEF_STATE		*fstate;
-    s32			first;
+    /* 0x28 */  s32             first;
+    /* 0x2C */  POLEF_STATE     *fstate[2];
+    /* 0x34 */  s32             unk34;
 } ALLowPass;
 
 typedef struct {
-    u32		input;
-    u32		output;
-    s16		ffcoef;
-    s16		fbcoef;
-    s16		gain;
-    f32		rsinc;
-    f32		rsval;
-    s32		rsdelta;
-    f32		rsgain;
-    ALLowPass	*lp;
-    ALResampler	*rs;
+    u32         input;
+    u32         output;
+    s16         ffcoef;
+    s16         fbcoef;
+    s16         gain;
+    f32         rsinc;
+    f32         rsval;
+    s32         rsdelta;
+    f32         rsgain;
+    ALLowPass   *lp;
+    ALResampler *rs;
 } ALDelay;
 
 typedef s32   (*ALSetFXParam)(void *, s32, void *);
 typedef struct {
-    struct ALFilter_s   filter;
-    s16			*base;
-    s16			*input;
-    u32			length;
-    ALDelay		*delay;
-    u8			section_count;
-    ALSetFXParam        paramHdl;
+    /* 0x00 */  u32                     length;
+    /* 0x04 */  ALDelay                 *delay;
+    /* 0x08 */  u8                      section_count;
+    /* 0x0C */  struct ALFilter_s       filter;
+    /* 0x20 */  s16                     *base[2];
+    /* 0x28 */  s16                     *input[2];
 } ALFx;
 
 void    alFxNew(ALFx *r, ALSynConfig *c, ALHeap *hp);

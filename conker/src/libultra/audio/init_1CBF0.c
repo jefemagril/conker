@@ -53,7 +53,7 @@ void init_lpfilter(ALLowPass *arg0) {
     sp10 = arg0->fc * 16384.0f;
     spE = sp10 >> 15;
     arg0->fgain = 16384.0f - spE;
-    arg0->fstate = 0;
+    arg0->first = 0;
 
     for (i = 0; i < 8; i++)
     {
@@ -121,7 +121,84 @@ void func_1001CF38(ALLowPass *arg0, f32 arg1) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/init_1CBF0/n_alFxNew.s")
+extern s32 D_8002BBE0[];
+
+void n_alFxNew(ALFx **fx_ar, ALSynConfig *c, s16 bus, ALHeap *hp)
+{
+    u16 i;
+    u16 j;
+    u16 k;
+    s32 *param;
+    ALDelay *d;
+    ALFx *r;
+
+    param = 0;
+    *fx_ar = r = (ALFx *)alHeapDBAlloc(0, 0, hp, 1, sizeof(ALFx));
+
+    switch (c->fxTypes[bus]) {
+    case AL_FX_CUSTOM:
+        param = c->params[bus];
+        break;
+    default:
+        param = D_8002BBE0;
+        break;
+    }
+
+    j = 0;
+
+    r->section_count = param[j++];
+    r->length = param[j++];
+
+    r->delay = alHeapDBAlloc(0, 0, hp, r->section_count, sizeof(ALDelay));
+    r->base[0] = alHeapDBAlloc(0, 0, hp, r->length, sizeof(s16));
+    r->input[0] = r->base[0];
+    r->base[1] = alHeapDBAlloc(0, 0, hp, r->length, sizeof(s16));
+    r->input[1] = r->base[1];
+
+    for (k = 0; k < r->length; k++) {
+        r->base[1][k] = 0;
+        r->base[0][k] = r->base[1][k];
+    }
+
+    for (i = 0; i < r->section_count; i++) {
+        d = &r->delay[i];
+        d->input = param[j++];
+        d->output = param[j++];
+        d->fbcoef = param[j++];
+        d->ffcoef = param[j++];
+        d->gain = param[j++];
+
+        if (param[j]) {
+#define RANGE 2.0f
+            d->rsinc = ((((f32)param[j++]) / 1000) * RANGE) / c->outputRate;
+            /* D_8002C788 ≈ 120000/ln(2) for hundredths-of-a-cent conversion */
+#define LENGTH (d->output - d->input)
+            d->rsgain = (((f32)param[j++]) / D_8002C788) * LENGTH;
+            d->rsval = 1.0f;
+            d->rsdelta = 0;
+            d->rs = alHeapDBAlloc(0, 0, hp, 1, sizeof(ALResampler));
+            d->rs->state[0] = alHeapDBAlloc(0, 0, hp, 1, sizeof(RESAMPLE_STATE));
+            d->rs->state[1] = alHeapDBAlloc(0, 0, hp, 1, sizeof(RESAMPLE_STATE));
+            d->rs->delta = 0.0f;
+            d->rs->first = 1;
+        } else {
+            d->rs = 0;
+            j++;
+            j++;
+        }
+
+        if (param[j]) {
+            d->lp = alHeapDBAlloc(0, 0, hp, 1, sizeof(ALLowPass));
+            d->lp->fstate[0] = alHeapDBAlloc(0, 0, hp, 1, sizeof(POLEF_STATE));
+            d->lp->fstate[1] = alHeapDBAlloc(0, 0, hp, 1, sizeof(POLEF_STATE));
+            d->lp->fc = param[j++];
+            init_lpfilter(d->lp);
+        } else {
+            d->lp = 0;
+            j++;
+        }
+    }
+}
 
 void alN_PVoiceNew(N_PVoice *mv, ALDMANew dmaNew, ALHeap *hp) {
     mv->dc_state = alHeapDBAlloc(0, 0, hp, 1, sizeof(ADPCM_STATE));

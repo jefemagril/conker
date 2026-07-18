@@ -305,6 +305,7 @@ typedef struct {
     ALHeap              *heap;          /* 0x28 */
     s32                 outputRate;     /* 0x2C */
     u8                  fxTypes[4];     /* 0x30 */
+    s32                 *params[4];     /* 0x34 */
 } ALSynConfig;
 
 typedef struct ALPlayer_s {

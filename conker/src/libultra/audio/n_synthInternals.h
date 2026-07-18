@@ -171,7 +171,7 @@ Acmd *n_alAuxBusPull( s32 sampleOffset, Acmd *p);
 
 Acmd *n_alFxPull( s32 sampleOffset, Acmd *p);
 s32 n_alFxParamHdl(void *filter, s32 paramID, void *param);
-void n_alFxNew(ALFx **r, ALSynConfig *c, ALHeap *hp, s32 unknown);
+void n_alFxNew(ALFx **r, ALSynConfig *c, s16 bus, ALHeap *hp);
 
 Acmd *n_alMainBusPull( s32 sampleOffset, Acmd *p);
 s32 n_alMainBusParam( s32 paramID, void *param);
