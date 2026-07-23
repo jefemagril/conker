@@ -261,10 +261,10 @@ extern struct50 *D_8003E390[];
 extern OSThread  D_8003E3A0;
 extern s32  D_8003E640;
 
-extern OSMesgQueue *D_8003E608;
-extern OSMesg      *D_8003E620;
-extern OSMesgQueue *D_8003E5D0;
-extern OSMesg      *D_8003E5E8;
+extern OSMesgQueue D_8003E608;
+extern OSMesg      D_8003E620[];
+extern OSMesgQueue D_8003E5D0;
+extern OSMesg      D_8003E5E8[];
 
 extern s32  D_8003CA3C[];
 extern u8   D_8003CA48[];

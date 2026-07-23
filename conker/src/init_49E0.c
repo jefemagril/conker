@@ -3,6 +3,23 @@
 #include "functions.h"
 #include "variables.h"
 
+/*
+ * Sched gfx-start state (D_8003A582), set by this file's helpers:
+ *   IDLE      — accept a new gfx task from the cmd queue
+ *   RUNNING   — RSP gfx task in flight (set by func_10004F00)
+ *   DEFERRED  — task pending; framebuffer still on screen
+ *   COMPLETE  — waiting to swap / notify client (set by func_10004FE0)
+ */
+enum {
+    SC_GFX_IDLE     = 0,
+    SC_GFX_RUNNING  = 1,
+    SC_GFX_DEFERRED = 2,
+    SC_GFX_COMPLETE = 6
+};
+
+/* D_8003B238 sentinel: no valid min-frame sample yet (set in osCreateScheduler path). */
+#define SC_FRAME_COUNT_UNSET 255
+
 
 // contains jr
 #pragma GLOBAL_ASM("asm/nonmatchings/init_49E0/func_100049E0.s")
@@ -66,7 +83,7 @@
 //     if (D_8003A581 != 0) {
 //         goto loop_1;
 //     }
-//     func_10004DB0();
+//     __scTryStartGfx();
 //     goto loop_1;
 // case 2:
 //     if (D_8003A582 == 3) {
@@ -127,32 +144,42 @@
 //     goto loop_1;
 // }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/init_49E0/func_10004DB0.s")
-// NON-MATCHING: branching is not right
-// void func_10004DB0(void) {
-//     if (D_8003A582 == 0) {
-//         if (osRecvMesg(&D_8003B1E8, &D_8002AC50, 0) == 0) {
-//             if ((osViGetCurrentFramebuffer() == D_8002AC50->framebuffer) ||
-//                 (osViGetNextFramebuffer() == D_8002AC50->framebuffer) ||
-//                 ((D_8003B23A != 0) && (D_8003B238 < D_8003B239))) {
-//                 D_8003A582 = 2;
-//             } else {
-//                 if (D_8003B238 != 255) {
-//                     if ((D_8003B238 >= D_8003B239) || (D_8003B23A == 0)) {
-//                         D_8003B239 = D_8003B238;
-//                     }
-//                 }
-//                 func_10004F00();
-//             }
-//         }
-//     } else if (D_8003A582 == 2) {
-//         if ((D_8003B23A == 0) || ( D_8003B238 >= D_8003B239)) {
-//             func_10004F00();
-//         }
-//     } else if (D_8003A582 == 6) {
-//         func_10004FE0();
-//     }
-// }
+/**
+ * On VI retrace: pull a gfx OSScTask from the sched cmd queue and start it if
+ * the framebuffer is free (PD __scTaskReady / retrace task-start arm).
+ *
+ * D_8003B238 — frames since last gfx start (increments in __scMain).
+ * D_8003B239 — minimum frame gap before next start (updated from 238).
+ * D_8003B23A — blackout / holdoff countdown (decrements in __scMain).
+ */
+void __scTryStartGfx(void) {
+    u8 framesSinceStart;
+
+    if (D_8003A582 == SC_GFX_IDLE) {
+        if (osRecvMesg(&D_8003B1E8, &D_8002AC50, OS_MESG_NOBLOCK) == 0) {
+            /* FB not current/next, and blackout holdoff expired or min-frame met */
+            if ((osViGetCurrentFramebuffer() != D_8002AC50->framebuffer) &&
+                (osViGetNextFramebuffer() != D_8002AC50->framebuffer) &&
+                ((D_8003B23A == 0) || (D_8003B238 >= D_8003B239))) {
+                framesSinceStart = D_8003B238;
+                if (framesSinceStart != SC_FRAME_COUNT_UNSET) {
+                    if ((framesSinceStart >= D_8003B239) || (D_8003B23A == 0)) {
+                        D_8003B239 = framesSinceStart;
+                    }
+                }
+                func_10004F00();
+            } else {
+                D_8003A582 = SC_GFX_DEFERRED;
+            }
+        }
+    } else if (D_8003A582 == SC_GFX_DEFERRED) {
+        if ((D_8003B23A == 0) || (D_8003B238 >= D_8003B239)) {
+            func_10004F00();
+        }
+    } else if (D_8003A582 == SC_GFX_COMPLETE) {
+        func_10004FE0();
+    }
+}
 
 void func_10004F00(void) {
     if (D_8002AC5C == 0) {
@@ -162,20 +189,20 @@ void func_10004F00(void) {
         D_8002AC58 = D_8002AC50;
         D_8003A583 = 1;
         D_8003A584 = 0;
-        if ((D_8003B238 == 255) ||
+        if ((D_8003B238 == SC_FRAME_COUNT_UNSET) ||
             ((D_8003B238 >= 11) && ((D_8003B238 >= 21) || (D_800C35EA != 1)))) {
             D_8003B238 = 2;
         }
         D_800BE9E4 = D_8003B238;
         D_8003B238 = 0 ;
-        D_8003A582 = 1;
+        D_8003A582 = SC_GFX_RUNNING;
         osSendMesg(D_8003B230, &D_8003B240, 0);
     }
 }
 
 void func_10004FE0(void) {
     if (D_8003B238 <= 0) {
-        D_8003A582 = 6;
+        D_8003A582 = SC_GFX_COMPLETE;
     } else {
         func_10005020();
     }
@@ -184,7 +211,7 @@ void func_10004FE0(void) {
 void func_10005020(void) {
     void *fb;
 
-    D_8003A582 = 0;
+    D_8003A582 = SC_GFX_IDLE;
     fb = D_8002AC50->framebuffer;
     if ((D_8002AC50->flags & OS_SC_SWAPBUFFER) && (D_8002AC5C == 0)) {
         func_1515FDA0(fb);

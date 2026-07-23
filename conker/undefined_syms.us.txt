@@ -56,5 +56,6 @@ D_80041EA0 = 0x80041EA0;
 tmp_task = 0x80036B60;
 __osPiDevMgr = 0x8002AB50;
 piThread = 0x80035910;
+D_80035910 = 0x80035910;
 piThreadStack = 0x80035B40;
 piEventBuf = 0x80036B58;

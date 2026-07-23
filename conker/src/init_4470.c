@@ -3,6 +3,13 @@
 #include "functions.h"
 #include "variables.h"
 
+/* Max bytes per osPiStartDma; PI hardware */
+#define PI_DMA_CHUNK_SIZE 0x14000 /* 80 KiB */
+
+/* Thread ids 3..6 map onto gMessageQueue[0..3]; others share queue 0. */
+#define PI_MQ_THREAD_BASE 3
+#define PI_MQ_COUNT       4
+
 
 void func_10004470(void) {
     int i;
@@ -24,12 +31,12 @@ s32 func_10004514(s32 devAddr, void *dramAddr, u32 size, s32 arg3) {
     OSIoMesg *ioMsg;
     s32 sp3c;
 
-    sp3c = __osRunningThread->id - 3;
+    sp3c = __osRunningThread->id - PI_MQ_THREAD_BASE;
     if ((size < 0xC8U) && (sp3c == 0)) {
         func_1000480C(devAddr, dramAddr, size);
         return;
     }
-    if ((sp3c >= 4) || ( sp3c < 0)) {
+    if ((sp3c >= PI_MQ_COUNT) || ( sp3c < 0)) {
         sp3c = 0;
     }
     if (arg3 == 0) {
@@ -50,7 +57,7 @@ s32 func_10004514(s32 devAddr, void *dramAddr, u32 size, s32 arg3) {
         msgQueue = &gMessageQueue[sp3c];
     }
     osInvalDCache(dramAddr, size);
-    osPiStartDma(ioMsg, 0, 0, devAddr, dramAddr, size, msgQueue);
+    osPiStartDma(ioMsg, OS_MESG_PRI_NORMAL, OS_READ, devAddr, dramAddr, size, msgQueue);
 
     if (arg3 != 0) {
         osRecvMesg(msgQueue, 0, OS_MESG_BLOCK);
@@ -67,44 +74,42 @@ void func_10004674(void) {
     D_8003A571 = 0;
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/init_4470/func_100046E4.s")
-// NON-MATCHING: stack isnt right
-// void func_100046E4(s32 devAddr, void *dramAddr, u32 size) {
-//     s32 _dramAddr;
-//     s32 idx;
-//     s32 threadId;
-//     s32 _devAddr; // pad
-//     OSMesgQueue *mesgQueue;
-//     OSIoMesg *sp68;
-//     OSIoMesg *sp64; // mesg?
-//     u32 _size;
-//     u32 sent;
-//
-//
-//     threadId = __osRunningThread->id - 3;
-//     if ((threadId >= 4) || (idx = threadId, (threadId < 0))) {
-//         idx = 0;
-//     }
-//     sent = 0;
-//     osInvalDCache(dramAddr, size);
-//     if (size != 0) {
-//         mesgQueue =  &gMessageQueue[idx];
-//         _dramAddr = dramAddr;
-//         // _devAddr = devAddr;
-//         do {
-//             if ((size - sent) < 81920) {
-//                 _size = size - sent;
-//             } else {
-//                 _size = 81920;
-//             }
-//             osPiStartDma(&sp68, 0, 0, devAddr, _dramAddr, _size, mesgQueue);
-//             osRecvMesg(mesgQueue, &sp64, 1);
-//             sent += _size;
-//             devAddr += _size;
-//             _dramAddr += _size;
-//         } while (sent < size) ;
-//     }
-// }
+/**
+ * Blocking ROM→RDRAM PI DMA in PI_DMA_CHUNK_SIZE pieces (sibling of func_10004514).
+ *
+ * Recv mesg is stored in the word below OSIoMesg on the stack so the frame stays
+ * 0x80 bytes (a separate OSMesg local grows it to 0x88 and breaks the match).
+ */
+void piDmaRead(s32 devAddr, void *dramAddr, u32 size) {
+    OSIoMesg ioMsg;
+    s32 mqIndex;
+    u32 transferred;
+    OSMesgQueue *mq;
+    u32 chunk;
+
+    mqIndex = __osRunningThread->id - PI_MQ_THREAD_BASE;
+    if ((mqIndex >= PI_MQ_COUNT) || (mqIndex < 0)) {
+        mqIndex = 0;
+    }
+    transferred = 0;
+    osInvalDCache(dramAddr, size);
+    if (size != 0) {
+        mq = &gMessageQueue[mqIndex];
+        do {
+            if ((size - transferred) < PI_DMA_CHUNK_SIZE) {
+                chunk = size - transferred;
+            } else {
+                chunk = PI_DMA_CHUNK_SIZE;
+            }
+            osPiStartDma(&ioMsg, OS_MESG_PRI_NORMAL, OS_READ, devAddr, dramAddr, chunk, mq);
+            /* mesg word lives in the pad below ioMsg (keeps stack frame at 0x80) */
+            osRecvMesg(mq, (OSMesg *)&ioMsg - 1, OS_MESG_BLOCK);
+            transferred += chunk;
+            devAddr += chunk;
+            dramAddr = (void *)((u8 *)dramAddr + chunk);
+        } while (transferred < size);
+    }
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/init_4470/func_1000480C.s")
 // void func_1000480C(s32 devAddr, void *dramAddr, u32 size) {

@@ -52,6 +52,7 @@ segments:
       - [0x4470, c, init_4470]
       - [0x49E0, c, init_49E0]
       - [0x50A0, c, init_50A0]
+      - [0x52A0, c, init_52A0]
       - [0x5570, asm, libultra/io/motor]
       - [0x5AB0, asm, init_5AB0] # handwritten TLB
       - [0x8120, asm, libultra/os/maptlbrdb]

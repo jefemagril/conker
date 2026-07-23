@@ -886,10 +886,10 @@ void func_10003920(void);
 s32 func_10003C6C(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 //func_10004074
 void func_100043B4(s32 *arg0, u32 arg1);
-//func_100046E4
+void piDmaRead(s32 devAddr, void *dramAddr, u32 size);
 void func_1000480C(s32 devAddr, void *dramAddr, u32 size);
 void func_100049E0(s32 arg0);
-//func_10004DB0
+void __scTryStartGfx(void);
 void func_100050A0(OSMesgQueue *arg0);
 void func_100052A0(s32 arg0);
 //func_10005570
@@ -914,11 +914,12 @@ void func_1000709C(void);
 void func_10008C6C(u8 arg0, u8 arg1);
 //func_10008CE8
 //func_10008F90
-void func_10009400(s32 arg0);
+s32 func_100095A0(struct50 *info, struct50 *previnfo);
+void func_10009400(void *arg);
 //func_100095A0
 s32 func_100097CC(u32 arg0, s32 arg1, s32 arg2);
 //func_100099BC
-void func_10009BE4(struct147 *arg0);
+void func_10009BE4(struct54 *arg0);
 s32 func_10009CBC(void *arg0, s32 arg1);
 s32  func_10009FFC(void);
 //func_1000A03C

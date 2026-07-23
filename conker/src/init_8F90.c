@@ -159,126 +159,151 @@ void func_100093CC(void) {
     }
 }
 
-// audio thread
+#include <PR/sched.h>
+
+// audio thread (PD amgr_main / Banjo audioManagerThread_entry twin)
 #pragma GLOBAL_ASM("asm/nonmatchings/init_8F90/func_10009400.s")
-// NON-MATCHING: a long way to go
-// void func_10009400(s32 arg0) {
-//     OSMesg *msg;
-//     s32 sp54;
-//     OSPfs *sp4C;
-//     s16 temp_v0;
-//     u32 phi_s0;
-//     u32 phi_s0_2;
-//     s32 phi_s5;
-//     s32 phi_s4;
-//     s32 phi_s1;
+// NON-MATCHING: switch/stack/sltiu nearly match at -O2 -g3 (~5 words off).
+// Need client@0x4C + pad@0x54 (4-byte hole under msg@0x5C), s4=first / s3=4,
+// and rematerialized `addiu done,1` (not `move` from $fp's constant 1) in the
+// case 4/10 delay slots plus the unreachable case-10 `addiu`. `if (1){done=1;}`
+// fixes addiu but swaps s3/s4; volatile hole fixes stack but breaks codegen.
+// Quit mesg types are 4 and 10. Every-other frame via local u32 count>=2 reset.
 //
+// void func_10009400(void *arg) {
+//     u32 count;
+//     s32 done;
+//     s16 *msg;
+//     struct50 *info;
+//     OSScClient client;
+//     volatile s32 pad;
+//     s32 first;
+//
+//     done = 0;
 //     msg = NULL;
-//     sp54 = 0;
-//     phi_s0 = 0;
-//     phi_s5 = 0;
-//     phi_s4 = 1;
-//     phi_s1 = 0;
-//     func_100051C8(&sp4C, &D_8003E5D0);
-//     do {
-//         osRecvMesg(&D_8003E5D0, &msg, 1);
+//     info = NULL;
+//     count = 0;
+//     first = 1;
+//     pad = 0;
+//     (void)arg;
+//     func_100051C8((OSPfs *)&client, &D_8003E5D0);
+//     while (done == 0) {
+//         osRecvMesg(&D_8003E5D0, (OSMesg *)&msg, OS_MESG_BLOCK);
 //         if (D_8002AC5C != 0) {
-//             ((struct53*)msg)->unk0 = (u16)4;
+//             *msg = 4;
 //         }
-//         temp_v0 = ((struct53*)msg)->unk0;
-//         if (temp_v0 != 1) {
-//             if (temp_v0 == (u16)4 || temp_v0 == 16) {
-//                     phi_s1 = 1;
+//         switch (*msg) {
+//         case 1:
+//             if (count >= 2U) {
+//                 count = 0;
 //             }
-//         } else {
-//             phi_s0_2 = phi_s0;
-//             if (phi_s0 >= 2U) {
-//                 phi_s0_2 = 0U;
-//             }
-//             if (phi_s0_2 == 0 && (func_100095A0(D_8003E390[D_8002AE44 % 3U], phi_s5) != 0)) {
-//                 if (phi_s4 == 0) {
-//                     osRecvMesg(&D_8003E608, &msg, 1);
-//                     phi_s5 = ((struct53*)msg)->unk4;
+//             if (count == 0) {
+//                 if (func_100095A0(D_8003E390[D_8002AE44 % 3], info) != 0) {
+//                     if (first == 0) {
+//                         osRecvMesg(&D_8003E608, (OSMesg *)&msg, OS_MESG_BLOCK);
+//                         info = (struct50 *)((struct53 *)msg)->unk4;
+//                     }
+//                     first = 0;
 //                 }
-//                 phi_s4 = 0;
 //             }
-//             phi_s0 = phi_s0_2 + 1;
+//             count++;
+//             break;
+//         case 4:
+//             done = 1;
+//             break;
+//         case 10:
+//             done = 1;
+//             break;
 //         }
 //     }
-//     while (phi_s1 == 0);
-//
-//     func_10018E0C(&D_8003E640);
+//     n_alClose((s32)&D_8003E640);
 //     while (1) {
-//         osRecvMesg(&D_8003E5D0, &msg, 1);
+//         osRecvMesg(&D_8003E5D0, (OSMesg *)&msg, OS_MESG_BLOCK);
 //     }
 // }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/init_8F90/func_100095A0.s")
-// NON-MATCHING: so far away
-// s32 func_100095A0(struct50 *arg0, struct51 *arg1) {
-//     s32 sp3C;
-//     s32 sp34;
-//     u32 sp30;
-//     s32 temp_a2;
-//     s32 temp_v1;
-//     u32 temp_t7;
-//     u8 temp_v0;
-//     s32 phi_v1;
-//     s32 phi_a2;
+// NON-MATCHING: PD amgr_handle_frame_msg / Banjo audioManager_handleFrameMsg twin.
+// Logic and stack slots match (outbuffer@0x3C, cmdLen@0x34, AI-temp@0x30, frame 0x40,
+// slti on AI_LEN>>2). Remaining: IDO -O2 sinks `li 2` into the success path and hoists
+// &D_8002AE4C before the cmdLen early-out; also CSEs the second &D_100291A0 address
+// formation. Original schedules addiu a2,2 + &D_8003E388 before the branch, forms
+// &D_8002AE4C only in the success path, and loads &D_100291A0 twice (size then ucode).
+// Net ~3 fewer instructions / register-rename thrash — not a logic gap.
 //
-//     sp3C = osVirtualToPhysical(arg0->unk0);
+// Conker-specific vs PD: sample pad 184; AI len threshold 0xF9; (phys+samples*4)&0x1FFF
+// pad-by-0x10; osAiSetNextBuffer(prev->unk4) not prev->data; early-out on cmdLen==0;
+// inlined OSScTask + osWritebackDCacheAll + osSendMesg(&D_8003B200); yield_data_size 0x400.
+//
+// s32 func_100095A0(struct50 *info, struct50 *previnfo) {
+//     s16 *outbuffer;
+//     s32 pad0;
+//     s32 cmdLen;
+//     s32 somevalue;
+//     Acmd *cmd;
+//     s32 two;
+//     f32 pad;
+//
+//     extern u8 D_8002C960[];
+//     Acmd *n_alAudioFrame(Acmd *cmdList, s32 *cmdLen, s16 *outBuf, s32 outLen);
+//
+//     (void) pad;
+//     (void) pad0;
+//
+//     outbuffer = (s16 *) osVirtualToPhysical((void *) info->unk0);
 //     func_100099BC();
 //     func_1000A03C();
-//     temp_a2 = sp3C;
-//     temp_t7 = (u32) AI_A4500004 >> 2;
-//     phi_v1 = (s32) temp_t7;
-//     if (arg1 != 0) {
-//         sp3C = temp_a2;
-//         sp30 = temp_t7;
-//         func_10002DB0(arg1->unk4, arg1->unk8 * 4, temp_a2);
-//         phi_v1 =  sp30;
+//
+//     somevalue = IO_READ(AI_LEN_REG) >> 2;
+//
+//     if (previnfo != NULL) {
+//         osAiSetNextBuffer((void *) previnfo->unk4, previnfo->unk8 * 4);
 //     }
-//     if ((phi_v1 >= 0xF9) && (D_80040F84 == 0)) {
-//         arg0->unk8 = D_80040F88; // *
-//         D_80040F84 = 2U;
+//
+//     if (somevalue >= 0xF9 && D_80040F84 == 0) {
+//         info->unk8 = D_80040F88;
+//         D_80040F84 = 2;
 //     } else {
-//         arg0->unk8 = D_80040F8C; // *
-//         temp_v0 = D_80040F84;
-//         if (temp_v0 != 0) {
-//             D_80040F84 = (u8) (temp_v0 - 1);
+//         info->unk8 = D_80040F8C;
+//         if (D_80040F84 != 0) {
+//             D_80040F84--;
 //         }
 //     }
-//     if (((temp_a2 + (arg0->unk8 * 4)) & 0x1FFF) == 0) {
-//         arg0->unk4 = (s32) (arg0->unk0 + 16);
-//         phi_a2 = temp_a2 + 16;
+//
+//     if ((((u32) outbuffer + (info->unk8 * 4)) & 0x1FFF) == 0) {
+//         info->unk4 = info->unk0 + 0x10;
+//         outbuffer = (s16 *) ((u32) outbuffer + 0x10);
 //     } else {
-//         arg0->unk4 = (s32) arg0->unk0;
-//         phi_a2 = temp_a2;
+//         info->unk4 = info->unk0;
 //     }
-//     // temp_v1 = alAudioFrame(D_8003E388[D_8002AE4C], &sp34, phi_a2, arg0->unk8);
-//     if (sp34 == 0) {
+//
+//     two = 2;
+//     cmd = n_alAudioFrame(((Acmd **) &D_8003E388)[D_8002AE4C], &cmdLen, outbuffer, info->unk8);
+//
+//     if (cmdLen == 0) {
 //         return 0;
 //     }
-//     arg0->unk10 = 0;
-//     arg0->unk68 = 0x8003E608;
-//     arg0->unk6C = arg0->unk70;
-//     arg0->unk1C = 2;
-//     arg0->unk20 = 0;
-//     arg0->unk58 = (s32) D_8003E388[D_8002AE4C];
-//     arg0->unk5C = (s32) (((s32) D_8003E388[temp_v1 - D_8002AE4C] >> 3) * 8);
-//     arg0->unk28 = 2;
-//     arg0->unk30 = 0x100290D0;
-//     arg0->unk34 = (s32) (D_100291A0 - D_100290D0);
-//     arg0->unk2C = 0;
-//     arg0->unk38 = 0x100291A0;
-//     arg0->unk40 = 0x8002C960;
-//     arg0->unk44 = 2048;
-//     arg0->unk60 = 0;
-//     arg0->unk64 = 1024;
-//     // D_8002AE4C, 0x8003E388, 2
+//
+//     info->unk10 = 0;
+//     info->unk68 = (s32) &D_8003E608;
+//     info->unk6C = (s32) &info->unk70;
+//     info->unk1C = two;
+//     info->unk20 = 0;
+//     info->unk58 = (s32) ((Acmd **) &D_8003E388)[D_8002AE4C];
+//     info->unk5C = (((s32) cmd - (s32) ((Acmd **) &D_8003E388)[D_8002AE4C]) >> 3) << 3;
+//     info->unk28 = two;
+//     info->unk30 = (s32) &D_100290D0;
+//     info->unk34 = (s32) &D_100291A0 - (s32) &D_100290D0;
+//     info->unk2C = 0;
+//     info->unk38 = (s32) &D_100291A0;
+//     info->unk40 = (s32) &D_8002C960;
+//     info->unk44 = 0x800;
+//     info->unk60 = 0;
+//     info->unk64 = 0x400;
+//
 //     osWritebackDCacheAll();
-//     osSendMesg(&D_8003B200, &arg0->unk10, 1);
-//     D_8002AE4C = D_8002AE4C ^ 1;
+//     osSendMesg(&D_8003B200, (OSMesg) &info->unk10, OS_MESG_BLOCK);
+//     D_8002AE4C ^= 1;
 //     return 1;
 // }
 
