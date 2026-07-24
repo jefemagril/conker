@@ -426,14 +426,15 @@ typedef struct N_ALSndpSoundState {
     /* 0x38 */ struct N_ALSndpSoundState **handle;
     /* 0x3C */ ALBank *bank;
     /* 0x40 */ s32 retryCount;
-    /* 0x44 */ u16 vol;
-    /* 0x46 */ u8 pad46[0x6];
+    /* 0x44 */ s16 vol;
+    /* 0x46 */ s16 envvol;
+    /* 0x48 */ ALMicroTime endtime;
     /* 0x4C */ s16 soundNum;
     /* 0x4E */ s8 priority;
     /* 0x4F */ u8 pan;
     /* 0x50 */ u8 fxmix;
     /* 0x51 */ u8 fxbus;
-    /* 0x52 */ u8 pad52;
+    /* 0x52 */ u8 filter;
     /* 0x53 */ u8 flags;
     /* 0x54 */ u8 state;
 } N_ALSndpSoundState;
