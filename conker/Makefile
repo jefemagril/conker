@@ -223,6 +223,16 @@ $(BUILD_DIR)/$(SRC_DIR)/libultra/audio/n_csplayer.c.o: $(SRC_DIR)/libultra/audio
 		--assembler "$(AS) $(ASFLAGS)" --asm-prelude $(ASM_PROCESSOR_DIR)/prelude.inc
 	$(PYTHON) tools/truncate_elf_rodata.py $@ 0x250 4
 
+# _n_handleEvent's jtbl_8002C708 (0x40) + two dead strings (0x58) must be
+# 0xA0 total, tightly packed before the next TU's rodata pool.
+$(BUILD_DIR)/$(SRC_DIR)/libultra/audio/n_sndplayer.c.o: $(SRC_DIR)/libultra/audio/n_sndplayer.c include/variables.h include/structs.h include/functions.h
+	mkdir -p $(BUILD_DIR)/$(SRC_DIR)/libultra/audio
+	$(PYTHON) $(ASM_PROCESSOR_DIR)/asm_processor.py $(OPT_FLAGS) $< > $(BUILD_DIR)/$<
+	$(CC) -c -32 $(CFLAGS) $(OPT_FLAGS) $(LOOP_UNROLL) $(MIPSBIT) -o $@ $(BUILD_DIR)/$<
+	$(PYTHON) $(ASM_PROCESSOR_DIR)/asm_processor.py $(OPT_FLAGS) $< --post-process $@ \
+		--assembler "$(AS) $(ASFLAGS)" --asm-prelude $(ASM_PROCESSOR_DIR)/prelude.inc
+	$(PYTHON) tools/truncate_elf_rodata.py $@ 0xA0 4
+
 $(BUILD_DIR)/%.c.o: %.c
 	$(CC) -c -32 $(CFLAGS) $(OPT_FLAGS) $(MIPSBIT) -o $@ $<
 

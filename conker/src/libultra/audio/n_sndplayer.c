@@ -5,7 +5,7 @@ extern N_ALSndpSoundState *D_8002BA24;
 extern N_ALSndpSoundState *D_8002BA28;
 extern N_ALSndPlayerExtended *D_8002BA2C;
 extern s16 D_8002BA30;
-extern u16 *D_800428B8;
+extern s16 *D_800428B8;
 
 typedef struct {
     u16 type;
@@ -166,14 +166,6 @@ s32 _n_sndpVoiceHandler(N_ALSndPlayer *sp) {
     return alsp->nextDelta;
 }
 
-/* NON-MATCHING: Conker twin of PD _n_handleEvent.
- * Closest idiomatic C below. Remaining mismatch (~0x14 bytes / reg alloc):
- * null-check branch sense (bnez-to-next vs beqz), PLAY_SOUND/PLAY fallthrough
- * scheduling, and -g temp register choices across the large switch.
- * jtbl at 0x8002C708 (types 1..16); strings at 0x8002C6B0/0x8002C6DC are dead
- * after STOP's flush (if (0) printf). No PD voice-steal; Conker has PLAY_SOUND
- * resolve (0x4000) and FILTER (0x8000). */
-#if 0
 void _n_handleEvent(N_ALSndpEvent *event)
 {
     ALVoiceConfig config;
@@ -203,7 +195,7 @@ void _n_handleEvent(N_ALSndpEvent *event)
         }
 
         state = event->state;
-        if (state) {
+        if (!state) {
             /* empty — original emits bnez-to-next */
         }
 
@@ -254,7 +246,7 @@ void _n_handleEvent(N_ALSndpEvent *event)
                 keymap = sound->keyMap;
                 state->sound = sound;
 
-                isUnity = (u32) (sound->envelope->decayTime + 1) < 1;
+                isUnity = (u32) sound->envelope->decayTime + 1 == 0;
                 state->priority = (s8) (isUnity + SNDP_MAX_PRIORITY);
 
                 state->flags = KEYMAP_FLAGS(keymap) | SNDP_LEAF_FLAG;
@@ -277,15 +269,14 @@ void _n_handleEvent(N_ALSndpEvent *event)
                 return;
             }
 
-            sound = state->sound;
             keymap = sound->keyMap;
 
             config.fxBus = state->fxbus;
-            config.priority = state->priority;
+            config.priority = (u8) state->priority;
             config.unityPitch = 0;
             config.unk8 = *(s32 *) ((u8 *) state->bank->instArray[0] + state->soundNum * 4 + 0x10);
 
-            isfull = !(g_SndpNumPlaying < g_SndPlayer->maxSounds);
+            isfull = g_SndpNumPlaying >= g_SndPlayer->maxSounds;
 
             if (!isfull || (state->flags & SNDP_PARENT_OF_LEAF_FLAG)) {
                 hasvoice = n_alSynAllocVoice(SNDP_STATE_VOICE(state), &config);
@@ -449,8 +440,8 @@ void _n_handleEvent(N_ALSndpEvent *event)
             break;
 
         case SNDP_VOLTBL_EVT:
+            keymap = sound->keyMap;
             if (state->state == AL_PLAYING) {
-                keymap = sound->keyMap;
                 delta = sound->envelope->releaseTime / state->basePitch / state->pitch;
                 vol = MAX(0, (g_SndpVolumeTable[KEYMAP_VOLINDEX(keymap)]
                         * (state->envvol * state->vol * sound->sampleVolume / 0x3F01))
@@ -510,9 +501,6 @@ loop_tail:
         }
     } while (!done && state && !isspecial);
 }
-#endif
-
-#pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/n_sndplayer/_n_handleEvent.s")
 
 void sndp_free_state(N_ALSndpSoundState *state) {
     if ((state->flags & SNDP_HAS_VOICE_FLAG) != 0) {
