@@ -7,6 +7,8 @@
 #include "cseq.h"
 #include "n_cseqp.h"
 
+void n_alSynFilter13(N_ALVoice *voice, f32 pitch);
+f32 alSemitones2Ratio(s32 semitones);
 
        ALMicroTime      __n_CSPVoiceHandler(void *node);
 static void              __n_CSPHandleNextSeqEvent(N_ALCSPlayer *seqp);
@@ -96,18 +98,279 @@ void n_alCSPNew(N_ALCSPlayer *seqp, ALSeqpConfig *c)
 #endif
 }
 
-/* NON-MATCHING: __n_CSPVoiceHandler (PD sibling + Conker jtbl).
- * Conker event slots vs common Rare enum:
- *  0x10 STOP_EVT     soft-stop to state 3 (flush REF, save delta at unk88)
- *  0x11 STOPPING_EVT free voices when AL_STOPPING (PD STOP body)
- *  0x12              begin stopping (PD STOPPING); TRACK_END slot
- *  0x16              queued note-off MIDI (enum AL_CSP_NOTEOFF is 0x15)
- *  0x17/0x18         trem/vib; 0x19/0x1A FXMIX/FXPARAM
- * Remaining: stack frame 0x90, empty-case jtbl split (13FD4 vs 13FDC),
- * STOP channel cleanup via drvr->unk34, PLAY resume via __alCSeqNextDelta.
+/* Conker twin of PD __n_CSPVoiceHandler. Live event IDs after LOOPEND are
+ * CONKER_* (NOTEOFF/TREM/VIB/FX shifted +1 vs PD). Stop API remapped:
+ *  STOP(0x10) soft→state 3; STOPPING(0x11) hard free; TRACK_END(0x12) begin-stop.
  */
-// jump table
-#pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/n_csplayer/__n_CSPVoiceHandler.s")
+char func_1001ADA4(N_ALSeqPlayer *seqp, N_ALVoice *voice, ALMicroTime killTime);
+
+ALMicroTime __n_CSPVoiceHandler(void *node)
+{
+    N_ALCSPlayer   *seqp = (N_ALCSPlayer *) node;
+    N_ALEvent       evt;
+    N_ALVoice      *voice;
+    ALMicroTime     delta;
+    N_ALVoiceState *vs;
+    void           *oscState;
+    f32             oscValue;
+    u8              chan;
+    void           *fx;
+    void           *lpfx;
+    s32             oldState;
+    N_ALEvent       playEvt;
+    s32             deltaTicks;
+    register s16    volume;
+    register s32    volDelta;
+    register s32    mix;
+
+    do {
+        switch (seqp->nextEvent.type) {
+        case (AL_SEQ_REF_EVT):
+            __n_CSPHandleNextSeqEvent(seqp);
+            break;
+
+        case (AL_SEQP_API_EVT):
+            evt.type = AL_SEQP_API_EVT;
+            n_alEvtqPostEvent(&seqp->evtq, &evt, seqp->frameTime, 1);
+            break;
+
+        case (AL_NOTE_END_EVT):
+            voice = seqp->nextEvent.msg.note.voice;
+
+            n_alSynStopVoice(voice);
+            n_alSynFreeVoice(voice);
+            vs = (N_ALVoiceState *) voice->unk10;
+
+            if (vs->flags) {
+                __n_seqpStopOsc((N_ALSeqPlayer *) seqp, vs);
+            }
+
+            __n_unmapVoice((N_ALSeqPlayer *) seqp, voice);
+            break;
+
+        case (AL_SEQP_ENV_EVT):
+            voice = seqp->nextEvent.msg.vol.voice;
+            vs = (N_ALVoiceState *) voice->unk10;
+
+            if (vs->envPhase == AL_PHASE_ATTACK) {
+                vs->envPhase = AL_PHASE_DECAY;
+            }
+
+            delta = seqp->nextEvent.msg.vol.delta;
+            vs->envEndTime = seqp->curTime + delta;
+            vs->envGain = seqp->nextEvent.msg.vol.vol;
+            volume = __n_vsVol(vs, (N_ALSeqPlayer *) seqp),
+            n_alSynSetVol(voice, volume, delta);
+            break;
+
+        case (CONKER_TREM_OSC_EVT):
+            vs = seqp->nextEvent.msg.osc.vs;
+            oscState = seqp->nextEvent.msg.osc.oscState;
+            delta = (*seqp->updateOsc)(oscState, &oscValue);
+            vs->tremelo = (u8) oscValue;
+            volume = __n_vsVol(vs, (N_ALSeqPlayer *) seqp),
+            volDelta = __n_vsDelta(vs, seqp->curTime),
+            n_alSynSetVol(&vs->voice, volume, volDelta);
+            evt.type = CONKER_TREM_OSC_EVT;
+            evt.msg.osc.vs = vs;
+            evt.msg.osc.oscState = oscState;
+            n_alEvtqPostEvent(&seqp->evtq, &evt, delta, 0);
+            break;
+
+        case (CONKER_VIB_OSC_EVT):
+            vs = seqp->nextEvent.msg.osc.vs;
+            oscState = seqp->nextEvent.msg.osc.oscState;
+            chan = seqp->nextEvent.msg.osc.chan;
+            delta = (*seqp->updateOsc)(oscState, &oscValue);
+            vs->vibrato = oscValue;
+            n_alSynSetPitch(&vs->voice,
+                            vs->pitch * vs->vibrato * seqp->chanState[chan].pitchBend);
+
+            if (seqp->chanState[chan].unk14) {
+                n_alSynFilter13(
+                    &vs->voice,
+                    440 * alSemitones2Ratio((u8) seqp->chanState[chan].unk15
+                                            + (vs->key - vs->sound->keyMap->keyBase)
+                                            - 64)
+                        * seqp->chanState[chan].pitchBend * vs->vibrato);
+            }
+
+            evt.type = CONKER_VIB_OSC_EVT;
+            evt.msg.osc.vs = vs;
+            evt.msg.osc.oscState = oscState;
+            evt.msg.osc.chan = chan;
+            n_alEvtqPostEvent(&seqp->evtq, &evt, delta, 0);
+            break;
+
+        case (AL_SEQP_MIDI_EVT):
+        case (CONKER_CSP_NOTEOFF_EVT):
+            __n_CSPHandleMIDIMsg(seqp, &seqp->nextEvent);
+            break;
+
+        case (AL_SEQP_META_EVT):
+            __n_CSPHandleMetaMsg(seqp, &seqp->nextEvent);
+            break;
+
+        case (AL_SEQP_VOL_EVT):
+            seqp->vol = seqp->nextEvent.msg.spvol.vol;
+
+            for (vs = seqp->vAllocHead; vs != 0; vs = vs->next) {
+                volume = __n_vsVol(vs, (N_ALSeqPlayer *) seqp),
+                volDelta = __n_vsDelta(vs, seqp->curTime),
+                n_alSynSetVol(&vs->voice, volume, volDelta);
+            }
+            break;
+
+        case (CONKER_SEQP_FXMIX_EVT):
+            seqp->unk7C = seqp->nextEvent.msg.unknown0.unk0;
+            seqp->unk80 = seqp->nextEvent.msg.unknown0.unk4;
+
+            for (vs = seqp->vAllocHead; vs != 0;) {
+                if (vs->envPhase != AL_PHASE_RELEASE) {
+                    mix = __n_vsMix(vs, seqp) & 0xFF,
+                    n_alSynSetFXMix(&vs->voice, mix);
+                }
+                vs = vs->next;
+            }
+            break;
+
+        case (CONKER_SEQP_FXPARAM_EVT):
+            if (seqp->nextEvent.msg.unknown2.unk1 < 8) {
+                fx = (void *) n_alSynGetFXRef(seqp->nextEvent.msg.unknown2.unk0);
+
+                if (fx) {
+                    n_alSynSetFXParam(fx,
+                                      (seqp->nextEvent.msg.unknown2.unk2 << 3)
+                                          | (seqp->nextEvent.msg.unknown2.unk1 & 7),
+                                      &seqp->nextEvent.msg.unknown2.unk4);
+                }
+            } else {
+                lpfx = (void *) n_alSynGetOutputLPRef(seqp->nextEvent.msg.unknown2.unk0);
+
+                if (lpfx) {
+                    n_alSynSetOutputLPParam(lpfx,
+                                            seqp->nextEvent.msg.unknown2.unk1,
+                                            &seqp->nextEvent.msg.unknown2.unk4);
+                }
+            }
+            break;
+
+        case (AL_SEQP_PLAY_EVT):
+            /* Conker: resume via __alCSeqNextDelta; soft-stop reuses unk88. */
+            if (seqp->state != AL_PLAYING) {
+                oldState = seqp->state;
+                if (seqp->target != NULL) {
+                    seqp->state = AL_PLAYING;
+                    if (__alCSeqNextDelta(seqp->target, &deltaTicks)) {
+                        playEvt.type = AL_SEQ_REF_EVT;
+                        if (oldState == AL_SOFT_STOPPING) {
+                            deltaTicks = seqp->unk88;
+                        }
+                        n_alEvtqPostEvent(&seqp->evtq, &playEvt, deltaTicks, 0);
+                    }
+                }
+            }
+            break;
+
+        case (AL_SEQP_STOP_EVT):
+            /* Conker soft-stop: park in state 3, flush REF, save delta. */
+            if (seqp->state == AL_PLAYING) {
+                seqp->state = AL_SOFT_STOPPING;
+                seqp->unk88 = n_alEvtqFlushType(&seqp->evtq, AL_SEQ_REF_EVT);
+            }
+            break;
+
+        case (AL_SEQP_STOPPING_EVT):
+            /* Conker hard-stop body (PD STOP) plus channel instrument cleanup. */
+            if (seqp->state == AL_STOPPING) {
+                for (vs = seqp->vAllocHead; vs != 0; vs = seqp->vAllocHead) {
+                    n_alSynStopVoice(&vs->voice);
+                    n_alSynFreeVoice(&vs->voice);
+
+                    if (vs->flags) {
+                        __n_seqpStopOsc((N_ALSeqPlayer *) seqp, vs);
+                    }
+
+                    __n_unmapVoice((N_ALSeqPlayer *) seqp, &vs->voice);
+                }
+
+                seqp->state = AL_STOPPED;
+
+                for (chan = 0; chan < 16; chan++) {
+                    if (seqp->chanState[chan].unk36) {
+                        /* empty — matches original load/beqz trampoline */
+                    }
+                    if (seqp->chanState[chan].instrument != 0) {
+                        ((void (*)(ALInstrument *)) seqp->drvr->unk34)(
+                            seqp->bank->instArray[seqp->chanState[chan].unk38]);
+                        seqp->chanState[chan].instrument = 0;
+                    }
+                }
+            }
+            break;
+
+        case (AL_TRACK_END):
+            /* Conker begin-stop (PD STOPPING), also runs from soft-stop state. */
+            if (seqp->state == AL_PLAYING || seqp->state == AL_SOFT_STOPPING) {
+                n_alEvtqFlushType(&seqp->evtq, AL_SEQ_REF_EVT);
+                n_alEvtqFlushType(&seqp->evtq, CONKER_CSP_NOTEOFF_EVT);
+                n_alEvtqFlushType(&seqp->evtq, AL_SEQP_MIDI_EVT);
+
+                for (vs = seqp->vAllocHead; vs != 0; vs = vs->next) {
+                    if (func_1001ADA4((N_ALSeqPlayer *) seqp, &vs->voice, KILL_TIME)) {
+                        __n_seqpReleaseVoice((N_ALSeqPlayer *) seqp, &vs->voice, KILL_TIME);
+                    }
+                }
+
+                for (chan = 0; chan < 16; chan++) {
+                    seqp->chanState[chan].unkD = seqp->chanState[chan].unkE;
+
+                    if (seqp->chanState[chan].unkD == 0) {
+                        seqp->chanMask &= (1 << chan) ^ 0xffff;
+                    } else {
+                        seqp->chanMask |= 1 << chan;
+                    }
+                }
+
+                seqp->state = AL_STOPPING;
+                evt.type = AL_SEQP_STOPPING_EVT;
+                n_alEvtqPostEvent(&seqp->evtq, &evt, AL_EVTQ_END, 0);
+            }
+            break;
+
+        case (AL_SEQP_PRIORITY_EVT):
+            chan = seqp->nextEvent.msg.sppriority.chan;
+            seqp->chanState[chan].priority = seqp->nextEvent.msg.sppriority.priority;
+            break;
+
+        case (AL_SEQP_SEQ_EVT):
+            seqp->target = seqp->nextEvent.msg.spseq.seq;
+            seqp->chanMask = 0xffff;
+
+            if (seqp->bank) {
+                __n_initFromBank((N_ALSeqPlayer *) seqp, seqp->bank);
+            }
+            break;
+
+        case (AL_SEQP_BANK_EVT):
+            seqp->bank = seqp->nextEvent.msg.spbank.bank;
+            __n_initFromBank((N_ALSeqPlayer *) seqp, seqp->bank);
+            break;
+
+        /* Empty cases share one trampoline; unlisted IDs jump straight to join
+         * (no default — a default: creates a second trampoline and breaks jtbl). */
+        case (AL_SEQ_END_EVT):
+        case (AL_TEMPO_EVT):
+        case (AL_SEQ_MIDI_EVT):
+            break;
+        }
+
+        seqp->nextDelta = n_alEvtqNextEvent(&seqp->evtq, &seqp->nextEvent);
+    } while (seqp->nextDelta == 0);
+
+    seqp->curTime += seqp->nextDelta;
+    return seqp->nextDelta;
+}
 
 static void __n_CSPHandleNextSeqEvent(N_ALCSPlayer *seqp)
 {

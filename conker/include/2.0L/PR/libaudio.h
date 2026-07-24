@@ -438,10 +438,19 @@ enum ALMsg {
     AL_TRACK_END,
     AL_CSP_LOOPSTART,
     AL_CSP_LOOPEND,
-    AL_CSP_NOTEOFF_EVT,
-    AL_TREM_OSC_EVT,
+    AL_CSP_NOTEOFF_EVT,   /* 0x15: HandleNextSeqEvent post-next; VoiceHandler empty */
+    /* Conker VoiceHandler / API use the shifted IDs below (PD NOTEOFF is 0x15). */
+    AL_TREM_OSC_EVT,      /* header 0x16 — NOT the live trem type (see CONKER_* ) */
     AL_VIB_OSC_EVT
 };
+
+/* Live Conker event IDs after LOOPEND (header enum lags the binary). */
+#define CONKER_CSP_NOTEOFF_EVT   0x16
+#define CONKER_TREM_OSC_EVT      0x17
+#define CONKER_VIB_OSC_EVT       0x18
+#define CONKER_SEQP_FXMIX_EVT    0x19
+#define CONKER_SEQP_FXPARAM_EVT  0x1A
+#define AL_SOFT_STOPPING         3    /* Conker soft-stop pending (after STOP_EVT) */
 
 /*
  * Midi event definitions
@@ -678,7 +687,11 @@ typedef struct {
     /* 0x16 */  u8                  unk16;
     /* 0x17 */  u8                  unk17;
     /* 0x18 */  f32                 pitchBend;  /* current pitch bend val in cents  */
-    /* 0x1C */  u8                  pad1C[0x20];
+    /* 0x1C */  u8                  pad1C[0x1A];
+    /* 0x36 */  u8                  unk36;
+    /* 0x37 */  u8                  unk37;
+    /* 0x38 */  s16                 unk38;      /* instrument index into bank->instArray */
+    /* 0x3A */  u8                  pad3A[0x2];
 /* END OF RARE EXTRAS */
 } ALChanState;
 
