@@ -225,9 +225,8 @@ segments:
       - [0x2C240, rodata]
       - [0x2C250, rodata]
       - [0x2C450, .rodata, libultra/audio/osc]
-      # VoiceHandler jtbl (0x6C) + HandleNextSeqEvent jtbl (0x54) from n_csplayer.c
+      # VoiceHandler (0x6C) + HandleNextSeqEvent (0x54) + HandleMIDIMsg (0x190) from n_csplayer.c
       - [0x2C460, .rodata, libultra/audio/n_csplayer]
-      - [0x2C520, rodata]
       - [0x2C6B0, rodata]
       - [0x2C750, rodata]
       - [0x2C760, .rodata, libultra/audio/cents2ratio]

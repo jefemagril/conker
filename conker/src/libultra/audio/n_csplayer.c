@@ -10,6 +10,18 @@
 void n_alSynFilter13(N_ALVoice *voice, f32 pitch);
 f32 alSemitones2Ratio(s32 semitones);
 
+/* CC dispatch (asm/data/2AB50.data.s). D_8002BFC0[-cc] aliases BA50 fade slots. */
+extern void (*D_8002BA50[])(N_ALCSPlayer *seqp, N_ALEvent *event, s32 chan, s32 byte2);
+extern void (*D_8002BFC0[])(N_ALCSPlayer *seqp, N_ALEvent *event, s32 chan, s32 byte2);
+extern ALMicroTime D_80042810[];
+
+ALSound *func_1001B07C(N_ALSeqPlayer *seqp, u8 key, u8 vel, u8 chan);
+s32      func_1001B7D0(N_ALCSPlayer *seqp, s32 prog, s32 chan);
+
+/* initOsc is called with a 7th timeindex arg; Conker ALOscInit typedef is 6-arg. */
+typedef ALMicroTime (*ALOscInit7)(void **oscState, f32 *initVal, u8 oscType,
+                                  u8 oscRate, u8 oscDepth, u8 oscDelay, u8 timeindex);
+
        ALMicroTime      __n_CSPVoiceHandler(void *node);
 static void              __n_CSPHandleNextSeqEvent(N_ALCSPlayer *seqp);
        void             __n_CSPHandleMIDIMsg(N_ALCSPlayer *seqp, N_ALEvent *event);
@@ -412,10 +424,381 @@ static void __n_CSPHandleNextSeqEvent(N_ALCSPlayer *seqp)
     }
 }
 
-// jump table
-#pragma GLOBAL_ASM("asm/nonmatchings/libultra/audio/n_csplayer/__n_CSPHandleMIDIMsg.s")
+void __n_CSPHandleMIDIMsg(N_ALCSPlayer *seqp, N_ALEvent *event)
+{
+    N_ALVoice          *voice;
+    s32                 status;
+    u8                  chan;
+    u8                  key;
+    u8                  byte1;
+    u8                  byte2;
+    ALMIDIEvent         *midi = &event->msg.midi;
+    N_ALEvent           evt;
+    ALMicroTime         deltaTime;
+    N_ALVoiceState     *vstate;
+    ALChanState        *chanstate;
+    s32                 sp90;
+    ALVoiceConfig       config;
+    ALSound            *sound;
+    s16                 cents;
+    f32                 pitch, oscValue;
+    u8                  fxmix;
+    u8                  sp76;
+    ALPan               pan;
+    s16                 vol;
+    f32                 sp70;
+    void               *oscState;
+    ALInstrument       *inst;
+    N_ALVoiceState     *vs;
+    void              (*handler)(N_ALCSPlayer *, N_ALEvent *, s32, s32);
+    s32                 bendVal;
+    f32                 bendRatio;
+    s32                 bendCents;
+    N_ALVoiceState     *vsBend;
+    register s32        volDelta;
+    register s16        volume;
+    register f32        filterRatio;
 
-void __n_CSPHandleMetaMsg(N_ALCSPlayer *seqp, N_ALEvent *event)
+    status = midi->status & AL_MIDI_StatusMask;
+    chan   = midi->status & AL_MIDI_ChannelMask;
+    byte1  = key = midi->byte1;
+    byte2  = midi->byte2;
+
+    /* Conker: defer MIDI while channel muted (unk36), except ProgramChange */
+    if (seqp->chanState[chan].unk36 && status != AL_MIDI_ProgramChange) {
+        evt.type = AL_SEQP_MIDI_EVT;
+        evt.msg.midi = *midi;
+        n_alEvtqPostEvent(&seqp->evtq, &evt, 0x8235, 0);
+        return;
+    }
+
+    switch (status) {
+    case (AL_MIDI_NoteOn):
+
+        if (byte2 != 0) {
+            oscState = 0;
+
+            if (seqp->state != AL_PLAYING || (seqp->chanMask & (1 << chan)) == 0) {
+                if (midi->duration) {
+                    /* Muted/not-playing path posts type 2, not CONKER_CSP_NOTEOFF_EVT */
+                    evt.type            = AL_SEQP_MIDI_EVT;
+                    evt.msg.midi.status = chan | AL_MIDI_NoteOff;
+                    evt.msg.midi.byte1  = key;
+                    evt.msg.midi.byte2  = 0;
+
+                    deltaTime = seqp->uspt * midi->duration;
+                    D_80042810[chan] = deltaTime;
+
+                    n_alEvtqPostEvent(&seqp->evtq, &evt, deltaTime, 0);
+                }
+
+                break;
+            }
+
+            chanstate = &seqp->chanState[chan];
+
+            sound = func_1001B07C((N_ALSeqPlayer *)seqp, key, byte2, chan);
+            if (!sound) {
+                break;
+            }
+            ALFlagFailIf(!sound, seqp->debugFlags & NO_SOUND_ERR_MASK,
+                         ERR_ALSEQP_NO_SOUND);
+
+            config.priority   = chanstate->priority;
+            config.fxBus      = chanstate->unkB;
+            config.unityPitch = 0;
+            config.unk8       = 0;
+
+            vstate = __n_mapVoice((N_ALSeqPlayer *)seqp, key, byte2, chan);
+            ALFlagFailIf(!vstate, seqp->debugFlags & NO_VOICE_ERR_MASK,
+                         ERR_ALSEQP_NO_VOICE);
+
+            voice = &vstate->voice;
+
+            n_alSynAllocVoice(voice, &config);
+
+            vstate->sound    = sound;
+            vstate->envPhase = AL_PHASE_ATTACK;
+
+            if (chanstate->sustain > AL_SUSTAIN) {
+                vstate->phase = AL_PHASE_SUSTAIN;
+            } else {
+                vstate->phase = AL_PHASE_NOTEON;
+            }
+
+            cents = (key - sound->keyMap->keyBase) * 100
+                    + sound->keyMap->detune;
+
+            if (chanstate->usechanparams) {
+                cents += chanstate->pitch;
+            }
+
+            vstate->pitch = alCents2Ratio(cents);
+
+            if (chanstate->usechanparams) {
+                vstate->envGain    = chanstate->attackVolume;
+                vstate->envEndTime = seqp->curTime + chanstate->attackTime;
+            } else {
+                vstate->envGain    = sound->envelope->attackVolume;
+                vstate->envEndTime = seqp->curTime + sound->envelope->attackTime;
+            }
+
+            vstate->flags = 0;
+
+            if (chanstate->usechanparams) {
+                sp90 = chanstate->tremType;
+            } else {
+                inst = seqp->chanState[chan].instrument;
+                sp90 = inst->tremType;
+            }
+
+            oscValue = (f32)AL_VOL_FULL;
+
+            if (sp90) {
+                if (seqp->initOsc) {
+                    if (chanstate->usechanparams) {
+                        deltaTime = ((ALOscInit7)seqp->initOsc)(
+                            &oscState, &oscValue, chanstate->tremType,
+                            chanstate->tremRate, chanstate->tremDepth,
+                            chanstate->tremDelay, chanstate->timeindex);
+                    } else {
+                        deltaTime = ((ALOscInit7)seqp->initOsc)(
+                            &oscState, &oscValue, inst->tremType,
+                            inst->tremRate, inst->tremDepth, inst->tremDelay,
+                            chanstate->timeindex);
+                    }
+
+                    if (deltaTime) {
+                        evt.type             = CONKER_TREM_OSC_EVT;
+                        evt.msg.osc.vs       = vstate;
+                        evt.msg.osc.oscState = oscState;
+                        n_alEvtqPostEvent(&seqp->evtq, &evt, deltaTime, 0);
+                        vstate->flags |= 0x01;
+                        vstate->oscState = oscState;
+                    }
+                }
+            }
+
+            vstate->tremelo = (u8)oscValue;
+
+            oscValue = 1.0f;
+
+            if (chanstate->usechanparams) {
+                sp90 = chanstate->vibType;
+            } else {
+                sp90 = inst->vibType;
+            }
+
+            if (sp90) {
+                if (seqp->initOsc) {
+                    if (chanstate->usechanparams) {
+                        deltaTime = ((ALOscInit7)seqp->initOsc)(
+                            &oscState, &oscValue, chanstate->vibType,
+                            chanstate->vibRate, chanstate->vibDepth,
+                            chanstate->vibDelay, chanstate->timeindex);
+                    } else {
+                        deltaTime = ((ALOscInit7)seqp->initOsc)(
+                            &oscState, &oscValue, inst->vibType,
+                            inst->vibRate, inst->vibDepth, inst->vibDelay,
+                            chanstate->timeindex);
+                    }
+
+                    if (deltaTime) {
+                        evt.type             = CONKER_VIB_OSC_EVT;
+                        evt.msg.osc.vs       = vstate;
+                        evt.msg.osc.oscState = oscState;
+                        evt.msg.osc.chan     = chan;
+                        n_alEvtqPostEvent(&seqp->evtq, &evt, deltaTime, 0);
+                        vstate->flags |= 0x02;
+                        vstate->oscState2 = oscState;
+                    }
+                }
+            }
+
+            vstate->vibrato = oscValue;
+
+            pitch = vstate->pitch * chanstate->pitchBend * vstate->vibrato;
+
+            fxmix = __n_vsMix(vstate, seqp);
+
+            sp76 = chanstate->unk14;
+
+            if (sp76) {
+                sp70 = 440 * alSemitones2Ratio(
+                           cents / 100 + (u8)chanstate->unk15 - 64)
+                       * chanstate->pitchBend;
+            } else {
+                sp70 = 127.0f;
+            }
+
+            pan = __n_vsPan(vstate, (N_ALSeqPlayer *)seqp);
+            vol = __n_vsVol(vstate, (N_ALSeqPlayer *)seqp);
+
+            if (chanstate->usechanparams) {
+                deltaTime = chanstate->attackTime;
+            } else {
+                deltaTime = sound->envelope->attackTime;
+            }
+
+            n_alSynStartVoiceParams(voice, sound->wavetable,
+                                    pitch, vol, pan, fxmix, sp76, sp70,
+                                    chanstate->unk16, deltaTime);
+
+            evt.type          = AL_SEQP_ENV_EVT;
+            evt.msg.vol.voice = voice;
+
+            if (chanstate->usechanparams) {
+                evt.msg.vol.vol   = chanstate->decayVolume;
+                evt.msg.vol.delta = chanstate->decayTime;
+            } else {
+                evt.msg.vol.vol   = sound->envelope->decayVolume;
+                evt.msg.vol.delta = sound->envelope->decayTime;
+            }
+
+            n_alEvtqPostEvent(&seqp->evtq, &evt, deltaTime, 0);
+
+            if (midi->duration) {
+                evt.type            = CONKER_CSP_NOTEOFF_EVT;
+                evt.msg.midi.status = chan | AL_MIDI_NoteOff;
+                evt.msg.midi.byte1  = key;
+                evt.msg.midi.byte2  = 0;
+                deltaTime = seqp->uspt * midi->duration;
+                D_80042810[chan] = deltaTime;
+
+                n_alEvtqPostEvent(&seqp->evtq, &evt, deltaTime, 0);
+            }
+
+            if ((chanstate->unk17 & 1) && seqp->unk84) {
+                osSendMesg((OSMesgQueue *)seqp->unk84,
+                           (OSMesg)((D_80042810[chan] & 0xffffff00)
+                                    | (chanstate->unk17 >> 2)),
+                           OS_MESG_NOBLOCK);
+            }
+
+            break;
+        }
+
+        /* intentional fall-through: NoteOn vel == 0 */
+
+    case (AL_MIDI_NoteOff):
+        vstate = __n_lookupVoice((N_ALSeqPlayer *)seqp, key, chan);
+        ALFlagFailIf(!vstate, seqp->debugFlags & NOTE_OFF_ERR_MASK,
+                     ERR_ALSEQP_OFF_VOICE);
+
+        chanstate = &seqp->chanState[chan];
+
+        if (vstate->phase == AL_PHASE_SUSTAIN) {
+            vstate->phase = AL_PHASE_SUSTREL;
+        } else {
+            vstate->phase = AL_PHASE_RELEASE;
+
+            if (chanstate->usechanparams) {
+                __n_seqpReleaseVoice((N_ALSeqPlayer *)seqp, &vstate->voice,
+                                     chanstate->releaseTime);
+            } else {
+                __n_seqpReleaseVoice((N_ALSeqPlayer *)seqp, &vstate->voice,
+                                     vstate->sound->envelope->releaseTime);
+            }
+        }
+
+        if ((chanstate->unk17 & 2) && seqp->unk84) {
+            osSendMesg((OSMesgQueue *)seqp->unk84,
+                       (OSMesg)(key << 16 | 8 | chanstate->unk17 >> 2),
+                       OS_MESG_NOBLOCK);
+        }
+
+        break;
+
+    case (AL_MIDI_PolyKeyPressure):
+        vstate = __n_lookupVoice((N_ALSeqPlayer *)seqp, key, chan);
+        ALFailIf(!vstate, ERR_ALSEQP_POLY_VOICE);
+
+        vstate->velocity = byte2;
+        volume = __n_vsVol(vstate, (N_ALSeqPlayer *)seqp),
+        volDelta = __n_vsDelta(vstate, seqp->curTime),
+        n_alSynSetVol(&vstate->voice, volume, volDelta);
+        break;
+
+    case (AL_MIDI_ChannelPressure):
+        if ((vs = seqp->vAllocHead) != 0) {
+            do {
+                if (vs->channel == chan) {
+                    vs->velocity = byte1;
+                    volume = __n_vsVol(vs, (N_ALSeqPlayer *)seqp),
+                    volDelta = __n_vsDelta(vs, seqp->curTime),
+                    n_alSynSetVol(&vs->voice, volume, volDelta);
+                }
+            } while ((vs = vs->next) != 0);
+        }
+        break;
+
+    case (AL_MIDI_ControlChange):
+        if (byte1 < 0x5D) {
+            handler = D_8002BA50[byte1];
+        } else if (byte1 >= 0xFC) {
+            handler = D_8002BFC0[-byte1];
+        } else {
+            handler = NULL;
+        }
+
+        if (handler) {
+            if (0) {
+                if (chan == 2) {
+                }
+            }
+            handler(seqp, event, chan, byte2);
+        }
+        break;
+
+    case (AL_MIDI_ProgramChange):
+        sp90 = (seqp->chanState[chan].unk8 << 7) + key;
+
+        if (sp90 < seqp->bank->instCount) {
+            if (func_1001B7D0(seqp, sp90, chan)) {
+                evt.type            = AL_SEQP_MIDI_EVT;
+                evt.msg.midi.ticks  = 0;
+                evt.msg.midi.status = chan | AL_MIDI_ProgramChange;
+                evt.msg.midi.byte1  = key;
+                evt.msg.midi.byte2  = 0;
+                n_alEvtqPostEvent(&seqp->evtq, &evt, 0x8235, 0);
+            }
+        } else {
+            /* empty */
+        }
+        break;
+
+    case (AL_MIDI_PitchBendChange):
+        bendVal = ((byte2 << 7) + byte1) - 8192;
+        bendCents = seqp->chanState[chan].bendRange * bendVal / 8192;
+        bendRatio = alCents2Ratio(bendCents);
+        seqp->chanState[chan].pitchBend = bendRatio;
+
+        if ((vsBend = seqp->vAllocHead) != 0) {
+            do {
+                if (vsBend->channel == chan) {
+                    n_alSynSetPitch(&vsBend->voice,
+                                    vsBend->pitch * bendRatio * vsBend->vibrato);
+
+                    if (seqp->chanState[chan].unk14) {
+                        filterRatio = alSemitones2Ratio(
+                            (u8)seqp->chanState[chan].unk15
+                            + (vsBend->key - vsBend->sound->keyMap->keyBase)
+                            - 64),
+                        n_alSynFilter13(
+                            &vsBend->voice,
+                            filterRatio * 440 * bendRatio * vsBend->vibrato);
+                    }
+                }
+            } while ((vsBend = vsBend->next) != 0);
+        }
+        break;
+
+    default:
+        break;
+    }
+}
+
+static void __n_CSPHandleMetaMsg(N_ALCSPlayer *seqp, N_ALEvent *event)
 {
   ALTempoEvent    *tevt = &event->msg.tempo;
   s32             tempo;

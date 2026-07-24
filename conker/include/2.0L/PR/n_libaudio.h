@@ -257,7 +257,8 @@ typedef struct N_ALVoiceState_s {
     /* 0x3A */  u8                 tremelo;        /* current value of the tremelo */
     /* 0x3B */  u8                 flags;          /* bit 0 tremelo flag
                                                       bit 1 vibrato flag           */
-    u8 pad3C[0x8];
+    /* 0x3C */  void              *oscState;
+    /* 0x40 */  void              *oscState2;
 } N_ALVoiceState;
 
 typedef struct {
@@ -323,10 +324,11 @@ typedef struct {
     /* 0x8D */  u8  unk8D;
 } N_ALCSPlayer;
 
+/* Overlay of ALChanState rare envelope fields (same offsets). */
 typedef struct N_ALCSPExtraChanState {
     u8 pad0[0x24];
     s32 releaseTime;
-    u8 useCustomReleaseTime;
+    u8 useCustomReleaseTime; /* ALChanState.usechanparams */
 } N_ALCSPExtraChanState;
 
 

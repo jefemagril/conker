@@ -687,7 +687,23 @@ typedef struct {
     /* 0x16 */  u8                  unk16;
     /* 0x17 */  u8                  unk17;
     /* 0x18 */  f32                 pitchBend;  /* current pitch bend val in cents  */
-    /* 0x1C */  u8                  pad1C[0x1A];
+    /* 0x1C */  ALMicroTime         attackTime;
+    /* 0x20 */  ALMicroTime         decayTime;
+    /* 0x24 */  ALMicroTime         releaseTime;
+    /* 0x28 */  u8                  usechanparams; /* == useCustomReleaseTime */
+    /* 0x29 */  u8                  attackVolume;
+    /* 0x2A */  u8                  decayVolume;
+    /* 0x2B */  s8                  pitch;
+    /* 0x2C */  u8                  tremType;
+    /* 0x2D */  u8                  tremRate;
+    /* 0x2E */  u8                  tremDepth;
+    /* 0x2F */  u8                  tremDelay;
+    /* 0x30 */  u8                  vibType;
+    /* 0x31 */  u8                  vibRate;
+    /* 0x32 */  u8                  vibDepth;
+    /* 0x33 */  u8                  vibDelay;
+    /* 0x34 */  u8                  pad34;
+    /* 0x35 */  u8                  timeindex;
     /* 0x36 */  u8                  unk36;
     /* 0x37 */  u8                  unk37;
     /* 0x38 */  s16                 unk38;      /* instrument index into bank->instArray */

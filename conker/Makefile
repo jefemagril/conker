@@ -213,15 +213,15 @@ $(GLOBAL_ASM_PATTERN_O_FILES): $(BUILD_DIR)/%.c.o: %.c include/variables.h inclu
 		--assembler "$(AS) $(ASFLAGS)" --asm-prelude $(ASM_PROCESSOR_DIR)/prelude.inc
 endif
 
-# IDO pads .rodata to 16; VoiceHandler jtbl (0x6C) + HandleNextSeqEvent jtbl (0x54)
-# must abut jtbl_8002C520. Explicit recipe overrides the GLOBAL_ASM pattern above.
+# IDO pads .rodata to 16; VoiceHandler (0x6C) + HandleNextSeqEvent (0x54) +
+# HandleMIDIMsg (0x190) must abut 0x8002C6B0. Explicit recipe overrides the GLOBAL_ASM pattern above.
 $(BUILD_DIR)/$(SRC_DIR)/libultra/audio/n_csplayer.c.o: $(SRC_DIR)/libultra/audio/n_csplayer.c include/variables.h include/structs.h include/functions.h
 	mkdir -p $(BUILD_DIR)/$(SRC_DIR)/libultra/audio
 	$(PYTHON) $(ASM_PROCESSOR_DIR)/asm_processor.py $(OPT_FLAGS) $< > $(BUILD_DIR)/$<
 	$(CC) -c -32 $(CFLAGS) $(OPT_FLAGS) $(LOOP_UNROLL) $(MIPSBIT) -o $@ $(BUILD_DIR)/$<
 	$(PYTHON) $(ASM_PROCESSOR_DIR)/asm_processor.py $(OPT_FLAGS) $< --post-process $@ \
 		--assembler "$(AS) $(ASFLAGS)" --asm-prelude $(ASM_PROCESSOR_DIR)/prelude.inc
-	$(PYTHON) tools/truncate_elf_rodata.py $@ 0xC0 4
+	$(PYTHON) tools/truncate_elf_rodata.py $@ 0x250 4
 
 $(BUILD_DIR)/%.c.o: %.c
 	$(CC) -c -32 $(CFLAGS) $(OPT_FLAGS) $(MIPSBIT) -o $@ $<

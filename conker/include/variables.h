@@ -338,6 +338,7 @@ extern s16  D_800427F4;
 extern struct120 D_800425E0[];
 extern struct124 *D_80042800;
 extern s32  D_80042804;
+extern ALMicroTime D_80042810[]; /* per-chan scheduled note-off delta */
 extern u16  D_800428B8[];
 extern u8   D_800428C0;
 extern u8   D_800428C1;
