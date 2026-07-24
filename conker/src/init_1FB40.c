@@ -33,7 +33,7 @@
 //     void *temp_t8_2;
 //
 //     sp54 = arg1;
-//     if ((D_800E0E04 == 0) || (func_151F2E88(0xB8, &sp54) == 0)) {
+//     if ((D_800E0E04 == 0) || (n_alStreamMakeSamples(0xB8, &sp54) == 0)) {
 //         temp_t8 = sp54;
 //         sp54 = temp_t8 + 8;
 //         sp48 = temp_t8;

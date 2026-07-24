@@ -112,6 +112,7 @@ s32  n_alStreamGetState(void);
 void n_alStreamStart(s32 dataStart, s32 dataLength);
 void n_alStreamSetPan(s32 pan, s32 immediate);
 void n_alStreamSetLoadInfo(s32 commandCount, s32 sampleRate);
+s32  n_alStreamMakeSamples(s32 samples, Acmd **cmd);
 void n_alStreamSetDoneCallback(void (*callback)(s32));
 void n_alStreamSetVolumeRamp(s32 volume, s32 rampSamples);
 void n_alStreamForceStop(void);

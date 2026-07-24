@@ -333,6 +333,7 @@ n_alStreamGetState              = 0x151F2CDC;
 n_alStreamSetVolumeRamp         = 0x151F2D6C;
 n_alStreamSetPan                = 0x151F2DFC;
 n_alStreamSetLoadInfo           = 0x151F2E4C;
+n_alStreamMakeSamples           = 0x151F2E88;
 n_alStreamUpdateEnvelope        = 0x151F39E4;
 n_alStreamSetDoneCallback       = 0x151F3C1C;
 n_alStreamSetReadCallback       = 0x151F3C34;
