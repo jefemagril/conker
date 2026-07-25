@@ -99,7 +99,7 @@ typedef struct N_PVoice_s {
     s32            offset;
     /* RARE CUSTOM */
     /* 0x94 */ u8             pad94[0x5];
-    /* 0x99 */ s8             unk99;
+    /* 0x99 */ u8             unk99;
     /* 0x9A */ u8             pad9A[0x6];
     /* 0xA0 */ s16            unkA0;
     /* 0xA2 */ s16            unkA2;
@@ -109,7 +109,7 @@ typedef struct N_PVoice_s {
 } N_PVoice;
 
 
-typedef Acmd *(*N_ALCmdHandler)(s32, Acmd *);
+typedef Acmd *(*N_ALCmdHandler)(s32, Acmd *, s32 bus);
 
 typedef struct N_ALFilter_s {
     struct N_ALFilter_s   *source;
@@ -141,7 +141,7 @@ typedef struct N_ALAuxBus_s {
     /* sourceCount/maxSources are used as an ALLink head for voiceLink lists */
     s32                 sourceCount;
     s32                 maxSources;
-    /* Conker also stores the FX pointer returned by func_1001E4A0 here (0x1C) */
+    /* Conker also stores the FX pointer returned by n_alSynAllocFX here (0x1C) */
     N_PVoice           **sources;
     /* 0x20 */  ALFx                *fx;
     ALFx    *fx_array[AL_MAX_AUX_BUS_SOURCES]; /* [7] is struct auxbus44 * */
@@ -167,9 +167,9 @@ Acmd    *n_alEnvmixerPull(N_PVoice *f, s32 sampleOffset, Acmd *p);
 s32     n_alEnvmixerParam(N_PVoice *p, s32 paramID, void *param);
 
 s32 n_alAuxBusParam( s32 paramID, void *param);
-Acmd *n_alAuxBusPull( s32 sampleOffset, Acmd *p);
+Acmd *n_alAuxBusPull(s32 sampleOffset, Acmd *p, s32 fxBus, s32 *numpulls);
 
-Acmd *n_alFxPull( s32 sampleOffset, Acmd *p);
+Acmd *n_alFxPull( s32 sampleOffset, Acmd *p, s32 fxBus);
 s32 n_alFxParamHdl(void *filter, s32 paramID, void *param);
 void n_alFxNew(ALFx **r, ALSynConfig *c, s16 bus, ALHeap *hp);
 

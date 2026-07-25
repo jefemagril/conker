@@ -1,9 +1,6 @@
 #include "n_synthInternals.h"
 
 extern f32 D_8002C750;
-Acmd *func_1001FB40(s32 sampleOffset, Acmd *p);
-Acmd *func_1001E530(s32 sampleOffset, Acmd *p);
-s32 func_1001E4A0(s16 bus, ALSynConfig *c, ALHeap *hp);
 s32 __n_nextSampleTime(ALPlayer **client);
 s32 _n_timeToSamplesNoRound(s32 micros);
 
@@ -54,8 +51,8 @@ void n_alSynNew(ALSynConfig *c)
         n_syn->auxBus[i].maxSources = 0;
 
         if (c->fxTypes[i]) {
-            /* func_1001E4A0 / n_alFxNew write FX at +0x20; return also stored at +0x1C */
-            n_syn->auxBus[i].sources = (N_PVoice **)func_1001E4A0(i, c, hp);
+            /* n_alSynAllocFX / n_alFxNew write FX at +0x20; return also stored at +0x1C */
+            n_syn->auxBus[i].sources = (N_PVoice **) n_alSynAllocFX(i, c, hp);
         } else {
             n_syn->auxBus[i].sources = 0;
         }
@@ -70,7 +67,7 @@ void n_alSynNew(ALSynConfig *c)
     }
 
     n_syn->mainBus = (N_ALMainBus *)alHeapDBAlloc(0, 0, hp, 1, sizeof(N_ALMainBus));
-    n_syn->mainBus->filter.handler = (N_ALCmdHandler)func_1001E530;
+    n_syn->mainBus->filter.handler = (N_ALCmdHandler) n_alFxPull;
 
     n_syn->pFreeList.next = 0;
     n_syn->pFreeList.prev = 0;
@@ -141,7 +138,7 @@ Acmd *n_alAudioFrame(Acmd *cmdList, s32 *cmdLen, s16 *outBuf, s32 outLen) {
     while (outLen > 0) {
         nOut = MIN(n_syn->maxOutSamples, outLen);
 
-        cmdlEnd = func_1001FB40(n_syn->curSamples, cmdlEnd);
+        cmdlEnd = n_alMainBusPull(n_syn->curSamples, cmdlEnd);
         cmdPtr = cmdlEnd++;
         cmdPtr->words.w0 = 0x0D000000;
 

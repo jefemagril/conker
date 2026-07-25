@@ -44,13 +44,13 @@ void n_alCSPHandleChlPriorityCtrl(N_ALCSPlayer *seqp, s32 unused, s32 chan, s32 
 }
 
 void n_alCSPPostOsMesg(N_ALCSPlayer *seqp, s32 unused, s32 unused2, s32 msgValue) {
-    if (seqp->unk84 != 0) {
-        osSendMesg(seqp->unk84, (msgValue & 7) | 0x10 | ((seqp->node.samplesLeft << 5) & -0x100), 0);
+    if (seqp->queue != 0) {
+        osSendMesg(seqp->queue, (msgValue & 7) | 0x10 | ((seqp->node.samplesLeft << 5) & -0x100), 0);
     }
 }
 
 void n_alCSPSetChlFxId(N_ALCSPlayer *seqp, s32 unused, s32 chan, s32 fxId) {
-    seqp->chanState[chan].unk8 = fxId;
+    seqp->chanState[chan].instmajor = fxId;
 }
 
 void n_alCSPApplyChlFilterPitch(N_ALCSPlayer *seqp, u8 chan) {
@@ -59,12 +59,12 @@ void n_alCSPApplyChlFilterPitch(N_ALCSPlayer *seqp, u8 chan) {
     s8 pitchOffset;
     f32 pitchBend;
 
-    pitchOffset = seqp->chanState[chan].unk15 - 0x40;
+    pitchOffset = seqp->chanState[chan].filterPitch - 0x40;
     pitchBend = seqp->chanState[chan].pitchBend;
 
     for (voiceState = seqp->vAllocHead; voiceState != NULL; voiceState = voiceState->next) {
         if (voiceState->channel == chan) {
-            filter12 = seqp->chanState[chan].unk14;
+            filter12 = seqp->chanState[chan].filter12;
             n_alSynFilter12(&voiceState->voice, filter12);
             if (filter12 != 0) {
                 n_alSynFilter13(&voiceState->voice,
@@ -76,18 +76,18 @@ void n_alCSPApplyChlFilterPitch(N_ALCSPlayer *seqp, u8 chan) {
 }
 
 void n_alCSPSetChlFilter12(N_ALCSPlayer *seqp, s32 unused, s32 chan, s32 filter12) {
-    seqp->chanState[chan].unk14 = filter12;
+    seqp->chanState[chan].filter12 = filter12;
     n_alCSPApplyChlFilterPitch(seqp, chan);
 }
 
 void n_alCSPSetChlFilter13Pitch(N_ALCSPlayer *seqp, s32 unused, s32 chan, s32 pitchOffset) {
-    seqp->chanState[chan].unk15 = pitchOffset;
+    seqp->chanState[chan].filterPitch = pitchOffset;
     n_alCSPApplyChlFilterPitch(seqp, chan);
 }
 
 void n_alCSPSetChlFilter11(N_ALCSPlayer *seqp, s32 unused, s32 chan, s32 filter11) {
     N_ALSoundState *voiceState;
-    seqp->chanState[chan].unk16 = filter11;
+    seqp->chanState[chan].filter11 = filter11;
     for (voiceState = seqp->vAllocHead; voiceState != NULL; voiceState = voiceState->voice.node.next) {
         if (voiceState->chan == chan) {
             n_alSynFilter11(&voiceState->voice.node.prev, filter11);
@@ -151,7 +151,7 @@ void n_alCSPSetChlFXMix7F(N_ALCSPlayer *seqp, s32 unused, s32 chan, s32 fxmix7F)
 
 void n_alCSPSetChlFXBus(N_ALCSPlayer *seqp, s32 unused, s32 chan, u32 fxbus) {
     if (fxbus < n_syn->maxAuxBusses) {
-        seqp->chanState[chan].unkB = fxbus;
+        seqp->chanState[chan].fxbus = fxbus;
     }
 }
 
@@ -178,17 +178,17 @@ void n_alCSPApplyChlVol(N_ALCSPlayer *seqp, u8 chan) {
 void n_alCSPStartChlFade(N_ALCSPlayer *seqp, N_ALEvent *event, s32 chan, s32 target) {
     f32 fadeDelta;
 
-    if (seqp->chanState[chan].unkF == 0) {
-        seqp->chanState[chan].unkF = CSP_DEFAULT_CHL_FADE_SPEED;
+    if (seqp->chanState[chan].fadevolinc == 0) {
+        seqp->chanState[chan].fadevolinc = CSP_DEFAULT_CHL_FADE_SPEED;
     }
-    if (seqp->chanState[chan].unkE != target) {
-        fadeDelta = target - seqp->chanState[chan].unkD;
-        seqp->chanState[chan].unk10 = fadeDelta / (seqp->chanState[chan].unkF & CSP_CHL_FADE_DURATION_MASK);
-        seqp->chanState[chan].unk10 = fabsf(seqp->chanState[chan].unk10);
-        if (seqp->chanState[chan].unkE == seqp->chanState[chan].unkD) {
-            seqp->chanState[chan].unkE = target;
+    if (seqp->chanState[chan].fadevoltarget != target) {
+        fadeDelta = target - seqp->chanState[chan].fadevolcurrent;
+        seqp->chanState[chan].fadevolstep = fadeDelta / (seqp->chanState[chan].fadevolinc & CSP_CHL_FADE_DURATION_MASK);
+        seqp->chanState[chan].fadevolstep = fabsf(seqp->chanState[chan].fadevolstep);
+        if (seqp->chanState[chan].fadevoltarget == seqp->chanState[chan].fadevolcurrent) {
+            seqp->chanState[chan].fadevoltarget = target;
         } else {
-            seqp->chanState[chan].unkE = target;
+            seqp->chanState[chan].fadevoltarget = target;
             return;
         }
     } else {
@@ -206,12 +206,12 @@ void n_alCSPStepChlFade(N_ALCSPlayer *seqp, s32 event, s32 chan, s32 unused) {
     f32 fadeStepFloat;
     f32 eventDelayScale;
 
-    currentFadeVol = seqp->chanState[chan].unkD;
-    targetFadeVol = seqp->chanState[chan].unkE;
-    fadeStepFloat = seqp->chanState[chan].unk10;
+    currentFadeVol = seqp->chanState[chan].fadevolcurrent;
+    targetFadeVol = seqp->chanState[chan].fadevoltarget;
+    fadeStepFloat = seqp->chanState[chan].fadevolstep;
     fadeDelta = targetFadeVol - currentFadeVol;
     if (fadeDelta > 0) {
-        if (seqp->chanState[chan].unkF & 0x80) {
+        if (seqp->chanState[chan].fadevolinc & 0x80) {
             fadeStepFloat = fadeStepFloat * 2.0f;
         }
         fadeStep = fadeStepFloat;
@@ -238,7 +238,7 @@ void n_alCSPStepChlFade(N_ALCSPlayer *seqp, s32 event, s32 chan, s32 unused) {
         }
     }
     currentFadeVol = fadeDelta + currentFadeVol;
-    seqp->chanState[chan].unkD = currentFadeVol;
+    seqp->chanState[chan].fadevolcurrent = currentFadeVol;
     if (currentFadeVol != targetFadeVol) {
         n_alEvtqPostEvent(&seqp->evtq, event, seqp->uspt * 100 * eventDelayScale, 2);
     }
@@ -251,12 +251,12 @@ void n_alCSPStepChlFade(N_ALCSPlayer *seqp, s32 event, s32 chan, s32 unused) {
 }
 
 void n_alCSPSetChlFadeSpeed(N_ALCSPlayer *seqp, s32 unused, s32 chan, s32 fadeSpeed) {
-    seqp->chanState[chan].unkF = fadeSpeed;
+    seqp->chanState[chan].fadevolinc = fadeSpeed;
 }
 
 void n_alCSPSetChlFadeEnd(N_ALCSPlayer *seqp, s32 unused, s32 chan, s32 fadeVol) {
-    seqp->chanState[chan].unkD = fadeVol;
-    seqp->chanState[chan].unkE = fadeVol;
+    seqp->chanState[chan].fadevolcurrent = fadeVol;
+    seqp->chanState[chan].fadevoltarget = fadeVol;
     if (fadeVol == 0) {
         seqp->chanMask &= (1 << chan) ^ 0xFFFF; // disable
     } else {

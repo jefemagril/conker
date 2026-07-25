@@ -32,7 +32,7 @@
 
 
 void            __n_unmapVoice(N_ALSeqPlayer *seqp, N_ALVoice *voice);
-char		__n_voiceNeedsNoteKill(N_ALSeqPlayer *seqp, N_ALVoice *voice,
+u8		__n_voiceNeedsNoteKill(N_ALSeqPlayer *seqp, N_ALVoice *voice,
 				       ALMicroTime killTime);
 void		__n_seqpReleaseVoice(N_ALSeqPlayer *seqp, N_ALVoice *voice,
 				       ALMicroTime deltaTime);

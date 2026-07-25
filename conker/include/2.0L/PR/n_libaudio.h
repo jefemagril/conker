@@ -37,7 +37,7 @@ typedef struct N_ALVoice_s {
     /* 0x00 */  ALLink              node;
     /* 0x08 */  struct N_PVoice_s   *pvoice;
     /* 0x0C */  ALWaveTable         *table;
-    /* 0x10 */  void                *unk10;
+    /* 0x10 */  void                *clientPrivate;
     /* 0x14 */  void                *unk14;
     /* 0x18 */  s16                 state;
     /* 0x1A */  s16                 priority;
@@ -143,10 +143,10 @@ typedef struct {
 } N_ALOscEvent;
 
 typedef struct {
-    f32 unk0;
-    f32 unk4;
+    f32 fxmixmajor;
+    f32 fxmixmega;
     u8  pad8[0x4];
-} N_ALUnknownEvent1;
+} N_ALFxMixEvent;
 
 typedef struct {
     /* 0x00 */  ALLink              node;
@@ -168,9 +168,9 @@ typedef struct {
 } N_ALUnknownStruct1;
 
 typedef struct {
-    N_ALUnknownStruct1 *unk0;
+    N_ALUnknownStruct1 *state;
     u8  pad4[0x8];
-} N_ALUnknownEvent2;
+} N_ALSndpStateEvent;
 
 typedef struct N_ALStreamState {
     s32 dataStart;
@@ -200,13 +200,13 @@ typedef struct N_ALStreamState {
 } N_ALStreamState;
 
 typedef struct {
-    u8  unk0;
-    u8  unk1;
-    u8  unk2;
+    u8  bus;
+    u8  paramId;
+    u8  paramSub;
     u8  pad3;
-    s32 unk4;
+    s32 param;
     u8  pad[0x4];
-} N_ALUnknownEvent3;
+} N_ALFxParamEvent;
 
 typedef struct {
     s16                     type;
@@ -222,9 +222,9 @@ typedef struct {
         ALSeqpSeqEvent      spseq;
         ALSeqpBankEvent     spbank;
         N_ALOscEvent        osc;
-        N_ALUnknownEvent1   unknown0;
-        N_ALUnknownEvent2   unknown1;
-        N_ALUnknownEvent3   unknown2;
+        N_ALFxMixEvent      fxmix;
+        N_ALSndpStateEvent  sndp;
+        N_ALFxParamEvent    fxparam;
     } msg;
 } N_ALEvent;
 
@@ -316,12 +316,12 @@ typedef struct {
     /* 0x74 */  ALOscUpdate         updateOsc;
     /* 0x78 */  ALOscStop           stopOsc;
     /* RARE CUSTOM */
-    /* 0x7C */  f32 unk7C;
-    /* 0x80 */  f32 unk80;
-    /* 0x84 */  s32 unk84;
-    /* 0x88 */  s32 unk88;             /* soft-stop: saved REF flush delta */
-    /* 0x8C */  u8  unk8C;
-    /* 0x8D */  u8  unk8D;
+    /* 0x7C */  f32 fxmixmajor;
+    /* 0x80 */  f32 fxmixmega;
+    /* 0x84 */  s32 queue;
+    /* 0x88 */  s32 softStopDelta;             /* soft-stop: saved REF flush delta */
+    /* 0x8C */  u8  maxVoices;
+    /* 0x8D */  u8  usedVoices;
 } N_ALCSPlayer;
 
 /* Overlay of ALChanState rare envelope fields (same offsets). */

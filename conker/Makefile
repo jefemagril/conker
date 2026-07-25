@@ -128,6 +128,7 @@ $(BUILD_DIR)/$(SRC_DIR)/init_1E4A0.c.o: OPT_FLAGS := -g
 $(BUILD_DIR)/$(SRC_DIR)/init_1E530.c.o: OPT_FLAGS := -g
 $(BUILD_DIR)/$(SRC_DIR)/init_1FB40.c.o: OPT_FLAGS := -g
 $(BUILD_DIR)/$(SRC_DIR)/init_20000.c.o: OPT_FLAGS := -g
+$(BUILD_DIR)/$(SRC_DIR)/init_210C0.c.o: OPT_FLAGS := -g
 $(BUILD_DIR)/$(SRC_DIR)/init_214F0.c.o: OPT_FLAGS := -g
 $(BUILD_DIR)/$(SRC_DIR)/init_22040.c.o: OPT_FLAGS := -g
 $(BUILD_DIR)/$(SRC_DIR)/init_22460.c.o: OPT_FLAGS := -g
@@ -232,6 +233,15 @@ $(BUILD_DIR)/$(SRC_DIR)/libultra/audio/n_sndplayer.c.o: $(SRC_DIR)/libultra/audi
 	$(PYTHON) $(ASM_PROCESSOR_DIR)/asm_processor.py $(OPT_FLAGS) $< --post-process $@ \
 		--assembler "$(AS) $(ASFLAGS)" --asm-prelude $(ASM_PROCESSOR_DIR)/prelude.inc
 	$(PYTHON) tools/truncate_elf_rodata.py $@ 0xA0 4
+
+# n_alFxParamHdl jtbl (0x20) + CONVERT floats (0xC) must abut 0x8002C7D0.
+$(BUILD_DIR)/$(SRC_DIR)/init_1E530.c.o: $(SRC_DIR)/init_1E530.c include/variables.h include/structs.h include/functions.h
+	mkdir -p $(BUILD_DIR)/$(SRC_DIR)
+	$(PYTHON) $(ASM_PROCESSOR_DIR)/asm_processor.py $(OPT_FLAGS) $< > $(BUILD_DIR)/$<
+	$(CC) -c -32 $(CFLAGS) $(OPT_FLAGS) $(LOOP_UNROLL) $(MIPSBIT) -o $@ $(BUILD_DIR)/$<
+	$(PYTHON) $(ASM_PROCESSOR_DIR)/asm_processor.py $(OPT_FLAGS) $< --post-process $@ \
+		--assembler "$(AS) $(ASFLAGS)" --asm-prelude $(ASM_PROCESSOR_DIR)/prelude.inc
+	$(PYTHON) tools/truncate_elf_rodata.py $@ 0x2C 4
 
 $(BUILD_DIR)/%.c.o: %.c
 	$(CC) -c -32 $(CFLAGS) $(OPT_FLAGS) $(MIPSBIT) -o $@ $<

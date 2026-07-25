@@ -2,11 +2,11 @@
 
 
 void n_alCSPSetQueue(N_ALCSPlayer *seqp, s32 queue) {
-    seqp->unk84 = queue;
+    seqp->queue = queue;
 }
 
 void n_alCSPSetChlNoteMesgFlags(N_ALCSPlayer *seqp, s32 chan, u8 flags) {
-    seqp->chanState[chan].unk17 = flags;
+    seqp->chanState[chan].notemesgflags = flags;
 }
 
 void n_alCSPAllChanOn(N_ALCSPlayer *seqp) {
@@ -15,8 +15,8 @@ void n_alCSPAllChanOn(N_ALCSPlayer *seqp) {
     seqp->chanMask = 0xFFFF;
     for (chan = 0; chan < seqp->maxChannels; chan++)
     {
-        seqp->chanState[chan].unkE = 0xFF; /* fadevoltarget */
-        seqp->chanState[chan].unkD = 0xFF; /* fadevolcurrent */
+        seqp->chanState[chan].fadevoltarget = 0xFF; /* fadevoltarget */
+        seqp->chanState[chan].fadevolcurrent = 0xFF; /* fadevolcurrent */
     }
 }
 

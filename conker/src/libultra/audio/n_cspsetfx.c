@@ -5,8 +5,8 @@ void n_alCSPSetFxMix(N_ALCSPlayer *csp, f32 fxmixmajor, f32 fxmixmega) {
     N_ALEvent event;
 
     event.type = 25; /* Conker FXMIX event (PD uses 0x18) */
-    event.msg.unknown0.unk0 = fxmixmajor;
-    event.msg.unknown0.unk4 = fxmixmega;
+    event.msg.fxmix.fxmixmajor = fxmixmajor;
+    event.msg.fxmix.fxmixmega = fxmixmega;
 
     n_alEvtqPostEvent(&csp->evtq, &event, 0, 2);
 }

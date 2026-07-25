@@ -672,20 +672,20 @@ typedef struct {
     // /* 0x06 */  ALFxId              fxId;           /* type of fx assigned to this chan */
     /* 0x06 */  ALPan               pan;            /* overall pan for this chan        */
     /* 0x07 */  u8                  priority;       /* priority for this chan           */
-    /* 0x08 */  u8                  unk8;
+    /* 0x08 */  u8                  instmajor;
     /* 0x09 */  u8                  vol;            /* current volume for this chan     */
     /* 0x0A */  u8                  fxmix;          /* current fx mix for this chan     */
-    /* 0x0B */  u8                  unkB;
+    /* 0x0B */  u8                  fxbus;
     /* 0x0C */  u8                  sustain;        /* current sustain pedal state      */
 /* RARE EXTRAS */
-    /* 0x0D */  u8                  unkD;
-    /* 0x0E */  u8                  unkE;
-    /* 0x0F */  u8                  unkF;
-    /* 0x10 */  f32                 unk10;
-    /* 0x14 */  u8                  unk14;
-    /* 0x15 */  s8                  unk15;
-    /* 0x16 */  u8                  unk16;
-    /* 0x17 */  u8                  unk17;
+    /* 0x0D */  u8                  fadevolcurrent;
+    /* 0x0E */  u8                  fadevoltarget;
+    /* 0x0F */  u8                  fadevolinc;
+    /* 0x10 */  f32                 fadevolstep;
+    /* 0x14 */  u8                  filter12;
+    /* 0x15 */  s8                  filterPitch;
+    /* 0x16 */  u8                  filter11;
+    /* 0x17 */  u8                  notemesgflags;
     /* 0x18 */  f32                 pitchBend;  /* current pitch bend val in cents  */
     /* 0x1C */  ALMicroTime         attackTime;
     /* 0x20 */  ALMicroTime         decayTime;
@@ -704,9 +704,9 @@ typedef struct {
     /* 0x33 */  u8                  vibDelay;
     /* 0x34 */  u8                  pad34;
     /* 0x35 */  u8                  timeindex;
-    /* 0x36 */  u8                  unk36;
+    /* 0x36 */  u8                  muted;
     /* 0x37 */  u8                  unk37;
-    /* 0x38 */  s16                 unk38;      /* instrument index into bank->instArray */
+    /* 0x38 */  s16                 instIndex;      /* instrument index into bank->instArray */
     /* 0x3A */  u8                  pad3A[0x2];
 /* END OF RARE EXTRAS */
 } ALChanState;

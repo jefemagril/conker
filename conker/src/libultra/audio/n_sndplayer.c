@@ -26,8 +26,8 @@ void sndp_apply_detune_pitch(N_ALSndpSoundState *state);
 void n_alSndpFlushVoiceEvents(ALEventQueue *evtq, N_ALSndpSoundState *voice, u16 typeMask);
 N_ALSndpSoundState *n_alSndpPlaySound(ALBank *bank, s16 soundNum, u16 vol, ALPan pan, f32 pitch,
                                       u8 fxmix, u8 fxbus, N_ALSndpSoundState **handle);
-ALSound *func_1001BD34(N_ALSynth *syn, void *bankInstruments, s32 soundNum);
-void func_1001BE1C(N_ALSynth *syn, void *state, s32 index);
+ALSound *__n_synBankLoad(N_ALSynth *syn, void *bankInstruments, s32 soundNum);
+void __n_synBankFree(N_ALSynth *syn, void *state, s32 index);
 void func_10002088(const char *fmt, ...);
 void _bnkfPatchSound(void *s, s32 offset, s32 table);
 
@@ -224,7 +224,7 @@ void _n_handleEvent(N_ALSndpEvent *event)
         switch (event->type) {
         case SNDP_PLAY_SOUND_EVT:
             if (sound == NULL) {
-                sound = func_1001BD34(g_SndPlayer->drvr, (u8 *) state->bank + 0xC, state->soundNum);
+                sound = __n_synBankLoad(g_SndPlayer->drvr, (u8 *) state->bank + 0xC, state->soundNum);
                 state->sound = sound;
                 if (sound == NULL) {
                     event->type = SNDP_PLAY_SOUND_EVT;
@@ -312,7 +312,7 @@ void _n_handleEvent(N_ALSndpEvent *event)
             fxmix = MIN(127, MAX(0, fxmix));
             fxmix |= state->fxmix & 0x80;
 
-            func_1001BE1C(g_SndPlayer->drvr, state->bank->instArray[0], state->soundNum);
+            __n_synBankFree(g_SndPlayer->drvr, state->bank->instArray[0], state->soundNum);
 
             n_alSynStartVoiceParams(SNDP_STATE_VOICE(state), sound->wavetable,
                     state->pitch * state->basePitch, vol, pan, fxmix,
@@ -543,7 +543,7 @@ void n_alSndpFlushVoiceEvents(ALEventQueue *evtq, N_ALSndpSoundState *voice, u16
             item = current;
             nextEvent = next;
             event = &item->evt;
-            if ((event->msg.unknown1.unk0 == (N_ALUnknownStruct1 *) voice) && (((u16) event->type & typeMask) != 0)) {
+            if ((event->msg.sndp.state == (N_ALUnknownStruct1 *) voice) && (((u16) event->type & typeMask) != 0)) {
                 if (nextEvent != 0) {
                     nextEvent->delta += item->delta;
                 }
@@ -714,8 +714,8 @@ void sndp_post_stopall_event(N_ALSndpSoundState *state) {
 
     if (state) {
         event.type = SNDP_STOPALL_EVT;
-        event.msg.unknown1.unk0 = (N_ALUnknownStruct1 *) state;
-        ((N_ALSndpSoundState *) event.msg.unknown1.unk0)->flags &= SNDP_CLEAR_PARENT_FLAG_MASK;
+        event.msg.sndp.state = (N_ALUnknownStruct1 *) state;
+        ((N_ALSndpSoundState *) event.msg.sndp.state)->flags &= SNDP_CLEAR_PARENT_FLAG_MASK;
         n_alEvtqPostEvent(&g_SndPlayer->evtq, &event, 0, 2);
     }
 }

@@ -233,6 +233,8 @@ segments:
       - [0x2C770, rodata]
       - [0x2C790, .rodata, libultra/audio/n_synsetfxparam]
       - [0x2C7A0, rodata]
+      - [0x2C7A4, .rodata, init_1E530]
+      - [0x2C7D0, rodata]
       - [0x2C820, rodata]
       - [0x2C830, rodata]
       - [0x2C850, rodata]

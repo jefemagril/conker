@@ -15,8 +15,7 @@ extern void (*D_8002BA50[])(N_ALCSPlayer *seqp, N_ALEvent *event, s32 chan, s32 
 extern void (*D_8002BFC0[])(N_ALCSPlayer *seqp, N_ALEvent *event, s32 chan, s32 byte2);
 extern ALMicroTime D_80042810[];
 
-ALSound *func_1001B07C(N_ALSeqPlayer *seqp, u8 key, u8 vel, u8 chan);
-s32      func_1001B7D0(N_ALCSPlayer *seqp, s32 prog, s32 chan);
+s32      __n_cspLoadInstChanState(N_ALCSPlayer *seqp, s32 prog, s32 chan);
 
 /* initOsc is called with a 7th timeindex arg; Conker ALOscInit typedef is 6-arg. */
 typedef ALMicroTime (*ALOscInit7)(void **oscState, f32 *initVal, u8 oscType,
@@ -59,11 +58,11 @@ void n_alCSPNew(N_ALCSPlayer *seqp, ALSeqpConfig *c)
     seqp->stopOsc       = c->stopOsc;
 
 #if 1
-    seqp->unk7C = 0.0f;
-    seqp->unk80 = 1.0f;
-    seqp->unk84 = 0;
-    seqp->unk8D = 0;
-    seqp->unk8C = c->maxVoices;
+    seqp->fxmixmajor = 0.0f;
+    seqp->fxmixmega = 1.0f;
+    seqp->queue = 0;
+    seqp->usedVoices = 0;
+    seqp->maxVoices = c->maxVoices;
 #endif
 
     seqp->nextEvent.type = AL_SEQP_API_EVT;  /* this will start the voice handler "spinning" */
@@ -114,7 +113,6 @@ void n_alCSPNew(N_ALCSPlayer *seqp, ALSeqpConfig *c)
  * CONKER_* (NOTEOFF/TREM/VIB/FX shifted +1 vs PD). Stop API remapped:
  *  STOP(0x10) soft→state 3; STOPPING(0x11) hard free; TRACK_END(0x12) begin-stop.
  */
-char func_1001ADA4(N_ALSeqPlayer *seqp, N_ALVoice *voice, ALMicroTime killTime);
 
 ALMicroTime __n_CSPVoiceHandler(void *node)
 {
@@ -151,7 +149,7 @@ ALMicroTime __n_CSPVoiceHandler(void *node)
 
             n_alSynStopVoice(voice);
             n_alSynFreeVoice(voice);
-            vs = (N_ALVoiceState *) voice->unk10;
+            vs = (N_ALVoiceState *) voice->clientPrivate;
 
             if (vs->flags) {
                 __n_seqpStopOsc((N_ALSeqPlayer *) seqp, vs);
@@ -162,7 +160,7 @@ ALMicroTime __n_CSPVoiceHandler(void *node)
 
         case (AL_SEQP_ENV_EVT):
             voice = seqp->nextEvent.msg.vol.voice;
-            vs = (N_ALVoiceState *) voice->unk10;
+            vs = (N_ALVoiceState *) voice->clientPrivate;
 
             if (vs->envPhase == AL_PHASE_ATTACK) {
                 vs->envPhase = AL_PHASE_DECAY;
@@ -198,10 +196,10 @@ ALMicroTime __n_CSPVoiceHandler(void *node)
             n_alSynSetPitch(&vs->voice,
                             vs->pitch * vs->vibrato * seqp->chanState[chan].pitchBend);
 
-            if (seqp->chanState[chan].unk14) {
+            if (seqp->chanState[chan].filter12) {
                 n_alSynFilter13(
                     &vs->voice,
-                    440 * alSemitones2Ratio((u8) seqp->chanState[chan].unk15
+                    440 * alSemitones2Ratio((u8) seqp->chanState[chan].filterPitch
                                             + (vs->key - vs->sound->keyMap->keyBase)
                                             - 64)
                         * seqp->chanState[chan].pitchBend * vs->vibrato);
@@ -234,8 +232,8 @@ ALMicroTime __n_CSPVoiceHandler(void *node)
             break;
 
         case (CONKER_SEQP_FXMIX_EVT):
-            seqp->unk7C = seqp->nextEvent.msg.unknown0.unk0;
-            seqp->unk80 = seqp->nextEvent.msg.unknown0.unk4;
+            seqp->fxmixmajor = seqp->nextEvent.msg.fxmix.fxmixmajor;
+            seqp->fxmixmega = seqp->nextEvent.msg.fxmix.fxmixmega;
 
             for (vs = seqp->vAllocHead; vs != 0;) {
                 if (vs->envPhase != AL_PHASE_RELEASE) {
@@ -247,28 +245,28 @@ ALMicroTime __n_CSPVoiceHandler(void *node)
             break;
 
         case (CONKER_SEQP_FXPARAM_EVT):
-            if (seqp->nextEvent.msg.unknown2.unk1 < 8) {
-                fx = (void *) n_alSynGetFXRef(seqp->nextEvent.msg.unknown2.unk0);
+            if (seqp->nextEvent.msg.fxparam.paramId < 8) {
+                fx = (void *) n_alSynGetFXRef(seqp->nextEvent.msg.fxparam.bus);
 
                 if (fx) {
                     n_alSynSetFXParam(fx,
-                                      (seqp->nextEvent.msg.unknown2.unk2 << 3)
-                                          | (seqp->nextEvent.msg.unknown2.unk1 & 7),
-                                      &seqp->nextEvent.msg.unknown2.unk4);
+                                      (seqp->nextEvent.msg.fxparam.paramSub << 3)
+                                          | (seqp->nextEvent.msg.fxparam.paramId & 7),
+                                      &seqp->nextEvent.msg.fxparam.param);
                 }
             } else {
-                lpfx = (void *) n_alSynGetOutputLPRef(seqp->nextEvent.msg.unknown2.unk0);
+                lpfx = (void *) n_alSynGetOutputLPRef(seqp->nextEvent.msg.fxparam.bus);
 
                 if (lpfx) {
                     n_alSynSetOutputLPParam(lpfx,
-                                            seqp->nextEvent.msg.unknown2.unk1,
-                                            &seqp->nextEvent.msg.unknown2.unk4);
+                                            seqp->nextEvent.msg.fxparam.paramId,
+                                            &seqp->nextEvent.msg.fxparam.param);
                 }
             }
             break;
 
         case (AL_SEQP_PLAY_EVT):
-            /* Conker: resume via __alCSeqNextDelta; soft-stop reuses unk88. */
+            /* Conker: resume via __alCSeqNextDelta; soft-stop reuses softStopDelta. */
             if (seqp->state != AL_PLAYING) {
                 oldState = seqp->state;
                 if (seqp->target != NULL) {
@@ -276,7 +274,7 @@ ALMicroTime __n_CSPVoiceHandler(void *node)
                     if (__alCSeqNextDelta(seqp->target, &deltaTicks)) {
                         playEvt.type = AL_SEQ_REF_EVT;
                         if (oldState == AL_SOFT_STOPPING) {
-                            deltaTicks = seqp->unk88;
+                            deltaTicks = seqp->softStopDelta;
                         }
                         n_alEvtqPostEvent(&seqp->evtq, &playEvt, deltaTicks, 0);
                     }
@@ -288,7 +286,7 @@ ALMicroTime __n_CSPVoiceHandler(void *node)
             /* Conker soft-stop: park in state 3, flush REF, save delta. */
             if (seqp->state == AL_PLAYING) {
                 seqp->state = AL_SOFT_STOPPING;
-                seqp->unk88 = n_alEvtqFlushType(&seqp->evtq, AL_SEQ_REF_EVT);
+                seqp->softStopDelta = n_alEvtqFlushType(&seqp->evtq, AL_SEQ_REF_EVT);
             }
             break;
 
@@ -309,12 +307,12 @@ ALMicroTime __n_CSPVoiceHandler(void *node)
                 seqp->state = AL_STOPPED;
 
                 for (chan = 0; chan < 16; chan++) {
-                    if (seqp->chanState[chan].unk36) {
+                    if (seqp->chanState[chan].muted) {
                         /* empty — matches original load/beqz trampoline */
                     }
                     if (seqp->chanState[chan].instrument != 0) {
                         ((void (*)(ALInstrument *)) seqp->drvr->unk34)(
-                            seqp->bank->instArray[seqp->chanState[chan].unk38]);
+                            seqp->bank->instArray[seqp->chanState[chan].instIndex]);
                         seqp->chanState[chan].instrument = 0;
                     }
                 }
@@ -329,15 +327,15 @@ ALMicroTime __n_CSPVoiceHandler(void *node)
                 n_alEvtqFlushType(&seqp->evtq, AL_SEQP_MIDI_EVT);
 
                 for (vs = seqp->vAllocHead; vs != 0; vs = vs->next) {
-                    if (func_1001ADA4((N_ALSeqPlayer *) seqp, &vs->voice, KILL_TIME)) {
+                    if (__n_voiceNeedsNoteKill((N_ALSeqPlayer *) seqp, &vs->voice, KILL_TIME)) {
                         __n_seqpReleaseVoice((N_ALSeqPlayer *) seqp, &vs->voice, KILL_TIME);
                     }
                 }
 
                 for (chan = 0; chan < 16; chan++) {
-                    seqp->chanState[chan].unkD = seqp->chanState[chan].unkE;
+                    seqp->chanState[chan].fadevolcurrent = seqp->chanState[chan].fadevoltarget;
 
-                    if (seqp->chanState[chan].unkD == 0) {
+                    if (seqp->chanState[chan].fadevolcurrent == 0) {
                         seqp->chanMask &= (1 << chan) ^ 0xffff;
                     } else {
                         seqp->chanMask |= 1 << chan;
@@ -464,8 +462,8 @@ void __n_CSPHandleMIDIMsg(N_ALCSPlayer *seqp, N_ALEvent *event)
     byte1  = key = midi->byte1;
     byte2  = midi->byte2;
 
-    /* Conker: defer MIDI while channel muted (unk36), except ProgramChange */
-    if (seqp->chanState[chan].unk36 && status != AL_MIDI_ProgramChange) {
+    /* Conker: defer MIDI while channel muted, except ProgramChange */
+    if (seqp->chanState[chan].muted && status != AL_MIDI_ProgramChange) {
         evt.type = AL_SEQP_MIDI_EVT;
         evt.msg.midi = *midi;
         n_alEvtqPostEvent(&seqp->evtq, &evt, 0x8235, 0);
@@ -497,7 +495,7 @@ void __n_CSPHandleMIDIMsg(N_ALCSPlayer *seqp, N_ALEvent *event)
 
             chanstate = &seqp->chanState[chan];
 
-            sound = func_1001B07C((N_ALSeqPlayer *)seqp, key, byte2, chan);
+            sound = __n_lookupSoundQuick((N_ALSeqPlayer *)seqp, key, byte2, chan);
             if (!sound) {
                 break;
             }
@@ -505,7 +503,7 @@ void __n_CSPHandleMIDIMsg(N_ALCSPlayer *seqp, N_ALEvent *event)
                          ERR_ALSEQP_NO_SOUND);
 
             config.priority   = chanstate->priority;
-            config.fxBus      = chanstate->unkB;
+            config.fxBus      = chanstate->fxbus;
             config.unityPitch = 0;
             config.unk8       = 0;
 
@@ -621,11 +619,11 @@ void __n_CSPHandleMIDIMsg(N_ALCSPlayer *seqp, N_ALEvent *event)
 
             fxmix = __n_vsMix(vstate, seqp);
 
-            sp76 = chanstate->unk14;
+            sp76 = chanstate->filter12;
 
             if (sp76) {
                 sp70 = 440 * alSemitones2Ratio(
-                           cents / 100 + (u8)chanstate->unk15 - 64)
+                           cents / 100 + (u8)chanstate->filterPitch - 64)
                        * chanstate->pitchBend;
             } else {
                 sp70 = 127.0f;
@@ -642,7 +640,7 @@ void __n_CSPHandleMIDIMsg(N_ALCSPlayer *seqp, N_ALEvent *event)
 
             n_alSynStartVoiceParams(voice, sound->wavetable,
                                     pitch, vol, pan, fxmix, sp76, sp70,
-                                    chanstate->unk16, deltaTime);
+                                    chanstate->filter11, deltaTime);
 
             evt.type          = AL_SEQP_ENV_EVT;
             evt.msg.vol.voice = voice;
@@ -668,10 +666,10 @@ void __n_CSPHandleMIDIMsg(N_ALCSPlayer *seqp, N_ALEvent *event)
                 n_alEvtqPostEvent(&seqp->evtq, &evt, deltaTime, 0);
             }
 
-            if ((chanstate->unk17 & 1) && seqp->unk84) {
-                osSendMesg((OSMesgQueue *)seqp->unk84,
+            if ((chanstate->notemesgflags & 1) && seqp->queue) {
+                osSendMesg((OSMesgQueue *)seqp->queue,
                            (OSMesg)((D_80042810[chan] & 0xffffff00)
-                                    | (chanstate->unk17 >> 2)),
+                                    | (chanstate->notemesgflags >> 2)),
                            OS_MESG_NOBLOCK);
             }
 
@@ -701,9 +699,9 @@ void __n_CSPHandleMIDIMsg(N_ALCSPlayer *seqp, N_ALEvent *event)
             }
         }
 
-        if ((chanstate->unk17 & 2) && seqp->unk84) {
-            osSendMesg((OSMesgQueue *)seqp->unk84,
-                       (OSMesg)(key << 16 | 8 | chanstate->unk17 >> 2),
+        if ((chanstate->notemesgflags & 2) && seqp->queue) {
+            osSendMesg((OSMesgQueue *)seqp->queue,
+                       (OSMesg)(key << 16 | 8 | chanstate->notemesgflags >> 2),
                        OS_MESG_NOBLOCK);
         }
 
@@ -751,10 +749,10 @@ void __n_CSPHandleMIDIMsg(N_ALCSPlayer *seqp, N_ALEvent *event)
         break;
 
     case (AL_MIDI_ProgramChange):
-        sp90 = (seqp->chanState[chan].unk8 << 7) + key;
+        sp90 = (seqp->chanState[chan].instmajor << 7) + key;
 
         if (sp90 < seqp->bank->instCount) {
-            if (func_1001B7D0(seqp, sp90, chan)) {
+            if (__n_cspLoadInstChanState(seqp, sp90, chan)) {
                 evt.type            = AL_SEQP_MIDI_EVT;
                 evt.msg.midi.ticks  = 0;
                 evt.msg.midi.status = chan | AL_MIDI_ProgramChange;
@@ -779,9 +777,9 @@ void __n_CSPHandleMIDIMsg(N_ALCSPlayer *seqp, N_ALEvent *event)
                     n_alSynSetPitch(&vsBend->voice,
                                     vsBend->pitch * bendRatio * vsBend->vibrato);
 
-                    if (seqp->chanState[chan].unk14) {
+                    if (seqp->chanState[chan].filter12) {
                         filterRatio = alSemitones2Ratio(
-                            (u8)seqp->chanState[chan].unk15
+                            (u8)seqp->chanState[chan].filterPitch
                             + (vsBend->key - vsBend->sound->keyMap->keyBase)
                             - 64),
                         n_alSynFilter13(

@@ -31,6 +31,17 @@
  * Macros to assemble the audio command list
  */
 
+/*
+ * Rare addition. Opcode 0 is a no-op in the stock ABI, so this is only
+ * meaningful to Rare's own microcode.
+ */
+#define n_aNoop(pkt, outp, b, c)                                      \
+{                                                                     \
+	Acmd *_a = (Acmd *)pkt;                                       \
+	_a->words.w0 = (_SHIFTL(A_SPNOOP, 24, 8) | _SHIFTL(outp, 0, 16)); \
+	_a->words.w1 = (_SHIFTL(b, 16, 16) | _SHIFTL(c, 0, 16));      \
+}
+
 #define	n_aADPCMdec(pkt, s, f, c, a, d)					\
 {									\
 	Acmd *_a = (Acmd *)pkt;						\

@@ -186,8 +186,8 @@ void n_alSynSetFXParam(s32 arg0, s16 arg1, s32 arg2);
 void n_alSynSetOutputLPParam(struct139 *arg0, s16 arg1, s32 *arg2);
 // void func_1001E170(struct22 *arg0, s32 *w, f32 pitch, s16 vol, u8 pan, u8 fxmix, u8 arg6, f32 arg7, u8 arg8, s32 arg9);
 // void n_alCSPSendMidi(struct26 *arg0, s32 arg1, u8 arg2, u8 arg3, u8 arg4);
-s32  func_1001E4A0(s16 arg0, s32 arg1, s32 arg2);
-f32  func_1001FA78(f32 arg0[4][4], s32 arg1);
+ALFxRef n_alSynAllocFX(s16 bus, ALSynConfig *c, ALHeap *hp);
+f32  _doModFunc(void *d, s32 count);
 /* chunk0 */
 void func_15000000(void);
 void func_15000090(void);
@@ -1006,13 +1006,12 @@ void func_100114D0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
 void n_alCSeqNewLoopStartMarkers(ALCSeq *seq, ALCSeqMarker *m, u32 markerCount, u32 firstLoopIndex);
 // void n_alCSPApplyChlFilterPitch(struct26 *arg0, u8 arg1);
 // __n_unmapVoice
-//func_1001ADA4
+// __n_voiceNeedsNoteKill
 // __n_lookupVoice
-//func_1001B07C
+// __n_lookupSoundQuick
 // __n_vsVol
 // s32  __n_vsMix(N_ALVoiceState *vs, N_ALCSPlayer *seqp);
 // __n_vsPan
-void func_1001E530(s32 arg0, void *arg1, s32 arg2);
 //func_1019EA88
 //func_1019EAB0
 //func_1019EAE0

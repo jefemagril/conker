@@ -138,7 +138,7 @@ void func_10008988(u8 idx, s32 mask, s32 enable) {
 
 // is this n_alCSPGetChlVol ?
 u8 func_10008A4C(u8 idx, u8 chan) {
-    return D_8003C900[idx]->chanState[chan].unkD; // do we assume this is volume?
+    return D_8003C900[idx]->chanState[chan].fadevolcurrent; // do we assume this is volume?
 }
 
 void func_10008A94(u8 idx, s32 mask, s32 arg2) {

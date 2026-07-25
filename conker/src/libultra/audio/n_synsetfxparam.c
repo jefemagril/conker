@@ -3,11 +3,10 @@
 
 
 void n_alFxInitlpfilter_mono(ALLowPass *, f32);
-void func_1001ED6C(ALFxRef fx, s16 paramID, void *param);
 
 void n_alSynSetFXParam(ALFxRef fx, s16 paramID, void *param) {
     ALFxRef fxRef = fx;
-    func_1001ED6C(fxRef, paramID, param);
+    n_alFxParamHdl(fxRef, paramID, param);
 }
 
 void n_alSynSetOutputLPParam(ALLowPass *lp, s16 paramID, s32 *param) {
