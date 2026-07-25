@@ -16,7 +16,7 @@
 //     for (i = 0; i <= D_80082FA0; i++) {
 //         temp_f0 = tmp[i][1] * 0.5f;
 //         temp_f2 = tmp[i][2] * 0.5f;
-//         func_151EF954(D_800DCC10[i], -temp_f0, temp_f0, -temp_f2, temp_f2, 1.0f, foo, 1.0f);
+//         guOrtho(D_800DCC10[i], -temp_f0, temp_f0, -temp_f2, temp_f2, 1.0f, foo, 1.0f);
 //     }
 // }
 
