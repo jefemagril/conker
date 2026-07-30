@@ -183,7 +183,7 @@ segments:
       - [0x262D0, asm, libultra/os/unmaptlb]
       - [0x26310, asm, libultra/os/maptlb]
       - [0x263D0, c,   libultra/io/aisetfreq] # -O1
-      - [0x26530, asm, libultra/gu/sqrtf]
+      - [0x26530, asm, libultra/gu/sqrtf] # handwritten leaf; tracked in src/hasm/
       - [0x26540, asm, libultra/gu/sinf]
       - [0x26700, asm, libultra/io/sprawread]
       - [0x26750, asm, libultra/io/sprawwrite]
@@ -449,10 +449,10 @@ segments:
       - [0xD3d10, asm]
       - [0xD4450, asm]
       - [0xD4C20, c, game_D4C20]
-      - [0xD4c40, c, libultra/gu/guMtxF2L]
+      - [0xD4c40, asm, libultra/gu/guMtxF2L] # handwritten; tracked in src/hasm/ (sibling loop = guMtxF2L2)
       - [0xD4E10, asm]
       - [0xD5030, c, game_D5030]
-      - [0xD5070, c, libultra/gu/guMtxIdentF]
+      - [0xD5070, asm, libultra/gu/guMtxIdentF] # handwritten; tracked in src/hasm/ (sibling loop = guMtxIdentF2)
       - [0xD50C0, asm]
       - [0xD5160, c, game_D5160]
       - [0xD51B0, c, game_D51B0]

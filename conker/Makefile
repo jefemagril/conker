@@ -34,6 +34,12 @@ ASM_DIRS  = asm \
             asm/libultra asm/libultra/audio asm/libultra/gu asm/libultra/io asm/libultra/libc asm/libultra/os \
 			asm/data asm/data/init asm/data/init/data asm/data/game asm/data/libultra
 
+# Handwritten asm lives here (tracked). Splat still dumps ignored copies under
+# asm/; pattern rules below assemble these sources into the build/asm/ paths
+# the linker script expects. Add new files under src/hasm/ mirroring the asm/
+# relative path, then they override automatically.
+HASM_DIR := $(SRC_DIR)/hasm
+
 BIN_DIRS  = assets
 
 SPLIT_DIR := $(BUILD_DIR)/split
@@ -249,6 +255,11 @@ $(BUILD_DIR)/$(SRC_DIR)/init_1E530.c.o: $(SRC_DIR)/init_1E530.c include/variable
 
 $(BUILD_DIR)/%.c.o: %.c
 	$(CC) -c -32 $(CFLAGS) $(OPT_FLAGS) $(MIPSBIT) -o $@ $<
+
+# Prefer tracked handwritten sources over splat's gitignored asm/ dumps.
+# Listed before the generic %.s.o rule so Make picks hasm when the file exists.
+$(BUILD_DIR)/asm/%.s.o: $(HASM_DIR)/%.s
+	$(AS) $(ASFLAGS) -o $@ $<
 
 $(BUILD_DIR)/%.s.o: %.s
 	$(AS) $(ASFLAGS) -o $@ $<
