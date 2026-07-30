@@ -1,12 +1,12 @@
 {
-  "timestamp": "2026-07-25T02:50:59Z",
-  "commit": "dfedffb",
+  "timestamp": "2026-07-25T04:01:10Z",
+  "commit": "dd98f70",
   "sections": {
     "total": {
-      "percent": 9.6109,
-      "c_bytes": 216892,
+      "percent": 9.6818,
+      "c_bytes": 218492,
       "bytes": 2256728,
-      "c_funcs": 1941,
+      "c_funcs": 1949,
       "funcs": 8030
     },
     "init": {
@@ -17,10 +17,10 @@
       "funcs": 574
     },
     "game": {
-      "percent": 6.2994,
-      "c_bytes": 130580,
+      "percent": 6.3766,
+      "c_bytes": 132180,
       "bytes": 2072880,
-      "c_funcs": 1467,
+      "c_funcs": 1475,
       "funcs": 7274
     },
     "debugger": {
