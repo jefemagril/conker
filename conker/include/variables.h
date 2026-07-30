@@ -387,6 +387,10 @@ extern f32 D_80085FE0;
 extern f32 D_80085FE4;
 extern f32 D_80085FE8;
 
+extern f32 D_80085EA0;
+extern f32 D_80085EA4;
+extern f32 D_80085EA8;
+extern f32 D_80085EAC;
 extern f32 D_80085EB0;
 extern f32 D_80085EB4;
 extern f32 D_80085EB8;
@@ -566,6 +570,7 @@ extern s32 D_800968E0;
 extern f32 D_80096900;
 extern f32 D_80096904;
 
+extern f32 D_80098D70[];
 extern f32 D_80098D90[];
 extern f32 D_80098DB0; // 0.008726646192371845
 extern f32 D_80098DB4; // 0.008726646192371845
