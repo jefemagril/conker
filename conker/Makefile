@@ -141,6 +141,9 @@ $(BUILD_DIR)/$(SRC_DIR)/init_22460.c.o: OPT_FLAGS := -g
 
 
 $(BUILD_DIR)/$(SRC_DIR)/libultra/io/ai.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/libc/string.c.o: OPT_FLAGS := -O2
+$(BUILD_DIR)/$(SRC_DIR)/libultra/libc/lldiv.c.o: OPT_FLAGS := -O2
+$(BUILD_DIR)/$(SRC_DIR)/libultra/libc/ldiv.c.o: OPT_FLAGS := -O2
 $(BUILD_DIR)/$(SRC_DIR)/libultra/io/aigetstat.c.o: OPT_FLAGS := -O1
 $(BUILD_DIR)/$(SRC_DIR)/libultra/io/aisetfreq.c.o: OPT_FLAGS := -O1
 $(BUILD_DIR)/$(SRC_DIR)/libultra/io/pigetstat.c.o: OPT_FLAGS := -O1
