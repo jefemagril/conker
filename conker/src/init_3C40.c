@@ -8,7 +8,9 @@ s32 allocate_memory(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return func_10003C6C(arg0, arg1, arg2, 0, arg3);
 }
 
+/* NON-MATCHING: large free-list allocator (BK malloc analogue); not attempted this wave. */
 #pragma GLOBAL_ASM("asm/nonmatchings/init_3C40/func_10003C6C.s")
+/* NON-MATCHING: free+defrag (BK func_8025456C analogue); deferred after smaller leaves. */
 #pragma GLOBAL_ASM("asm/nonmatchings/init_3C40/func_10004074.s")
 
 void func_10004250(void) {
@@ -54,13 +56,14 @@ void func_10004308(void) {
     osSetIntMask(mask);
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/init_3C40/func_100043B4.s")
-// NON-MATCHING: missing an addiu
-// void func_100043B4(s32 *arg0, u32 arg1) {
-//     OSIntMask mask = osSetIntMask(1);
-//     *(arg0 - 1) = (arg1 << 24) | *(arg0 - 1) & 0xFFFFFF;
-//     osSetIntMask(mask);
-// }
+void func_100043B4(s32 *arg0, u32 arg1) {
+    OSIntMask mask;
+    struct54 *block = (struct54 *)((u8 *)arg0 - 0xC);
+
+    mask = osSetIntMask(1);
+    block->unk8 = (block->unk8 & 0xFFFFFF) | (arg1 << 24);
+    osSetIntMask(mask);
+}
 
 void func_1000440C(void) {
     struct54 *foo;

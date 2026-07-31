@@ -901,7 +901,7 @@ void func_100052A0(s32 arg0);
 void func_10005B04(s32 arg0);
 //func_10005BE0
 //func_10005C2C
-void func_1000709C(void);
+void rzip_init(void);
 //func_10007C74
 //func_10007CC4
 //func_10007D28
@@ -924,7 +924,7 @@ void func_10009BE4(struct54 *arg0);
 s32 func_10009CBC(void *arg0, s32 arg1);
 s32  func_10009FFC(void);
 //func_1000A03C
-//func_1000A348
+void func_1000A348(void);
 //func_1000A420
 //func_1000A750
 //func_1000B060

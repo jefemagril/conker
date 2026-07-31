@@ -51,7 +51,7 @@ void func_100010F8(s32 arg0) {
 //     func_10003920();
 //     func_10003930();
 //     func_10003BD0();
-//     func_1000709C();
+//     rzip_init();
 //     fb = D_8002AAE8;
 //     *(fb + 0) = func_10003C6C(126144, 0xFF, 3, 1, 0);
 //     *(fb + 1) = func_10003C6C(126144, 0xFF, 3, 1, 0);
@@ -67,7 +67,7 @@ void func_100010F8(s32 arg0) {
 //     sp40 = allocate_memory(sp28, 1, 2, 0);
 //     func_10004514(sp44, sp40, sp28, 1);
 //     if (0) {};
-//     func_10006240(sp40, &D_80082B20, D_8003809C);
+//     rzip_uncompress_file(sp40, &D_80082B20, D_8003809C);
 //     func_10004074(sp40);
 //     // D_80033330 is the current compressed item
 //     block_count = (u32) (((s32)func_151FA130 - (s32)func_15000000) + 4095) >> 12; // 2072880 bytes / 4096 = 506 offsets

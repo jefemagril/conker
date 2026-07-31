@@ -112,6 +112,12 @@ void piDmaRead(s32 devAddr, void *dramAddr, u32 size) {
 }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/init_4470/func_1000480C.s")
+/*
+ * NON-MATCHING: KSEG1 PIO/ROM-mirror copy (not a PD dma.c twin).
+ * Closest C is halfword-align + A0000000 loads with D_8003A572/573 busy flags;
+ * IDO -O2/-O1/-g miss the original's register-pinned &D_8003A572/&D_8003A573
+ * and bnel busy-waits. Left as GLOBAL_ASM rather than thrash.
+ */
 // void func_1000480C(s32 devAddr, void *dramAddr, u32 size) {
 //     s32 sp38;
 //     s32 *temp_t0;

@@ -70,8 +70,8 @@ extern u8   D_800428C2;
 
 extern s16 _getRate(f32, f32, s32, u16 *);
 extern s16 _getVol(s16, s32, s16, u16);
-extern void *func_151F85C4(s32, N_ALStreamReadCallback, s32);
-extern s32 func_151F86B0(void *, u16 **, s32 *);
+extern void *mp3main_start_file(s32, N_ALStreamReadCallback, s32);
+extern s32 mp3main_continue_file(void *, u16 **, s32 *);
 extern void func_10004074(s32);
 
 #define STREAM_VOLUME_LIMIT 0x8000
@@ -295,7 +295,7 @@ s32 n_alStreamMakeSamples(s32 samples, Acmd **cmd) {
         n_alStreamPrefetch();
 
         if (gStreamTransitionDelay == 0) {
-            D_800E0D84 = func_151F85C4(0, gStreamReadCallback, gStreamDataLength);
+            D_800E0D84 = mp3main_start_file(0, gStreamReadCallback, gStreamDataLength);
 
             if (D_800E0D84 == NULL) {
                 gStreamReadOffset = 0;
@@ -340,7 +340,7 @@ s32 n_alStreamMakeSamples(s32 samples, Acmd **cmd) {
             D_800E0DF0 = 0;
             D_800E0DEC = 0;
 
-            if (func_151F86B0(D_800E0D84, &sp58, &numchannels)) {
+            if (mp3main_continue_file(D_800E0D84, &sp58, &numchannels)) {
                 D_800E0DE8 = sp58;
 
                 for (i = 0; i < numchannels; i++) {

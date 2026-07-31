@@ -5,7 +5,9 @@
 
 
 #pragma GLOBAL_ASM("asm/nonmatchings/init_8F90/func_10008F90.s")
-// NON-MATCHING: so much to do
+// NON-MATCHING: Conker amgr_create-like audio-manager init (0x43C). Sets up synth,
+// DMA/cache state, threads, and related tables. PD amgr_create is much smaller
+// (~175 lines) and not a line-for-line twin — Conker folds in extra cache/fx setup.
 // void func_10008F90(struct15 *arg0, OSPri arg1, struct52 *arg2) {
 //     // ? sp160;
 //     s32 sp58;
@@ -308,7 +310,9 @@ void func_100093CC(void) {
 // }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/init_8F90/func_100097CC.s")
-// NON-MATCHING: another horrible function
+// NON-MATCHING: Conker audio DMA/cache helper (adma_exec-like; 0x1B4). Not in PD
+// audiomgr.c — closest twin is PD audiodma.c adma_exec. Shares inlined-alLink
+// beql wall with func_100099BC / func_1000A348 / func_10009BE4 at -O2 -g3.
 // s32 func_100097CC(u32 arg0, s32 arg1, s32 arg2) {
 //     s32 sp2C;
 //     s32 sp28;
@@ -410,6 +414,9 @@ s32 func_10009980(s32 *arg0) {
 }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/init_8F90/func_100099BC.s")
+// NON-MATCHING: Conker audio DMA/cache helper (0x170) — fused receive-all +
+// begin-frame style drain of D_80040F78 used list onto free. Not in PD audiomgr.c
+// (PD: audiodma adma_receive_all + adma_begin_frame). Same inlined-alLink beql wall.
 
 void func_10009B2C(struct54 *arg0) {
     if (((s32)arg0 & 1) == 0) {
@@ -440,46 +447,60 @@ void func_10009B90(struct54 *arg0) {
 }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/init_8F90/func_10009BE4.s")
-// void func_10009BE4(struct00 *arg0) {
-//     struct00 *temp_a1;
-//     struct00 *temp_v0;
-//     struct00 *temp_v1;
+// NON-MATCHING: unlink one D_800406A0 node onto free list (unk10). Odd pointer
+// path sets D_8003C8E0=0x0F000004 and jal func_150AD770. Logic matches below;
+// codegen wall: need beqz delay-slot `lui` of &D_800406A0 plus absolute
+// D_800406A4 / D_800406B0 stores, and the same inlined-alLink inner beql shape
+// as func_1000A348 (IDO -O2 emits beqz+nop / sinks sw into b delay).
+// void func_10009BE4(struct54 *arg0) {
+//     struct147 *state;
+//     struct54 *next;
+//     struct54 *prev;
+//     struct54 *freeHead;
+//     s32 *dst;
 //
 //     if (((s32)arg0 & 1) != 0) {
 //         D_8003C8E0 = 0x0F000004;
-//         func_150AD770(); // 0x80040000
+//         func_150AD770();
 //         return;
 //     }
-//     arg0->unkC = (s32) arg0->unk8;
-//     if ((s32)arg0 == D_800406A0.unk4) {
-//         D_800406A4 = (struct54 *) arg0->unk0;
+//
+//     state = &D_800406A0;
+//     dst = (s32 *)arg0->unkC;
+//     *dst = arg0->unk8;
+//
+//     if (arg0 == (struct54 *)state->unk4) {
+//         D_800406A4 = arg0->unk0;
 //     }
-//     temp_v0 = arg0->unk0;
-//     if (temp_v0 != 0) {
-//         temp_v0->unk4 = (struct54 *) arg0->unk4;
+//
+//     next = arg0->unk0;
+//     if (next != NULL) {
+//         next->unk4 = arg0->unk4;
 //     }
-//     temp_v0 = arg0->unk4;
-//     if (temp_v0 != 0) {
-//         temp_v0 = (struct54 *) arg0->unk0;
+//
+//     prev = arg0->unk4;
+//     if (prev != NULL) {
+//         prev->unk0 = arg0->unk0;
 //     }
-//     temp_v1 = D_800406A0.unk10;
-//     if (temp_v1 != 0) {
-//         arg0->unk4 = temp_v1;
-//         arg0->unk0 = (struct54 *) &temp_v1;
-//         temp_a1 = &temp_v1;
-//         if (temp_a1 != 0) {
-//             temp_a1->unk4 = arg0;
+//
+//     freeHead = (struct54 *)state->unk10;
+//     if (freeHead != NULL) {
+//         arg0->unk4 = freeHead;
+//         arg0->unk0 = freeHead->unk0;
+//         if (freeHead->unk0 != NULL) {
+//             freeHead->unk0->unk4 = arg0;
 //         }
-//         temp_v1 = arg0;
-//         return;
+//         freeHead->unk0 = arg0;
+//     } else {
+//         D_800406B0 = arg0;
+//         arg0->unk0 = NULL;
+//         arg0->unk4 = NULL;
 //     }
-//     D_800406B0 = arg0;
-//     arg0->unk0 = NULL;
-//     arg0->unk4 = NULL;
-//     // return temp_v0;
 // }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/init_8F90/func_10009CBC.s")
+// NON-MATCHING: Conker audio cache/fx alloc helper (0x340). Not in PD audiomgr.c —
+// pulls from D_800406A0 free list / builds used-list nodes (pairs with A03C/A348).
 
 s32 func_10009FFC(void) {
     if (D_800406A0.unk0 == 0) {
@@ -493,4 +514,57 @@ s32 func_10009FFC(void) {
 }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/init_8F90/func_1000A03C.s")
+// NON-MATCHING: Conker audio cache/fx maintenance helper (0x30C). Not in PD
+// audiomgr.c — companion to 9CBC/A348 on D_800406A0 lists.
+
 #pragma GLOBAL_ASM("asm/nonmatchings/init_8F90/func_1000A348.s")
+// NON-MATCHING: walk D_800406A0 used list (unk4); when unk14==0 && unk16==0,
+// restore *unkC=unk8, clear unkC, inlined alUnlink, push to free list (unk10).
+// Same link pattern as func_10009BE4. Inlined-alLink beql wall at -O2 -g3:
+// outer free-list beql+dead sw unk10 and unlink can match, but IDO emits inner
+// beqz+nop and sinks `after->unk0 = node` into `b; sw`; original wants
+// `or a1,a0` + `lw a2` + inner beql (sw next in delay when NULL; fall-through
+// sw prev + sw next) then `b; nop`. Inverting the free-list test yields inner
+// beql but flips outer to bnezl.
+//
+// void func_1000A348(void) {
+//     struct54 *node;
+//     struct54 *next;
+//     struct54 *after;
+//     u32 *dest;
+//
+//     node = (struct54 *)D_800406A0.unk4;
+//     while (node != NULL) {
+//         next = node->unk0;
+//         if (node->unk14 == 0) {
+//             if (node->unk16 == 0) {
+//                 dest = (u32 *)node->unkC;
+//                 *dest = node->unk8;
+//                 node->unkC = 0;
+//                 if ((struct54 *)D_800406A0.unk4 == node) {
+//                     D_800406A0.unk4 = (s32)next;
+//                 }
+//                 if (node->unk0 != NULL) {
+//                     node->unk0->unk4 = node->unk4;
+//                 }
+//                 if (node->unk4 != NULL) {
+//                     node->unk4->unk0 = node->unk0;
+//                 }
+//                 after = D_800406A0.unk10;
+//                 if (after != NULL) {
+//                     node->unk0 = after->unk0;
+//                     node->unk4 = after;
+//                     if (after->unk0 != NULL) {
+//                         after->unk0->unk4 = node;
+//                     }
+//                     after->unk0 = node;
+//                 } else {
+//                     D_800406A0.unk10 = node;
+//                     node->unk0 = NULL;
+//                     node->unk4 = NULL;
+//                 }
+//             }
+//         }
+//         node = next;
+//     }
+// }

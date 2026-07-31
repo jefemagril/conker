@@ -54,7 +54,7 @@ segments:
       - [0x50A0, c, init_50A0]
       - [0x52A0, c, init_52A0]
       - [0x5570, c, libultra/io/motor]
-      - [0x5AB0, asm, init_5AB0] # handwritten TLB
+      - [0x5AB0, asm, init_5AB0] # handwritten TLB + RareZip inflate (magic 0x1172)
       - [0x8120, asm, libultra/os/maptlbrdb] # handwritten; tracked in src/hasm/
       - [0x8180, c, init_8180]
       - [0x8F90, c, init_8F90]
@@ -792,8 +792,8 @@ segments:
       - [0x21fc90, c,   libultra/audio/n_streamcrc]  # -O1 (CRC-5/CRC-8 helpers, split out of n_streamplayer)
       - [0x21fe10, c,   libultra/audio/n_streamplayer]  # -g
       - [0x221290, c, game_221290]
-      - [0x225d20, asm]
-      - [0x2270a0, asm]
+      - [0x225d20, asm]  # mp3 util + IMDCT long (PD util.s / func00046650)
+      - [0x2270a0, asm]  # mp3 IMDCT short (PD func00047550)
   - name:  game_data
     type:  code
     start: 0x002275E0

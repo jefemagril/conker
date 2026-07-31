@@ -21,7 +21,9 @@ enum {
 #define SC_FRAME_COUNT_UNSET 255
 
 
-// contains jr
+// contains jr — PD __scMain twin (perfect_dark/src/lib/sched.c).
+// NON-MATCHING: jump table (jtbl_8002C0A0); needs rodata migration before C match.
+// Closest shape is in the commented body below (mesg cases 0/1/2/3/6).
 #pragma GLOBAL_ASM("asm/nonmatchings/init_49E0/func_100049E0.s")
 // void func_100049E0(s32 arg0) {
 //     u32 sp64;
