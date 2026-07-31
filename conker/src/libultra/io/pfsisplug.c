@@ -2,7 +2,7 @@
 #include "controller.h"
 #include "siint.h"
 
-s32 osPfsIsPlug2(OSMesgQueue *mq, u8 *pattern)
+s32 osPfsIsPlug(OSMesgQueue *mq, u8 *pattern)
 {
     s32 ret = 0;
     OSMesg msg;
@@ -47,7 +47,7 @@ s32 osPfsIsPlug2(OSMesgQueue *mq, u8 *pattern)
     return ret;
 }
 
-void __osPfsRequestData2(u8 cmd)
+void __osPfsRequestData(u8 cmd)
 {
     u8 *ptr;
     __OSContRequesFormat requestformat;
@@ -76,7 +76,7 @@ void __osPfsRequestData2(u8 cmd)
     *ptr = CONT_CMD_END;
 }
 
-void __osPfsGetInitData2(u8 *pattern, OSContStatus *data)
+void __osPfsGetInitData(u8 *pattern, OSContStatus *data)
 {
     u8 *ptr;
     __OSContRequesFormat requestformat;

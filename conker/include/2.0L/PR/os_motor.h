@@ -61,7 +61,10 @@ extern "C" {
 
 /* Rumble PAK interface */
 
-extern s32 osMotorInit(OSMesgQueue *, OSPfs *, int);
+/* Conker labels are swapped vs stock libultra:
+ *   _MakeMotorData == stock osMotorInit
+ *   osMotorInit    == stock _MakeMotorData (internal pack helper) */
+extern s32 _MakeMotorData(OSMesgQueue *, OSPfs *, int);
 #if	0
 #define MOTOR_START		1
 #define MOTOR_STOP		0

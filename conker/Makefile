@@ -143,6 +143,56 @@ $(BUILD_DIR)/$(SRC_DIR)/init_22460.c.o: OPT_FLAGS := -g
 $(BUILD_DIR)/$(SRC_DIR)/libultra/io/ai.c.o: OPT_FLAGS := -O1
 $(BUILD_DIR)/$(SRC_DIR)/libultra/io/aigetstat.c.o: OPT_FLAGS := -O1
 $(BUILD_DIR)/$(SRC_DIR)/libultra/io/aisetfreq.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/pigetstat.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/spgetstat.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/spsetstat.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/vigetcurrcontext.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/pigetcmdq.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/sptaskyield.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/si.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/sp.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/spsetpc.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/sprawdma.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/sptaskyielded.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/vigetcurrframebuf.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/vigetnextframebuf.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/viswapbuf.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/visetmode.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/visetevent.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/viblack.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/vi.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/viswapcontext.c.o: OPT_FLAGS := -O1
+# Plain -O2: -g3 inserts $fp and grows viMgrMain's frame.
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/vimgr.c.o: OPT_FLAGS := -O2
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/sirawread.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/sirawwrite.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/pirawread.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/pirawdma.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/epirawdma.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/pidma.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/siacs.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/siacs2.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/sirawdma.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/sirawdma2.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/crc.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/pfsisplug.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/pfsisplug2.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/pfsinit.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/pfsinit2.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/contpfs.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/contpfs2.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/pfschecker.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/pfschecker2.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/contramwrite.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/contramread.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/contramread2.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/contramwrite2.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/contreaddata.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/contreaddata2.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/controller.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/motor.c.o: OPT_FLAGS := -O2
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/leodiskinit.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/io/leointerrupt.c.o: OPT_FLAGS := -O1
 
 $(BUILD_DIR)/$(SRC_DIR)/libultra/os/getthreadpri.c.o: OPT_FLAGS := -O1
 
@@ -268,7 +318,7 @@ $(BUILD_DIR)/%.bin.o: %.bin
 	$(LD) -r -b binary -o $@ $<
 
 $(TARGET).bin: $(TARGET).elf
-	$(OBJCOPY) $(OBJCOPYFLAGS) -O binary $< $@
+	$(OBJCOPY) -O binary --remove-section=.vimgr_bss $< $@
 
 # extract
 $(BUILD_DIR)/splat: check $(BASENAME).$(VERSION).yaml

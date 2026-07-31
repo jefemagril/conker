@@ -4,9 +4,7 @@
 s32 corrupted_init(OSPfs *pfs, __OSInodeCache *cache);
 s32 corrupted(OSPfs *pfs, __OSInodeUnit fpage, __OSInodeCache *cache);
 
-/* Duplicate of pfschecker: *2 entry points call the init (non-2) helpers. */
-
-s32 osPfsChecker2(OSPfs *pfs)
+s32 osPfsChecker(OSPfs *pfs)
 {
     int j;
     s32 ret;
@@ -133,7 +131,7 @@ s32 osPfsChecker2(OSPfs *pfs)
     return 0;
 }
 
-s32 corrupted_init2(OSPfs *pfs, __OSInodeCache *cache)
+s32 corrupted_init(OSPfs *pfs, __OSInodeCache *cache)
 {
     int i;
     int n;
@@ -169,7 +167,7 @@ s32 corrupted_init2(OSPfs *pfs, __OSInodeCache *cache)
     return 0;
 }
 
-s32 corrupted2(OSPfs *pfs, __OSInodeUnit fpage, __OSInodeCache *cache)
+s32 corrupted(OSPfs *pfs, __OSInodeUnit fpage, __OSInodeCache *cache)
 {
     int j;
     int n;

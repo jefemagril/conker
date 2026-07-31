@@ -53,7 +53,7 @@ segments:
       - [0x49E0, c, init_49E0]
       - [0x50A0, c, init_50A0]
       - [0x52A0, c, init_52A0]
-      - [0x5570, asm, libultra/io/motor]
+      - [0x5570, c, libultra/io/motor]
       - [0x5AB0, asm, init_5AB0] # handwritten TLB
       - [0x8120, asm, libultra/os/maptlbrdb]
       - [0x8180, c, init_8180]
@@ -142,65 +142,65 @@ segments:
       - [0x23790, asm, libultra/os/createmesgqueue]
       - [0x237C0, asm, libultra/os/seteventmesg]
       - [0x23830, c,   libultra/os/getthreadpri]
-      - [0x23850, asm, libultra/io/pirawdma]
-      - [0x23930, asm, libultra/io/epirawdma]
+      - [0x23850, c,   libultra/io/pirawdma]
+      - [0x23930, c,   libultra/io/epirawdma]
       - [0x23A10, asm, libultra/libc/bcopy]
       - [0x23D20, asm, libultra/os/writebackdcache]
-      - [0x23DA0, asm, libultra/io/spsetstat]
-      - [0x23DB0, asm, libultra/io/spsetpc]
-      - [0x23DF0, asm, libultra/io/sprawdma]
-      - [0x23E80, asm, libultra/io/sp]
+      - [0x23DA0, c,   libultra/io/spsetstat]
+      - [0x23DB0, c,   libultra/io/spsetpc]
+      - [0x23DF0, c,   libultra/io/sprawdma]
+      - [0x23E80, c,   libultra/io/sp]
       - [0x23EB0, asm, libultra/os/timerintr]
-      - [0x242B0, asm, libultra/io/vi]
-      - [0x24400, asm, libultra/io/pigettype]
-      - [0x24410, asm, libultra/io/viswapcontext]
+      - [0x242B0, c,   libultra/io/vi]
+      - [0x24400, c,   libultra/io/vigetcurrcontext]
+      - [0x24410, c,   libultra/io/viswapcontext]
       - [0x24770, asm, libultra/os/getcount]
       - [0x24780, asm, libultra/os/thread]
-      - [0x247C0, asm, libultra/io/visetmode]
-      - [0x24830, asm, libultra/io/viswapbuf]
+      - [0x247C0, c,   libultra/io/visetmode]
+      - [0x24830, c,   libultra/io/viswapbuf]
       - [0x24880, asm, libultra/os/setintmask]
-      - [0x24920, asm, libultra/io/pidma]
+      - [0x24920, c,   libultra/io/pidma]
       - [0x24A30, c,   libultra/io/aigetstat]
       - [0x24A40, asm, libultra/os/settimer]
-      - [0x24B20, asm, libultra/io/sptaskyielded]
-      - [0x24BA0, asm, libultra/io/sptaskyield]
-      - [0x24BC0, asm, libultra/io/contreaddata]
-      - [0x24E20, asm, libultra/io/vigetcurrframebuf]
-      - [0x24E60, asm, libultra/io/vigetnextframebuf]
-      - [0x24EA0, asm, libultra/io/visetevent]
+      - [0x24B20, c,   libultra/io/sptaskyielded]
+      - [0x24BA0, c,   libultra/io/sptaskyield]
+      - [0x24BC0, c,   libultra/io/contreaddata]
+      - [0x24E20, c,   libultra/io/vigetcurrframebuf]
+      - [0x24E60, c,   libultra/io/vigetnextframebuf]
+      - [0x24EA0, c,   libultra/io/visetevent]
       - [0x24F10, asm, libultra/os/writebackdcacheall]
       - [0x24F40, asm, libultra/os/gettime]
-      - [0x24FD0, asm, libultra/io/pfsisplug]
-      - [0x25340, asm, libultra/io/controller]
-      - [0x25700, asm, libultra/io/siacs]
-      - [0x257C0, asm, libultra/io/sirawdma]
-      - [0x25870, asm, libultra/io/contramwrite]
-      - [0x25C20, asm, libultra/io/contramread]
-      - [0x25FD0, asm, libultra/io/crc]
+      - [0x24FD0, c,   libultra/io/pfsisplug]
+      - [0x25340, c,   libultra/io/controller]
+      - [0x25700, c,   libultra/io/siacs]
+      - [0x257C0, c,   libultra/io/sirawdma]
+      - [0x25870, c,   libultra/io/contramwrite]
+      - [0x25C20, c,   libultra/io/contramread]
+      - [0x25FD0, c,   libultra/io/crc]
       - [0x26150, asm, libultra/os/destroythread]
-      - [0x26250, asm, libultra/io/viblack]
-      - [0x262C0, asm, libultra/io/pigetstat]
+      - [0x26250, c,   libultra/io/viblack]
+      - [0x262C0, c,   libultra/io/pigetstat]
       - [0x262D0, asm, libultra/os/unmaptlb]
       - [0x26310, asm, libultra/os/maptlb]
       - [0x263D0, c,   libultra/io/aisetfreq] # -O1
       - [0x26530, asm, libultra/gu/sqrtf] # handwritten leaf; tracked in src/hasm/
       - [0x26540, asm, libultra/gu/sinf]
-      - [0x26700, asm, libultra/io/sprawread]
-      - [0x26750, asm, libultra/io/sprawwrite]
-      - [0x267A0, asm, libultra/io/pirawread]
+      - [0x26700, c,   libultra/io/sirawread]
+      - [0x26750, c,   libultra/io/sirawwrite]
+      - [0x267A0, c,   libultra/io/pirawread]
       - [0x26800, asm, libultra/libc/__ull_rshift]
       - [0x26AC0, asm, libultra/os/sethwinterrupt]
-      - [0x26B10, asm, libultra/io/leointerrupt]
+      - [0x26B10, c,   libultra/io/leointerrupt]
       - [0x273D0, asm, libultra/os/probetlb]
       - [0x27490, asm, libultra/os/setcompare]
       - [0x274A0, asm, libultra/os/jammesg]
-      - [0x275F0, asm, libultra/io/pigetcmdq]
-      - [0x27620, asm, libultra/io/spgetstat]
-      - [0x27630, asm, libultra/io/si]
-      - [0x27660, asm, libultra/io/pfsinit]
-      - [0x27820, asm, libultra/io/leodiskinit]
-      - [0x27910, asm, libultra/io/contpfs]
-      - [0x28670, asm, libultra/io/pfschecker]
+      - [0x275F0, c,   libultra/io/pigetcmdq]
+      - [0x27620, c,   libultra/io/spgetstat]
+      - [0x27630, c,   libultra/io/si]
+      - [0x27660, c,   libultra/io/pfsinit]
+      - [0x27820, c,   libultra/io/leodiskinit]
+      - [0x27910, c,   libultra/io/contpfs]
+      - [0x28670, c,   libultra/io/pfschecker]
 
   - name:  init_data
     type:  code
@@ -766,26 +766,26 @@ segments:
       - [0x215960, asm]
       - [0x21c4f0, asm]
       - [0x21c540, asm]
-      - [0x21C900, asm, libultra/io/pfsinit2] # dupe of libultra/io/pfsinit
+      - [0x21C900, c,   libultra/io/pfsinit2] # dupe of libultra/io/pfsinit
       - [0x21CAC0, asm]
       - [0x21CAF0, asm]
       - [0x21ccb0, c, libultra/gu/guOrthoF] # guOrthoF / guOrtho (-O3)
       - [0x21ce70, asm] # modified osSetTimer ?
-      - [0x21cf50, asm, libultra/io/contreaddata2]
+      - [0x21cf50, c,   libultra/io/contreaddata2]
       - [0x21d1b0, c, libultra/gu/mtxutil2] # guMtxF2L2 / IdentF2 / Ident / L2F
       - [0x21D420, asm]
       - [0x21d4a0, c, libultra/gu/guNormalize]
       - [0x21d530, c, libultra/gu/mtxcatl]
       - [0x21D5F0, c, libultra/gu/guMtxXFMF]
       - [0x21D690, c, libultra/gu/guMtxCatF]
-      - [0x21d800, asm, libultra/io/siacs2]          # dupe of libultra/io/siacs
-      - [0x21D8C0, asm, libultra/io/sirawdma2]       # dupe of libultra/io/sirawdma
+      - [0x21d800, c,   libultra/io/siacs2]          # dupe of libultra/io/siacs
+      - [0x21D8C0, c,   libultra/io/sirawdma2]       # dupe of libultra/io/sirawdma
       - [0x21d970, asm, libultra/os/gettime2]        # dupe of libultra/os/gettime
-      - [0x21da00, asm, libultra/io/contpfs2]        # dupe of libultra/io/contpfs
+      - [0x21da00, c,   libultra/io/contpfs2]        # dupe of libultra/io/contpfs
       - [0x21e760, c,   libultra/io/pfschecker2]     # dupe of libultra/io/pfschecker
       - [0x21F1C0, c,   libultra/io/pfsisplug2]      # dupe of libultra/io/pfsisplug
-      - [0x21F530, asm, libultra/io/contramread2]    # dupe of libultra/io/contramread
-      - [0x21f8e0, asm, libultra/io/contramwrite2]   # dupe of libultra/io/contramwrite
+      - [0x21F530, c,   libultra/io/contramread2]    # dupe of libultra/io/contramread
+      - [0x21f8e0, c,   libultra/io/contramwrite2]   # dupe of libultra/io/contramwrite
       - [0x21fc90, c,   libultra/audio/n_streamcrc]  # -O1 (CRC-5/CRC-8 helpers, split out of n_streamplayer)
       - [0x21fe10, c,   libultra/audio/n_streamplayer]  # -g
       - [0x221290, c, game_221290]
