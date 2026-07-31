@@ -55,7 +55,7 @@ segments:
       - [0x52A0, c, init_52A0]
       - [0x5570, c, libultra/io/motor]
       - [0x5AB0, asm, init_5AB0] # handwritten TLB
-      - [0x8120, asm, libultra/os/maptlbrdb]
+      - [0x8120, asm, libultra/os/maptlbrdb] # handwritten; tracked in src/hasm/
       - [0x8180, c, init_8180]
       - [0x8F90, c, init_8F90]
       - [0xA420, c, init_A420]
@@ -121,14 +121,14 @@ segments:
       # -O2 -g3 from here
       - [0x226F0, asm, libultra/libc/bzero]
       - [0x22790, c,   libultra/os/initialize]
-      - [0x22A30, asm, libultra/os/setsr]
-      - [0x22A40, asm, libultra/os/getsr]
-      - [0x22A50, asm, libultra/os/setfpccsr]
+      - [0x22A30, asm, libultra/os/setsr] # handwritten; tracked in src/hasm/
+      - [0x22A40, asm, libultra/os/getsr] # handwritten; tracked in src/hasm/
+      - [0x22A50, asm, libultra/os/setfpccsr] # handwritten; tracked in src/hasm/
       - [0x22A60, c,   libultra/os/startthread]
       - [0x22BB0, c,   libultra/os/setthreadpri]
-      - [0x22C90, asm, libultra/os/invalicache]
-      - [0x22D10, asm, libultra/os/invaldcache]
-      - [0x22DC0, asm, libultra/os/interrupt]
+      - [0x22C90, asm, libultra/os/invalicache] # handwritten; tracked in src/hasm/
+      - [0x22D10, asm, libultra/os/invaldcache] # handwritten; tracked in src/hasm/
+      - [0x22DC0, asm, libultra/os/interrupt] # handwritten; tracked in src/hasm/
       - [0x22E00, c,   libultra/os/stopthread]
       - [0x22EC0, asm, libultra/libc/string]
       - [0x22F60, asm, libultra/libc/lldiv]
@@ -145,7 +145,7 @@ segments:
       - [0x23850, c,   libultra/io/pirawdma]
       - [0x23930, c,   libultra/io/epirawdma]
       - [0x23A10, asm, libultra/libc/bcopy]
-      - [0x23D20, asm, libultra/os/writebackdcache]
+      - [0x23D20, asm, libultra/os/writebackdcache] # handwritten; tracked in src/hasm/
       - [0x23DA0, c,   libultra/io/spsetstat]
       - [0x23DB0, c,   libultra/io/spsetpc]
       - [0x23DF0, c,   libultra/io/sprawdma]
@@ -154,11 +154,11 @@ segments:
       - [0x242B0, c,   libultra/io/vi]
       - [0x24400, c,   libultra/io/vigetcurrcontext]
       - [0x24410, c,   libultra/io/viswapcontext]
-      - [0x24770, asm, libultra/os/getcount]
+      - [0x24770, asm, libultra/os/getcount] # handwritten; tracked in src/hasm/
       - [0x24780, c,   libultra/os/thread]
       - [0x247C0, c,   libultra/io/visetmode]
       - [0x24830, c,   libultra/io/viswapbuf]
-      - [0x24880, asm, libultra/os/setintmask]
+      - [0x24880, asm, libultra/os/setintmask] # handwritten; tracked in src/hasm/
       - [0x24920, c,   libultra/io/pidma]
       - [0x24A30, c,   libultra/io/aigetstat]
       - [0x24A40, c,   libultra/os/settimer]
@@ -168,7 +168,7 @@ segments:
       - [0x24E20, c,   libultra/io/vigetcurrframebuf]
       - [0x24E60, c,   libultra/io/vigetnextframebuf]
       - [0x24EA0, c,   libultra/io/visetevent]
-      - [0x24F10, asm, libultra/os/writebackdcacheall]
+      - [0x24F10, asm, libultra/os/writebackdcacheall] # handwritten; tracked in src/hasm/
       - [0x24F40, c,   libultra/os/gettime]
       - [0x24FD0, c,   libultra/io/pfsisplug]
       - [0x25340, c,   libultra/io/controller]
@@ -180,8 +180,8 @@ segments:
       - [0x26150, c,   libultra/os/destroythread]
       - [0x26250, c,   libultra/io/viblack]
       - [0x262C0, c,   libultra/io/pigetstat]
-      - [0x262D0, asm, libultra/os/unmaptlb]
-      - [0x26310, asm, libultra/os/maptlb]
+      - [0x262D0, asm, libultra/os/unmaptlb] # handwritten; tracked in src/hasm/
+      - [0x26310, asm, libultra/os/maptlb] # handwritten; tracked in src/hasm/
       - [0x263D0, c,   libultra/io/aisetfreq] # -O1
       - [0x26530, asm, libultra/gu/sqrtf] # handwritten leaf; tracked in src/hasm/
       - [0x26540, asm, libultra/gu/sinf]
@@ -191,8 +191,8 @@ segments:
       - [0x26800, asm, libultra/libc/__ull_rshift]
       - [0x26AC0, c,   libultra/os/sethwinterrupt]
       - [0x26B10, c,   libultra/io/leointerrupt]
-      - [0x273D0, asm, libultra/os/probetlb]
-      - [0x27490, asm, libultra/os/setcompare]
+      - [0x273D0, asm, libultra/os/probetlb] # handwritten; tracked in src/hasm/
+      - [0x27490, asm, libultra/os/setcompare] # handwritten; tracked in src/hasm/
       - [0x274A0, c,   libultra/os/jammesg]
       - [0x275F0, c,   libultra/io/pigetcmdq]
       - [0x27620, c,   libultra/io/spgetstat]
@@ -214,6 +214,9 @@ segments:
       - [0x290D0, data] # could be larger/smaller
       - [0x2AB40, .data, libultra/io/aisetnextbuf]
       - [0x2AB50, data]
+      # osClockRate / __osShutdown / __OSGlobalIntMask are defined in initialize.c
+      - [0x2BD10, .data, libultra/os/initialize]
+      - [0x2BD20, data]
 
       - [0x2BF20, rodata]
       - [0x2C080, rodata]

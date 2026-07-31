@@ -212,7 +212,7 @@ $(BUILD_DIR)/$(SRC_DIR)/libultra/os/startthread.c.o: OPT_FLAGS := -O1
 $(BUILD_DIR)/$(SRC_DIR)/libultra/os/destroythread.c.o: OPT_FLAGS := -O1
 $(BUILD_DIR)/$(SRC_DIR)/libultra/os/settimer.c.o: OPT_FLAGS := -O1
 $(BUILD_DIR)/$(SRC_DIR)/libultra/os/timerintr.c.o: OPT_FLAGS := -O1
-# initialize stays default -O2 -g3 (yaml region)
+$(BUILD_DIR)/$(SRC_DIR)/libultra/os/initialize.c.o: OPT_FLAGS := -O1
 
 # Plain -O2 (not -O2 -g3): epilogue is lw/addiu/jr/nop; -g3 delay-fills jr with addiu.
 $(BUILD_DIR)/$(SRC_DIR)/libultra/gu/guNormalize.c.o: OPT_FLAGS := -O2

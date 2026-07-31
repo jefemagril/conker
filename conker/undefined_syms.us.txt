@@ -64,7 +64,8 @@ osViModeMpalLan1 = 0x8002BE80;
 osViModeNtscLan1 = 0x8002BED0;
 osTvType = 0x80000300;
 osRomBase = 0x80000308;
-osClockRate = 0x8002BD10;
+/* low half of the u64 osClockRate defined in libultra/os/initialize.c */
+D_8002BD14 = 0x8002BD14;
 viThread = 0x80036BA0;
 viThreadStack = 0x80036DD0;
 viEventQueue = 0x80037DD0;
@@ -90,7 +91,6 @@ piEventBuf = 0x80036B58;
 LeoDiskHandle = 0x80043AC0;
 __osDiskHandle = 0x80043B34;
 __osPiTable = 0x8002AB6C;
-__OSGlobalIntMask = 0x8002BD1C;
 __osEventStateTab = 0x80042910;
 __osRunQueue = 0x8002BDF8;
 __osEepromTimerMsg = 0x80042A90;

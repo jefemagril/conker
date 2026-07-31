@@ -1,15 +1,32 @@
 #include <os_internal.h>
 #include "osint.h"
 
-/*
- * __osTimerServicesInit: GLOBAL_ASM — __osCurrentTime=0 at -O1 emits an extra
- * lui vs original (high/low halves with one lui). Left as asm rather than thrash.
- */
-#pragma GLOBAL_ASM("asm/nonmatchings/libultra/os/timerintr/__osTimerServicesInit.s")
-
-/* BSS via undefined_syms / symbol_addrs (not emitted from this TU) */
+/* __osTimerList lives elsewhere; its address comes from undefined_syms. */
 extern OSTimer *__osTimerList;
-extern u32 __osTimerCounter;
+
+/*
+ * These four must be defined here, not declared extern. When they are extern,
+ * `__osCurrentTime = 0` materialises a separate %hi for each half of the u64
+ * and costs an extra lui; defining them locally lets both stores share one
+ * `lui $at`, which is what the original does. The addresses still come from
+ * undefined_syms (0x800429B0..0x800429C0) — this .bss is discarded at link.
+ */
+OSTime __osCurrentTime;
+u32 __osBaseCounter;
+u32 __osViIntrCount;
+u32 __osTimerCounter;
+
+void __osTimerServicesInit(void)
+{
+	__osCurrentTime = 0;
+	__osBaseCounter = 0;
+	__osViIntrCount = 0;
+
+	__osTimerList->next = __osTimerList->prev = __osTimerList;
+	__osTimerList->interval = __osTimerList->value = 0;
+	__osTimerList->mq = NULL;
+	__osTimerList->msg = NULL;
+}
 
 void __osTimerInterrupt(void)
 {
