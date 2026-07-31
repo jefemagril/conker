@@ -195,6 +195,24 @@ $(BUILD_DIR)/$(SRC_DIR)/libultra/io/leodiskinit.c.o: OPT_FLAGS := -O1
 $(BUILD_DIR)/$(SRC_DIR)/libultra/io/leointerrupt.c.o: OPT_FLAGS := -O1
 
 $(BUILD_DIR)/$(SRC_DIR)/libultra/os/getthreadpri.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/os/createmesgqueue.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/os/seteventmesg.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/os/virtualtophysical.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/os/piacs.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/os/gettime.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/os/gettime2.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/os/sethwinterrupt.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/os/thread.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/os/recvmesg.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/os/sendmesg.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/os/jammesg.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/os/stopthread.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/os/setthreadpri.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/os/startthread.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/os/destroythread.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/os/settimer.c.o: OPT_FLAGS := -O1
+$(BUILD_DIR)/$(SRC_DIR)/libultra/os/timerintr.c.o: OPT_FLAGS := -O1
+# initialize stays default -O2 -g3 (yaml region)
 
 # Plain -O2 (not -O2 -g3): epilogue is lw/addiu/jr/nop; -g3 delay-fills jr with addiu.
 $(BUILD_DIR)/$(SRC_DIR)/libultra/gu/guNormalize.c.o: OPT_FLAGS := -O2
