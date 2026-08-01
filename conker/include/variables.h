@@ -1140,7 +1140,7 @@ extern f32 D_800D2DB0;
 extern s32 D_800D2DB4;
 
 extern s32 D_800D3094;
-extern struct178 D_800D3098[73];
+extern struct178 *D_800D3098;
 extern struct00 *D_800D3300;
 extern s32 D_800D35DC;
 extern s32 D_800D3668;
