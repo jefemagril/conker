@@ -482,9 +482,28 @@ void func_15076760(void) {
 }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_A28B0/func_15076768.s")
-// NON-MATCHING: switch/if on D_800D1890 — case0 func_15197A7C(D_800D154C);
-// case1 builds {x,-390,z} then func_1504715C(sp20)+func_1514B364; frame 0x50.
-// IDO shortens / reshapes early-exit lw-ra delay slots.
+// NON-MATCHING: 21/35 — need beq + `lui a1, %hi(D_800D154C)` delay + frame 0x50.
+// plain switch: frame 0x50 but beql/-390 delay + orphan lui (0x90).
+// xz temps: size 0x8C + beq, but frame 0x58 and delay=addiu mtx; actor in $v0.
+// void func_15076768(void) {
+//     f32 pos[3];
+//     f32 sp20[9];
+//
+//     switch (D_800D1890) {
+//     case 0:
+//         func_15197A7C(D_800D154C);
+//         break;
+//     case 1: {
+//         struct127 *a1 = D_800D154C;
+//         pos[1] = -390.0f;
+//         pos[0] = a1->x_position;
+//         pos[2] = a1->z_position;
+//         func_1504715C(sp20);
+//         func_1514B364(pos, sp20, 0xFF, 0);
+//         break;
+//     }
+//     }
+// }
 
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_A28B0/func_150767F4.s")
@@ -735,7 +754,30 @@ void func_15077364(void) {
     D_800D154C->unk248 = (u8) D_800D1892;
 }
 
-// ??
+// NON-MATCHING: 29/44 JUSTREG — single expr + `s16 v0 = 0` gets correct size,
+// a1/v1/v0/t5-delay/t7-unk246/t8-BE9E4; temps are t2/t4/t5 vs target t3/t5/a0.
+// void func_15077404(void) {
+//     struct127 * volatile *a1 = &D_800D154C;
+//     struct127 *v1;
+//     s16 v0 = 0;
+//
+//     if (D_800D1893 != 0) {
+//         a1 = &D_800D154C;
+//         v1 = *a1;
+//         v0 = (s16)(((v1->unk246 & 0x1F) << 8) + v1->unk249
+//                    + (s16)((D_800D1891 << 8) + D_800D1892) * D_800BE9E4);
+//         if (v0 < 0) {
+//             v0 = 0;
+//         }
+//         v1->unk246 = (v0 >> 8) | 0x80;
+//         {
+//             struct127 *tmp = *a1;
+//             tmp->unk249 = v0;
+//         }
+//     } else {
+//         (*a1)->unk246 = D_800D1890;
+//     }
+// }
 #pragma GLOBAL_ASM("asm/nonmatchings/game_A28B0/func_15077404.s")
 
 void func_150774B4(void) {
