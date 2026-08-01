@@ -919,7 +919,8 @@ typedef struct {
     u8  unk14;
     u8  pad15;
     u8  unk16;
-    u8  pad17[0xF];
+    u8  pad17[0xD];
+    s16 unk24;
     s8  unk26;
     u8  unk27;
     s32 unk28;
@@ -974,7 +975,11 @@ typedef struct {
     s8  unk95;  // used
     u8  pad96;
     u8  unk97;
-    u8  pad98[0x7C];
+    u8  pad98[0x10];
+    /* 0xA8 */ f32 unkA8;
+    /* 0xAC */ u8  unkAC;
+    /* 0xAD */ u8  unkAD;
+    u8  padAE[0x66];
     u16 unk114;
     u16 unk116;
     u16 unk118;
@@ -989,7 +994,8 @@ typedef struct {
     u8  unk128;
     u8  pad129[0x6C];
     u8  unk195;
-    u8  pad196[0x2];
+    u8  pad196;
+    u8  unk197;
     u8  unk198;
     u8  pad199;
     /* 0x19a */ u8  grenade_count;
@@ -1177,7 +1183,8 @@ struct struct127 {
     u32 pad128;
     u32 pad12C;
     u32 pad130;
-    u32 pad134;
+    u8  pad134[3];
+    u8  unk137;
     u8  unk138;
     u8  pad139[0x3];
     u8  unk13C; // used
@@ -1334,7 +1341,8 @@ struct struct127 {
     u8  unk285;
     u8  unk286;
     u8  unk287;
-    u8  pad288[0x41];
+    /* 0x288 */ u8  unk288;
+    u8  pad289[0x40];
     u8  unk2C9;
     s8  unk2CA;
     s8  unk2CB;

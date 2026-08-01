@@ -4,7 +4,9 @@
 #include "variables.h"
 
 
+// NON-MATCHING: deferred mid/hard leaf (size 0x244)
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_1506AD30.s")
+// NON-MATCHING: size 0x244 — multi-save f20/s-regs; (struct127*, f32 a1, u8 a2); D_800D1880 path
 
 void func_1506AF74(void) {
     if ((D_800D154C->unk100 & 8) != 0) {
@@ -87,6 +89,7 @@ void func_1506B370(void) {
 void func_1506B3B0(void) {
 }
 
+// NON-MATCHING: deferred mid/hard leaf (size 0x134)
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_1506B3B8.s")
 // NON-MATCHING: 5% there...
 // void func_1506B3B8(void) {
@@ -177,6 +180,7 @@ void func_1506B5E4(void) {
     D_800D154C->unk2D0->unk10 = 0.0f;
 }
 
+// NON-MATCHING: deferred mid/hard leaf (size 0x10c)
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_1506B634.s")
 // NON-MATCHING: miles away
 // void func_1506B634(u8 arg0) {
@@ -341,7 +345,9 @@ void func_1506BCA0(void) {
 }
 
 // ???
+// NON-MATCHING: deferred mid/hard leaf (size 0x120)
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_1506BCC8.s")
+// NON-MATCHING: 27/72 size-ok — id==0x16 / unk180 y_velocity path; control-flow schedule off
 
 void func_1506BDE8(void) {
     if (D_800D154C->y_position < D_80099C40) {
@@ -380,8 +386,11 @@ void func_1506BF1C(void) {
     }
 }
 
+// NON-MATCHING: deferred mid/hard leaf (size 0x3d0)
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_1506BF5C.s")
+// NON-MATCHING: size 0x3d0 — large leaf; not thrashed this campaign
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_1506C32C.s")
+// NON-MATCHING: length churn 0xcc–0xe4 vs 0xec — cascade a1=4/3/2 + F568 index; beql a1==0 shape hard
 
 void func_1506C418(void) {
     func_10010A3C(D_800D154C);
@@ -391,12 +400,13 @@ void func_1506C43C(void) {
     func_100109D0(D_800D154C);
 }
 
-// requires jump table
+// NON-MATCHING: jtbl (size 0xA0C) — jump table; park for jtbl pass
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_1506C460.s")
-// requires jump table
+// NON-MATCHING: jtbl (size 0x47C) — jump table; park for jtbl pass
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_1506CE6C.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_1506D2E8.s")
+// NON-MATCHING: size 0x20C — not a jtbl; object spawn via 83E0C/5EEF4 + D_800D2104 writes
 // NON-MATCHING: plenty to figure out here
 // void func_1506D2E8(void) {
 //     f32 sp40;
@@ -455,10 +465,34 @@ void func_1506D570(void) {
     D_800D154C->unk6E = 0;
 }
 
+// NON-MATCHING: deferred mid/hard leaf (size 0x130)
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_1506D584.s")
-// ???
+// NON-MATCHING: float→int FPCSR path (cvt.w.s); paired with 6D6B4
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_1506D6B4.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_1506D74C.s")
+// NON-MATCHING: 17/38 — 0x29-default+bnez(slti) shape ok; early bc1tl / D_80099D4C schedule off
+void func_1506D74C(void) {
+    f32 sp34;
+    f32 sp30;
+    f32 sp2C;
+
+    if (D_800D154C->in_water == 0) {
+        D_800D154C->gravity = 5.0f;
+        D_800D154C->y_velocity = 0.0f;
+    }
+    D_800D154C->y_position += 70.0f;
+    D_800D154C->unk137 = 0;
+    D_800D154C->disable_run = 0;
+    func_1505A184(D_800D154C->unk76, (f32) D_800D1580, 0, &sp34, &sp30, &sp2C);
+    func_1505E650(D_800D154C, 0xF, 1.0f, 0.0f, 0.0f, 0.0f, 0);
+    D_800D154C->x_position += sp34;
+    D_800D154C->z_position += sp30;
+    D_800D154C->unk100 |= 2;
+    D_800D154C->unk28 = 0.0f;
+    D_800D154C->unk83 = 0x14;
+    D_800D154C->unk31C->unk44 = 0xC;
+    D_800D154C->unk31C->unk54 = 0xA;
+}
+
 
 void func_1506D898(void) {
     D_800D154C->y_position -= 80.0f;
@@ -477,7 +511,9 @@ void func_1506D934(void) {
 void func_1506D950(void) {
 }
 
+// NON-MATCHING: deferred mid/hard leaf (size 0x120)
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_1506D958.s")
+// NON-MATCHING: size 0x11c/0x124 vs 0x120 — ×2 object scan + dual sb unk101; D_800CC37B/C3D1/[1]..[25]
 
 void func_1506DA78(void) {
     D_800D154C->immune = D_800D1580;
@@ -517,7 +553,25 @@ void func_1506DBD4(void) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_1506DC10.s")
+void func_1506DC10(void) {
+    struct127 *temp_a1 = D_800D154C;
+    s32 a0;
+    s32 temp_v1;
+
+    if (((temp_a1->unk118 - 60.0f) < temp_a1->y_position) || (D_80099D50 == temp_a1->unk118)) {
+        temp_v1 = func_150ADA20() & 3;
+        if (temp_v1 >= 2) {
+            a0 = temp_v1 + 0x612;
+        } else {
+            a0 = temp_v1 + 0x8F;
+        }
+        temp_a1 = D_800D154C;
+    } else {
+        a0 = 9;
+    }
+    func_15060A9C(a0, temp_a1);
+}
+
 
 void func_1506DCA4(void) {
     D_800D154C->unk2E8 = D_800D1580;
@@ -575,12 +629,80 @@ void func_1506DE04(void) {
     }
 }
 
-// jump table
+// NON-MATCHING: jtbl via jtbl_80099D54 — C switch MATCHES text 154/154 len 0x268, but
+// .game_data SUBALIGN(16) cannot place C .rodata at 0x80099D54 (mid-section); needs
+// reloc retarget to asm jtbl or SUBALIGN change before C can land.
+// void func_1506DE84(void) {
+//     struct127 *v0;
+//     extern f32 D_80099D8C, D_80099D90, D_80099D94;
+//     extern void func_151875E0(f32, f32, f32, s32, s32, s32, f32, f32);
+//     extern void func_1516F1C0(u8, s32, s32, s32);
+//     extern void func_1516F2F8(u8, s32, s32, s32, s32, s32);
+//     extern void func_150AFDB0(void);
+//     extern void func_150AFE64(s32);
+//     extern void func_1506E0EC(void);
+//     extern void func_1506E2CC(void);
+//
+//     switch (D_800D1580) {
+//     case 0:
+//         v0 = D_800D154C;
+//         if (0.0f == v0->unk28) {
+//             f32 f0 = D_80099D8C;
+//             func_151875E0(v0->x_position, v0->y_position, v0->z_position, 0x1E, 0x1E, 7, f0, f0);
+//         }
+//         break;
+//     case 1:
+//         if ((func_150ADA20() & 0xFF) < 0x40U) {
+//             v0 = D_800D154C;
+//             func_151875E0(v0->x_position, v0->y_position, v0->z_position, 0xA, 0x14, 7, D_80099D90, D_80099D94);
+//             D_800D1580 = 0x106;
+//             func_1506BA4C(0x12C, 0x708);
+//         }
+//         break;
+//     case 2: func_1516F1C0(D_800C3E78, 0x10, 0xFF, 0); break;
+//     case 3: func_1516F1C0(D_800C3E78, 0x28, 0xFF, 0); break;
+//     case 4: func_1516F1C0(D_800C3E78, 0x28, 0xFF, 0); break;
+//     case 5: func_1516F2F8(D_800C3E78, 0x1E, 0x14, 2, 0xFF, 0); break;
+//     case 6: func_1516F2F8(D_800C3E78, 0x12, 0xC, 2, 0xFF, 0); break;
+//     case 7: func_1516F2F8(D_800C3E78, 0x3C, 0x78, 2, 0xFF, 0); break;
+//     case 8: func_1506E0EC(); break;
+//     case 9: func_150AFE64(0); break;
+//     case 10: func_150AFE64(1); break;
+//     case 11: func_1506E2CC(); break;
+//     case 12: func_1516F2F8(D_800C3E78, 0x12, 0xC, 0, 0xFF, 0); break;
+//     case 13: func_150AFDB0(); break;
+//     }
+// }
+// NON-MATCHING: jump-table / deferred (size 0x268)
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_1506DE84.s")
 
+// NON-MATCHING: size 0x1E0 — not a jtbl; 4-corner A7960 loop + 151700D8 (sibling of 6E2CC)
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_1506E0EC.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_1506E2CC.s")
+// NON-MATCHING: best len 0x190–0x198 vs 0x1a0 — 4 corners via A7960 at ±100, then 151700D8
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_1506E46C.s")
+// NON-MATCHING: best len 0x184/0x188 vs 0x190 — bit21 checks + D_800BE5A8[unk288][v1-0x7D0] + ADA20 gate
+// s32 func_1506E46C(struct127 *arg0, s32 *arg1, s32 arg2) {
+//     s32 a3 = *arg1;
+//     s32 v1 = a3 & 0x7FFF;
+//     if ((a3 << 10) < 0) {
+//         if (arg2 == 0) { if (func_100107F8(arg0)) return 0; }
+//         else if (arg2 == 1) { if (func_10010894(arg0)) return 0; }
+//         else if (arg2 == 2) { if (n_alStreamGetState() == 1) return 0; }
+//     }
+//     if ((u32)v1 >= 0x7D0U) {
+//         s32 v0 = D_800BE5A8[arg0->unk288][v1 - 0x7D0];
+//         if (v0 == 0) return 0;
+//         { s32 t4 = a3 & 0xFF200000; a3 = t4 ? (t4 | (v0 & 0xFFFFFF)) : v0; }
+//     }
+//     v1 = (u32)a3 >> 16;
+//     if (v1) {
+//         if (((u32)a3 >> 24) < (func_150ADA20() & 0xFF)) return 0;
+//         a3 &= 0x7FFF;
+//         if (v1 & 0x1F) a3 = func_1000F568(a3, v1 & 0x1F);
+//     }
+//     *arg1 = a3; return 1;
+// }
 
 void func_1506E5FC(void) {
     if (func_1506E46C(D_800D154C, &D_800D1580, 0) != 0) {
@@ -797,20 +919,14 @@ void func_1506EE38(void) {
     D_800D154C->unk25C &= ~D_800D1580;
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_1506EE60.s")
-// NON-MATCHING: same issue as earlier
-// void func_1506EE60(void) {
-//     s32 temp_a1;
-//     s32 temp_v0;
-//
-//     temp_v0 = D_800D1580;
-//     temp_a1 = temp_v0 & 0xFFFF;
-//     if (temp_v0 != 0) {
-//         func_15188810(D_800D154C.unk0, temp_a1, temp_v0 >> 0x10);
-//         return;
-//     }
-//     func_15188A9C(D_800D154C.unk154C, temp_a1);
-// }
+void func_1506EE60(void) {
+    if (D_800D1580 != 0) {
+        func_15188810(D_800D154C, D_800D1580 & 0xFFFF, D_800D1580 >> 16);
+    } else {
+        func_15188A9C(D_800D154C);
+    }
+}
+
 
 void func_1506EEAC(void) {
     func_151898C0(D_800D154C, D_800D1580);
@@ -830,7 +946,18 @@ void func_1506EEF4(void) {
     D_800D154C->unk287 = 0;
 }
 
-// TBD whats goins on here
+// NON-MATCHING: JUSTREG 22/22 exact 2/22 — &D_800D154C in $a0 not $a2
+// void func_1506EF5C(void) {
+//     struct127 **a2 = &D_800D154C;
+//     s32 t1 = D_800D1580;
+//     s32 idx = (t1 >> 16) & 0xFF;
+//     u16 t2 = 0xFFFF;
+//
+//     (*a2)->unk282 = t2;
+//     (*a2)->unk276 = 5;
+//     (&(*a2)->unk284)[idx * 2] = t1 >> 8;
+//     (&(*a2)->unk285)[idx * 2] = t1;
+// }
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_1506EF5C.s")
 
 void func_1506EFB4(void) {
@@ -879,13 +1006,16 @@ void func_1506F17C(s32 arg0) {
     func_150AEEB0(D_800D154C, 0xFF);
 }
 
+// NON-MATCHING: deferred mid/hard leaf (size 0x37c)
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_1506F1A8.s")
+// NON-MATCHING: size 0x37c — large; not thrashed this campaign
 
 void func_1506F524(s32 arg0) {
     func_15197A7C(D_800D154C);
 }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_1506F54C.s")
+// NON-MATCHING: size 0x374 — large; not thrashed this campaign
 
 void func_1506F8C0(s32 arg0) {
     func_1519EF70(D_800D154C, 0, 0);
@@ -942,7 +1072,12 @@ void func_1506FCFC(s32 arg0) {
     func_15196438(D_800D154C, 5, 0xFF, 0);
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_1506FD30.s")
+void func_1506FD30(s32 arg0) {
+    struct127 *a0;
+    f32 temp_f0 = func_150ADA68();
+    func_150E2EA4(a0 = D_800D154C, a0->unique_id, 1, -1, (f32)0, 0.0f, D_80099EA0, (f32)0, 0.0f, 414.0f, 3, 3, 5, 20.0f, (temp_f0 * 10.0f) + 40.0f, 1, 50.0f);
+}
+
 
 void func_1506FDF0(s32 arg0) {
     func_151AABC4(D_800D154C, 0);
@@ -1043,8 +1178,23 @@ void func_150701F4(s32 arg0) {
     func_151C9740(D_800D154C, 0xFF, 1);
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_15070224.s")
+void func_15070224(s32 arg0) {
+    Header sp50;
+    Header2 sp44;
+
+    sp50.unk0 = 3;
+    sp50.unk1 = 0xFF;
+    sp50.unk2 = (func_150ADA20() % 5U) + 4;
+    sp50.unk4 = 0;
+    sp44.unk0 = D_800D154C->x_position;
+    sp44.unk4 = D_800D154C->y_position;
+    sp44.unk8 = D_800D154C->z_position;
+    func_151602C0(&sp50, &sp44, (func_150ADA20() % 3U) + 4, 0xFF, 0xFF, 0xFF, 0xFF, 0, 0, 0xFF, 1);
+}
+
+// NON-MATCHING: deferred mid/hard leaf (size 0x390)
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_15070300.s")
+// NON-MATCHING: size 0x390 — large; not thrashed this campaign
 
 void func_15070690(s32 arg0) {
     func_150EEE00(D_800D154C, (arg0 - 0x3E) & 0xFF, arg0);
@@ -1087,29 +1237,27 @@ void func_15070860(s32 arg0) {
     func_150FE49C(D_800D154C, 0xFF, 1, 0, 0);
 }
 
+// NON-MATCHING: deferred mid/hard leaf (size 0x380)
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_15070898.s")
+// NON-MATCHING: size 0x380 — large; not thrashed this campaign
 
 void func_15070C18(s32 arg0) {
     func_15199834(D_800D154C);
 }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_15070C40.s")
-// NON-MATCHING: missing a move and a branch
-// void func_15103E40(s32, s32, s32, u8, u8, u8, u8);
+// NON-MATCHING: 29/39 size-ok — call is OUTSIDE unk124 if; ternary shape matches but u8 arg
+// emits late lbu a3 from stack instead of early andi a3,a0,0xFF; phi forms are +1 insn (0xa0)
 // void func_15070C40(u8 arg0) {
 //     struct17 tmp;
-//     struct127 *temp_a1;
-//     struct127 *phi_a0;
+//     struct127 *temp_a1 = D_800D154C;
 //
-//     phi_a0 = temp_a1 = D_800D154C;
 //     tmp.unk0 = temp_a1->x_position;
 //     tmp.unk4 = temp_a1->y_position;
 //     tmp.unk8 = temp_a1->z_position;
-//
-//     if (temp_a1->unk124) {
-//         phi_a0 = &D_800CC2D0[temp_a1->unk124 - 1];
-//         func_15103E40(phi_a0, temp_a1, &tmp, arg0, 0, 0xFF, 0);
-//     }
+//     func_15103E40(
+//         temp_a1->unk124 ? &D_800CC2D0[temp_a1->unk124 - 1] : temp_a1,
+//         temp_a1, &tmp, arg0, 0, 0xFF, 0);
 // }
 
 void func_15070CDC(s32 arg0) {
@@ -1120,8 +1268,11 @@ void func_15070D00(s32 arg0) {
     func_15070C40(0);
 }
 
+// NON-MATCHING: deferred mid/hard leaf (size 0x23c)
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_15070D24.s")
+// NON-MATCHING: size 0x23c — D_80099B88/B94 vecs; unk1D4/unk74 gates + ADA68
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_15070F60.s")
+// NON-MATCHING: size 0x2d0 — sibling of 70D24; called as func_15070F60(0/1)
 void func_15071230(s32 arg0) {
     func_15070F60(0);
 }
@@ -1134,8 +1285,52 @@ void func_15071278(s32 arg0) {
     func_150FC438(D_800D154C, 0, 1, D_800D154C->unk84.ub[1]);
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_150712AC.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_15071360.s")
+void func_150712AC(s32 arg0) {
+    struct {
+        u8 unk0;
+        u8 pad1;
+        s16 unk2;
+        u8 unk4;
+        u8 unk5;
+        s8 unk6;
+    } sp18;
+
+    func_150FE860(D_800D154C, 0xFF, 1);
+    if (D_800D154C->camera != 0) {
+        sp18.unk0 = 1;
+        sp18.unk2 = (s16)((func_150ADA20() % 7U) + 0xA);
+        sp18.unk5 = 1 << D_800D154C->camera->unk23D;
+        sp18.unk4 = (func_150ADA20() % 7U) + 2;
+        sp18.unk6 = -1;
+        func_151D8868(&sp18, 0, 0xFF, 1);
+    }
+}
+
+void func_15071360(s32 arg0) {
+    struct {
+        u8 unk0;
+        u8 pad1;
+        s16 unk2;
+        u8 unk4;
+        u8 unk5;
+        s8 unk6;
+    } sp18;
+
+    if (func_151044F4()) {
+        func_150FF084(D_800D154C, 0xFF, 1);
+    } else {
+        func_150FED30(D_800D154C, 0xFF, 1);
+    }
+    if (D_800D154C->camera != 0) {
+        sp18.unk0 = 1;
+        sp18.unk2 = (s16)((func_150ADA20() % 5U) + 0xF);
+        sp18.unk5 = 1 << D_800D154C->camera->unk23D;
+        sp18.unk4 = (func_150ADA20() & 3) + 3;
+        sp18.unk6 = -1;
+        func_151D8868(&sp18, 0, 0xFF, 1);
+    }
+}
+
 
 void func_15071434(s32 arg0) {
     func_150FF840(D_800D154C, 1, 0, 0xFF, 1);
@@ -1212,24 +1407,21 @@ void func_15071764(s32 arg0) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_150717E0.s")
-// void func_150717E0(s32 arg0) {
-//     u8 sp24;
-//     void *sp20;
-//     void **sp18;
-//     void **temp_a0;
-//     void *temp_v0;
-//
-//     temp_v0 = func_15083E90(0x12);
-//     temp_a0 = &sp20;
-//     if (temp_v0 != 0) {
-//         sp20 = temp_v0;
-//         sp18 = temp_a0;
-//         sp24 = temp_v0->unk3B;
-//         func_15131D4C(temp_a0, 0x43);
-//         func_151494E0(temp_a0, 0x43);
-//     }
-// }
+void func_150717E0(s32 arg0) {
+    struct {
+        struct127 *ptr;
+        u8 id;
+        u8 pad[3];
+    } sp20;
+    void *temp_v0 = func_15083E90(0x12);
+    if (temp_v0 != 0) {
+        sp20.ptr = temp_v0;
+        sp20.id = ((struct127 *)temp_v0)->unique_id;
+        func_15131D4C((s32)&sp20, 0x43);
+        func_151494E0((s32)&sp20, 0x43);
+    }
+}
+
 
 void func_15071830(s32 arg0) {
     func_150F9BB0(D_800D154C, 0xFF, 1);
@@ -1243,7 +1435,24 @@ void func_15071888(s32 arg0) {
     func_151D5714(D_800D154C, &D_800A1FB0, &D_800A1FBC, D_80088B90, D_80099F30, 0xFF, 1);
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_150718E4.s")
+void func_150718E4(s32 arg0) {
+    struct {
+        u8 bytes[4];
+        struct17 vec;
+    } sp20;
+    struct127 *temp_v0;
+    s32 temp_t0;
+
+    *(u32 *)sp20.bytes = D_80099BB8;
+    temp_v0 = D_800D154C;
+    if ((temp_v0->unk1D4 != 0) || ((temp_v0->unk74 & 0xF) == 0xF)) {
+        temp_t0 = func_150ADA20() & 3;
+        func_15143134(&D_800A5480, &sp20.vec, (sp20.bytes[temp_t0] << 6) + (s32)D_800D154C->unk1D4);
+        sp20.vec.unk4 = D_800D154C->unk180 + 20.0f;
+        func_151C329C(&sp20.vec, 0xFF, 1);
+    }
+}
+
 
 void func_15071998(s32 arg0) {
     func_150FA520(D_800D154C, 0, 0xFF, 1);
@@ -1261,8 +1470,12 @@ void func_15071A34(s32 arg0) {
     func_151D09A8(D_800D154C, 0xFF, 1);
 }
 
+// NON-MATCHING: deferred mid/hard leaf (size 0xb4)
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_15071A64.s")
+// NON-MATCHING: 39/45 — single struct199 (vec at unk24); blezl health ok; D_800D154C in $v0 not $a1
+// and lui $at/$v0 schedule vs target (JUSTREG-ish)
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_15071B18.s")
+// NON-MATCHING: size 0x1f0 — unk1D4/unk74 gates; 99BC8 + 15143134 / DC260 / 52190
 
 void func_15071D08(s32 arg0) {
     func_150F2230(D_800D154C, 0xFF, 1);
@@ -1336,14 +1549,24 @@ void func_15071FB0(void) {
     }
 }
 
+// NON-MATCHING: deferred mid/hard leaf (size 0x1c8)
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_15071FDC.s")
+// NON-MATCHING: size 0x1c8 — u8 arg / schedule; not thrashed this pass
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_150721A4.s")
+// NON-MATCHING: size 0x4c vs 0x44 — extra move after andi; needs $v1 load of D_800D1580 + andi into $a1/$a3
+// void func_150721A4(void) {
+//     s32 v1 = D_800D1580;
+//     s32 t6 = v1 >> 8;
+//     s32 t7 = v1 >> 16;
+//     func_1506160C(D_800D154C, t7 & 0xFF, v1, t6, 0);
+// }
 
 struct127 *func_150721E8(struct127 *arg0) {
     return func_15072208(arg0, 0);
 }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_15072208.s")
+// NON-MATCHING: hand-unroll bnel ×4 search; C emits 0xfc–0x224 vs 0xe8 (likely-branch delay loads)
 
 void func_150722F0(void) {
     struct127 *temp_v0 = func_150721E8(D_800D154C);
@@ -1380,8 +1603,11 @@ void func_150723E0(void) {
     }
 }
 
+// NON-MATCHING: deferred mid/hard leaf (size 0x24c)
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_15072420.s")
+// NON-MATCHING: size 0x24c — unpacks D_800D1580; 83E0C/5EEF4/60F28 object path
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_1507266C.s")
+// NON-MATCHING: JUSTREG 53/53 exact 29/53 — nested early-return emits beql; regs: base in $v1 not $a3, stride in $a2 not $t0
 
 void func_15072740(void) {
     s32 temp_v0;
@@ -1399,7 +1625,9 @@ void func_150727AC(void) {
     D_800D154C->unk2D0->unk10 = D_800D154C->animation_speed;
 }
 
+// NON-MATCHING: deferred mid/hard leaf (size 0x128)
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_150727F0.s")
+// NON-MATCHING: size 0x128–0x130 — ×4 object scan; D_800CC4E8/C502 + beql delay lw chain
 
 void func_15072918(void) {
     func_15060F28(D_800D154C, 0);
@@ -1448,7 +1676,9 @@ void func_15072AF8(void) {
     func_1505E650(D_800D154C, D_800D154C->unk84.uh + 1, 1.0f, 6.0f, 0.0f, 0.0f, 0);
 }
 
+// NON-MATCHING: deferred mid/hard leaf (size 0x25c)
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_15072B44.s")
+// NON-MATCHING: size 0x25c — not thrashed this campaign
 void func_15072DA0(void) {
     D_800D154C->unk2F8 &= 0xFFF8;
     D_800D154C->unk2F8 |= D_800D1580;
@@ -1491,7 +1721,10 @@ void func_15072EF4(void) {
     D_800D154C->stunned = (s8) D_800D1580;
 }
 
+// NON-MATCHING: deferred mid/hard leaf (size 0x144)
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_15072F10.s")
+// NON-MATCHING: exact 68/79 JUSTREG 77/79 len 0x13c vs 0x144 — frame -0x58 vs -0x50; v0/v1 swap on
+// unk1D1/unk31C; trailing dead jr+nop; body is (unk1D1*25)<<19>>16 * 0x3BB40000 + 5A184 + E1570
 
 void func_15073054(void) {
     D_800D154C->unk22E = (s16) D_800D1580;
@@ -1522,8 +1755,11 @@ void func_150730D0(void) {
       }
 }
 
+// NON-MATCHING: deferred mid/hard leaf (size 0x314)
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_15073118.s")
+// NON-MATCHING: size 0x314 — not thrashed this campaign
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_1507342C.s")
+// NON-MATCHING: size 0x4bc — large; not thrashed this campaign
 
 void func_150738E8(void) {
     u8 temp_v0 = (u8)(D_800D154C->unk13C - 100);
@@ -1560,8 +1796,12 @@ void func_15073A28(void) {
     D_800D154C->unk44 = (f32) D_800D1580;
 }
 
+// NON-MATCHING: deferred mid/hard leaf (size 0xe8)
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_15073A50.s")
+// NON-MATCHING: 21/58 size-ok — &D_800CC2D0[unk124] + 5D024; regs ($v0/$v1) and spill slots off
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_15073B38.s")
+// NON-MATCHING: ~0xe8/0xf0 — unkA8=(f32)(D_800D1580&0xFFFF); mid byte needs full cvt.w.s FPCSR
+// path into unkAC (f32→u8 trunc is 8B short); struct126 now has unkA8/AC/AD
 
 void func_15073C28(void) {
     func_1507F640();
@@ -1571,8 +1811,11 @@ void func_15073C48(void) {
 
 }
 
-// ???
-#pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_15073C50.s")
+void func_15073C50(void) {
+    struct127 *v0 = D_800D154C;
+    v0->unk224 = (s16)(*(f32 *)((u8 *)D_800CC2E8 + v0->unk222 * 0x32C) + (f32)D_800D1580);
+}
+
 
 void func_15073CB8(void) {
     struct127 *tmp = func_1505F0AC(0x53);
@@ -1636,15 +1879,47 @@ void func_15073F78(void) {
     D_800D154C->unk10B &= ~D_800D1580;
 }
 
+// NON-MATCHING: deferred mid/hard leaf (size 0x6a4)
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_15073FA0.s")
+// NON-MATCHING: size 0x6a4 — large; not thrashed this campaign
 
 void func_15074644(void) {
     D_800D154C->unk31C->unk11A = (s8) D_800D1580;
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_15074664.s")
+void func_15074664(void) {
+    struct126 *v1 = D_800D154C->unk31C;
+    s32 v0;
+    s32 a0 = 1;
+
+    if (v1 == 0) {
+        return;
+    }
+    v0 = D_800D1580;
+    if (a0 == v0) {
+        func_10011FDC(5);
+        v1 = D_800D154C->unk31C;
+        v0 = D_800D1580;
+    } else if (a0 == (u8) v1->unk94) {
+        func_10011FDC(0);
+        v1 = D_800D154C->unk31C;
+        v0 = D_800D1580;
+    }
+    v1->unk94 = v0;
+}
+
+// NON-MATCHING: deferred mid/hard leaf (size 0xf4)
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_150746F0.s")
-// ?
+// NON-MATCHING: best 11/61 size-ok — live a1=&D_800D154C; BE616/?unk13C→a0; health/7CD64/7F488 path
+// NON-MATCHING: 6/23 size-ok; emits *0x32C-0x32C not addiu -1 then *0x32C
+// void func_150747E4(void) {
+//     struct127 *a0;
+//     if (D_800D154C->unk65 != 0) {
+//         a0 = &D_800CC2D0[D_800D154C->unk65 - 1];
+//         a0->unk218 = 0;
+//         a0->unk232 = D_800D1580;
+//     }
+// }
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_150747E4.s")
 
 void func_15074840(void) {
@@ -1657,7 +1932,19 @@ void func_15074870(void) {
     D_800D154C->unk24F = (s8) D_800D1580;
 }
 
-// ??
+// NON-MATCHING: JUSTREG 21/26 exact 3/26
+// void func_1507488C(void) {
+//     s32 v1 = D_800D1580;
+//     struct127 *a2 = D_800D154C;
+//     u8 a1 = v1 & 1;
+//
+//     if ((&a2->unk2E4)[(v1 >> 16) & 0xFF] & ((v1 >> 8) & 0xFF)) {
+//         a1 ^= 1;
+//     }
+//     if (a1 != 0) {
+//         a2->unk138 += v1 >> 24;
+//     }
+// }
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_1507488C.s")
 
 void func_150748F4(void) {
@@ -1678,7 +1965,9 @@ void func_1507490C(void) {
     }
 }
 
+// NON-MATCHING: deferred mid/hard leaf (size 0xc4)
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_15074980.s")
+// NON-MATCHING: exact 42/49 (prior 47/49) — D_8008FD8C loop + 5A72C < (D1580<<3); s0/s2 addiu order
 
 void func_15074A44(void) {
     if (D_800D154C->unk31C != 0) {
@@ -1693,7 +1982,7 @@ void func_15074A6C(void) {
 }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_15074A94.s")
-// NON-MATCHING: JUSTREG
+// NON-MATCHING: JUSTREG 44/58 — &D_800D154C reload pattern mostly ok; mid lerp schedule differs
 // void func_15074A94(void) {
 //     f32 phi_f2;
 //     f32 temp_f0;
@@ -1750,7 +2039,47 @@ void func_15074C00(s32 arg0, struct127 *arg1, s32 arg2) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_15074C80.s")
+void func_15074C80(struct127 *arg0, struct127 *arg1) {
+    u16 temp_v0 = arg0->unk278;
+    s32 temp_v1 = 2;
+
+    if (temp_v0 == 0x11) {
+        func_151942E8(arg0, arg1);
+        temp_v0 = arg0->unk278;
+    }
+    if ((temp_v1 == temp_v0) || (temp_v0 == 0x12) || (temp_v0 == 3) || (temp_v0 == 6)) {
+        if (arg1->health == 0) {
+            s32 a2;
+            if (temp_v1 == temp_v0) {
+                a2 = 0x2A;
+            } else if (temp_v0 == 0x12) {
+                a2 = 0x2F;
+            } else if (temp_v0 == 3) {
+                a2 = 0x39;
+            } else {
+                a2 = 0x51;
+            }
+            func_150335C8(arg0, arg1, a2, 0xC, 1, 0);
+        }
+        arg0->health = 0;
+    }
+    if (arg1->interaction_state == 0x19) {
+        f32 tmp = func_150484A0(arg0->y_velocity, arg0->xz_velocity);
+        func_15166118(
+            (s32) (256.0f - (tmp * D_8009A104)),
+            0xC0 - (arg0->unk76 >> 8),
+            (s32) arg0->x_position,
+            (s32) arg0->y_position,
+            (s32) arg0->z_position,
+            0x10,
+            0x14,
+            0,
+            0xFF,
+            0
+        );
+    }
+}
+
 
 void func_15074DEC(struct127 *arg0, s32 arg1, s32 arg2) {
     arg0->unk2E8 = 1;
@@ -1786,7 +2115,15 @@ void func_15074F30(struct127 *arg0, struct127 *arg1, s32 arg2) {
     arg0->unk218 = 0;
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_15074F48.s")
+void func_15074F48(struct127 *arg0, struct127 *arg1, s32 arg2) {
+    f32 sp1C = D_8009A108 - arg0->x_position;
+    f32 sp18 = arg0->z_position - D_8009A10C;
+
+    arg1->unk76 = func_1505A630(sp1C, sp18, 0);
+    arg1->xz_velocity = sqrtf((sp1C * sp1C) + (sp18 * sp18)) * D_8009A110;
+    func_15194408(arg0, arg1);
+}
+
 
 void func_15074FD4(struct127 *arg0, struct127 *arg1, s32 arg2) {
     if (arg1->interaction_state == 1) {
@@ -1828,4 +2165,6 @@ void func_150750C4(struct127 *arg0, struct127 *arg1, u8 *arg2) {
     }
 }
 
+// NON-MATCHING: deferred mid/hard leaf (size 0x298)
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_1507515C.s")
+// NON-MATCHING: size 0x298 — object-table scan over D_800CC2D0 stride 0x32C

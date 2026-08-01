@@ -628,19 +628,26 @@ extern f32 D_80099C3C;
 extern f32 D_80099C40;
 extern f32 D_80099C44;
 
+extern u32 D_80099BB8;
+extern f32 D_80099BBC[];
+
 extern f32 D_80099D44;
 extern f32 D_80099D4C;
+extern f32 D_80099D50;
 extern f32 D_80099DA0;
 extern f32 D_80099DA4;
 extern f32 D_80099DA8;
 
 extern f32 D_80099E98;
 extern f32 D_80099E9C;
+extern f32 D_80099EA0;
 
 extern f32 D_80099F30;
 extern f32 D_80099F4C;
 
 extern f32 D_8009A020[];
+extern f32 D_8009A0D8;
+extern f32 D_8009A094;
 extern f32 D_8009A0E8;
 extern f32 D_8009A0EC;
 extern f32 D_8009A0F0;
@@ -648,6 +655,10 @@ extern f32 D_8009A0F4;
 extern f32 D_8009A0F8;
 extern f32 D_8009A0FC;
 extern f32 D_8009A100;
+extern f32 D_8009A104;
+extern f32 D_8009A108;
+extern f32 D_8009A10C;
+extern f32 D_8009A110;
 // code_75400.c
 extern f32 D_8009A13C; // 1.399999976158142
 extern f32 D_8009A140;
@@ -828,6 +839,7 @@ extern u8  D_800BE500[5]; // might be a struct?
 extern s32 D_800BE570;
 extern u8  D_800BE574;
 extern u8  D_800BE575;
+extern s32 *D_800BE5A8[];
 extern s32 D_800BE5D0;
 extern u8  D_800BE5E0;
 extern u8  D_800BE9A0;
@@ -1048,6 +1060,7 @@ extern struct127 *D_800D154C;
 
 extern f32 D_800D1874;
 extern f32 D_800D1878;
+extern s32 D_800D187C;
 extern s32 D_800D1880;
 extern u8  D_800D1890;
 extern u8  D_800D1891;

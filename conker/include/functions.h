@@ -972,7 +972,7 @@ s32  func_1000EE70(void *arg0, s32 arg1, void *arg2, s32 arg3, s32 arg4, void *a
 //func_1000F1A8
 //func_1000F44C
 //func_1000F4D8
-//func_1000F568
+s32  func_1000F568(s32 arg0, s32 arg1);
 //func_1000F6B8
 void func_1000F85C(u16 arg0, u16 arg1, s32 arg2);
 void func_1000F91C(u16 arg0, u16 arg1, s16 arg2, u8 arg3, s32 arg4, s16 arg5, s16 arg6, s16 arg7, s16 arg8, s16 arg9);
@@ -1062,6 +1062,7 @@ f32  func_15048FC8(struct17 *arg0);
 void func_15049688(f32 *arg0, f32 arg1, f32 *arg2, f32 arg3, f32 arg4, f32 arg5);
 void func_1505841C(struct127 *arg0, f32 arg1);
 void func_15058898(struct127 *, f32);
+void func_150335C8(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
 void func_1505A184(u16 arg0, f32 arg1, f32 arg2, f32 *arg3, f32 *arg4, f32 *arg5);
 f32  func_1505A72C(struct127 *arg0, struct127 *arg1);
 void func_1505B5F8(struct127 *arg0, f32 arg1);
@@ -1122,7 +1123,8 @@ void func_1516944C(s32, s32, u8);
 void func_15169850(s32, u8, s32, s32, s32);
 void func_15174690(s32, s32, s32, s32, s32, s32, s32, s32, s32);
 void func_15177410(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, f32 arg5, s32 arg6, f32 arg7, s32 arg8, s32 arg9, s32 argA, s32 argB, s32 argC, s32 argD, s32 argE, s32 argF);
-s32  func_1517EFAC(s32 arg0);
+void func_1517EFAC(s32 arg0);
+void func_1517F488(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
 void func_15178E14(u8, s32);
 s32  func_15187EC0(s32 arg0, f32 arg1, s32 arg2, s32 arg3, u8 arg4, u8 arg5, u8 arg6, u8 arg7);
 void *func_15195AA8(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7);
@@ -1132,6 +1134,8 @@ void func_151D5714(struct127*, f32*, f32*, s32, f32, s32, s32);
 void func_151D9B8C(u8 arg0, f32 arg1, u8 arg2, s32 arg3, struct17 *arg4, s16 arg5, u8 arg6, u8 arg7, u8 arg8, u8 arg9, s32 argA);
 void func_151DA08C(u8 arg0, f32 arg1, f32 arg2, u8 arg3, s16 arg4, s32 arg5, void *arg6, s32 arg7, s32 arg8);
 void func_151DBCBC(u8 arg0, f32 arg1, s16 arg2, s32 arg3, void *arg4, u8 arg5, s32 arg6);
+s32  func_151EF610(void);
+void func_151B5BA0(struct127 *arg0, struct127 *arg1);
 void guOrtho(Mtx *m, f32 l, f32 r, f32 b, f32 t, f32 n, f32 f, f32 scale);
 void n_alStreamSetReadCallback(s32 (*readCallback)(void *state, void *dst, s32 len, s32 offset));
 s32 n_alStreamRead(void *state, void *dst, s32 len, s32 offset);
