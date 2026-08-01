@@ -117,20 +117,18 @@ void func_15075548(void) {
 // }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_A28B0/func_15075884.s")
-// NON-MATCHING: array index is wrong
+// NON-MATCHING: 39/45 — semantics OK (point at D_800D2104[unk13F] + unk21E*8,
+// unk8/unkC); remaining is IDO float schedule / unsigned u8→f32 for D_800D1891
+// (target has bgez + 2^32 bias). dist+dist vs *2.0f also not enough.
 // void func_15075884(void) {
-//     f32 temp_f0;
-//     f32 temp_f12;
-//     f32 temp_f2;
-//     struct169 *temp_v1;
-//     f32 phi_f2;
+//     s16 *temp_v1;
+//     f32 dx, dz;
 //
 //     func_15075548();
-//     temp_v1 = D_800D2104[(D_800D154C->unk13F) + (D_800D154C->unk21E)];
-//     temp_f2 = temp_v1->unk8 - D_800D154C->x_position;
-//     temp_f12 = temp_v1->unkC - D_800D154C->z_position;
-//     temp_f0 = sqrtf((temp_f2 * temp_f2) + (temp_f12 * temp_f12));
-//     D_800D154C->unk44 = 2.0f * (temp_f0 / D_800D1891);
+//     temp_v1 = (s16 *)((u8 *)D_800D2104[D_800D154C->unk13F] + (D_800D154C->unk21E << 3));
+//     dx = temp_v1[4] - D_800D154C->x_position;
+//     dz = temp_v1[6] - D_800D154C->z_position;
+//     D_800D154C->unk44 = 2.0f * (sqrtf((dx * dx) + (dz * dz)) / (u32)D_800D1891);
 // }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_A28B0/func_15075938.s")
@@ -192,18 +190,20 @@ void func_15075A50(void) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_A28B0/func_15075AAC.s")
-// what is D_800D2104?
-// void func_15075AAC(void) {
-//     struct169 *temp_v0;
-//
-//     func_15075548();
-//     temp_v0 = D_800D2104[D_800D1891 + D_800D154C->unk13F] ;
-//     if (fabsf(temp_v0->unk0 - D_800D154C->x_position) + (fabsf(temp_v0->unk4 - D_800D154C->z_position)) < 40.0f) {
-//         D_800D154C->unk21C = 0;
-//         D_800D154C->xz_velocity = 0.0f;
-//     }
-// }
+void func_15075AAC(void) {
+    struct169 *temp_v0;
+    f32 dx, dz;
+
+    func_15075548();
+    temp_v0 = (struct169 *)((u8 *)D_800D2104[D_800D154C->unk13F] + (D_800D1891 << 3));
+    dx = temp_v0->unk0 - D_800D154C->x_position;
+    dz = temp_v0->unk4 - D_800D154C->z_position;
+    if (fabsf(dx) + fabsf(dz) < 40.0f) {
+        D_800D154C->unk21C = 0;
+        D_800D154C->xz_velocity = 0.0f;
+    }
+}
+
 
 void func_15075B60(void) {
     func_15075548();
@@ -371,11 +371,18 @@ void func_150762B0(void) {
     func_1000CBA8(D_800D1890);
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_A28B0/func_150762D4.s")
-// void func_151669A0(s32 arg0, s32 arg1, s32 arg2, f32 arg3, u8 arg4, s32 arg5);
-// void func_150762D4(void) {
-//     func_151669A0(&D_800D154C->x_position, (s32)D_800D154C->y_position + 100.0f, D_800D154C->z_position, 0.44999998807907104f, 0xFF, 0);
-// }
+void func_151669A0(s32, s32, s32, f32, s32, s32);
+
+void func_150762D4(void) {
+    func_151669A0(
+        (s32)D_800D154C->x_position,
+        (s32)(D_800D154C->y_position + 100.0f),
+        (s32)D_800D154C->z_position,
+        0.45f,
+        0xFF,
+        0);
+}
+
 
 void func_15076340(void) {
     if (D_800D154C->unk107 == 0) {
@@ -473,8 +480,10 @@ void func_150766D0(void) {
 void func_15076760(void) {
 }
 
-// ???
 #pragma GLOBAL_ASM("asm/nonmatchings/game_A28B0/func_15076768.s")
+// NON-MATCHING: switch/if on D_800D1890 — case0 func_15197A7C(D_800D154C);
+// case1 builds {x,-390,z} then func_1504715C(sp20)+func_1514B364; frame 0x50.
+// IDO shortens / reshapes early-exit lw-ra delay slots.
 
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_A28B0/func_150767F4.s")
@@ -648,14 +657,11 @@ void func_15076FA8(void) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_A28B0/func_150770E4.s")
-// NON-MATCHING: JUSTREG (?)
-// void func_150770E4(void) {
-//     // this can't be right?
-//     if (D_800CC30C[D_800D154C->unk222 * 203] < D_800D1892) {
-//         func_15075400(D_800D1893);
-//     }
-// }
+void func_150770E4(void) {
+    if (*(f32 *)((u8 *)&D_800CC30C + D_800D154C->unk222 * 0x32C) < (f32)D_800D1892) {
+        func_15075400(D_800D1893);
+    }
+}
 
 void func_15077174(void) {
     D_800D154C->unk10E = D_800D1890;
@@ -669,22 +675,27 @@ void func_15077190(void) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_A28B0/func_150771F0.s")
-// NON-MATCHING: something isnt right...
-// void func_150771F0(void) {
-//     s32 phi_a1;
-//
-//     if (D_800D1893 == 0) {
-//         phi_a1 = (D_800D1892 != 0) ? 1 : 2;
-//         func_1506160C(D_800D154C, phi_a1, D_800D1890, D_800D1891, 0);
-//     } else {
-//         if (D_800D1892 == 0) {
-//             func_1502EA60(D_800D154C, D_800D1890);
-//         } else {
-//             func_1502EA7C(D_800D154C, D_800D1890);
-//         }
-//     }
-// }
+void func_150771F0(void) {
+    s32 a1;
+    u8 a2;
+    u8 a3;
+
+    if (D_800D1893 == 0) {
+        a2 = D_800D1890;
+        a3 = D_800D1891;
+        if (D_800D1892 != 0) {
+            a1 = 1;
+        } else {
+            a1 = 2;
+        }
+        func_1506160C(D_800D154C, a1, a2, a3, 0);
+    } else if (D_800D1892 == 0) {
+        func_1502EA60(D_800D154C, D_800D1890);
+    } else {
+        func_1502EA7C(D_800D154C, D_800D1890);
+    }
+}
+
 
 void func_15077294(void) {
     switch (D_800D1891) {
@@ -1084,8 +1095,21 @@ void func_150791F0(void) {
     }
 }
 
-// ???
 #pragma GLOBAL_ASM("asm/nonmatchings/game_A28B0/func_15079228.s")
+// NON-MATCHING: 29/46 — asm lw's D_800D3098 (pointer, not la of array); unk218-=1
+// (struct216* is 5 bytes). JUSTREG on float/temps vs target schedule.
+// void func_15079228(void) {
+//     struct178 *temp_v0 = &D_800D3098[D_800D154C->unk251];
+//     s32 temp_v1 = func_1505A630(D_800D154C->x_position - temp_v0->unk0,
+//                                 temp_v0->unk4 - D_800D154C->z_position, 0);
+//     s32 a2 = temp_v1 & 0xFFFF;
+//     if (temp_v1 == 0) {
+//         a2 = 1;
+//     }
+//     func_1505D024(D_800D154C, D_800D1890, a2, -1);
+//     D_800D154C->unk218 -= 1;
+//     D_800D154C->unk21C = 1;
+// }
 
 void func_150792E0(void) {
     D_800D154C->unk232 = D_800D1890;
@@ -1212,21 +1236,16 @@ void func_15079A28(void) {
     D_800D154C->unk253 = D_800D1891;
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_A28B0/func_15079A58.s")
-// void func_15079A58(void) {
-//     s16 tmp = (D_800D1890 << 8) + D_800D1891;
-//     D_800D2110[D_800D154C->unk13F] = tmp;
-// }
+void func_15079A58(void) {
+    D_800D2110[D_800D154C->unk13F] = (D_800D1890 << 8) + D_800D1891;
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_A28B0/func_15079A98.s")
-// void func_15079A98(s32 arg0) {
-//     struct169 *temp_v0;
-//     struct127 *temp_v1;
-//
-//     temp_v0 = D_800D2104[D_800D154C->unk13F];
-//     temp_v1 = &D_800CC2D0[arg0];
-//     func_1505A630(temp_v0->unk0 - temp_v1->x_position, temp_v1->z_position - temp_v0->unk4, 0);
-// }
+void func_15079A98(s32 arg0) {
+    struct169 *temp_v0 = (struct169 *)D_800D2104[D_800D154C->unk13F];
+    struct127 *temp_v1 = &D_800CC2D0[arg0];
+    func_1505A630(temp_v0->unk0 - temp_v1->x_position, temp_v1->z_position - temp_v0->unk4, 0);
+}
+
 
 // requires jump table
 #pragma GLOBAL_ASM("asm/nonmatchings/game_A28B0/func_15079B30.s")
@@ -1240,12 +1259,11 @@ void func_15079F50(void) {
 }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_A28B0/func_15079F6C.s")
-// NON-MATCHING: JUSTREG
+// NON-MATCHING: JUSTREG — u16 temps get a0=&D_800D154C and 18/20 insns;
+// only mismatch is lbu D_800D1891 into $v1 (ours) vs $t6 (target), plus matching or.
 // void func_15079F6C(void) {
-//     u16 tmp0;
-//     u16 tmp1;
-//     tmp0 = D_800D1890 << 8;
-//     tmp1 = D_800D1891;
+//     u16 tmp0 = D_800D1890 << 8;
+//     u16 tmp1 = D_800D1891;
 //     D_800D154C->unk224 = tmp0 | tmp1;
 //     D_800D154C->unk22B = D_800D1892;
 //     D_800D154C->unk226 = D_800D1893;
@@ -1279,8 +1297,10 @@ void func_15079F50(void) {
 //     D_800D154C->unkF4 |= 0x40;
 // }
 
-// D_800D2104!
-#pragma GLOBAL_ASM("asm/nonmatchings/game_A28B0/func_1507A100.s")
+void func_1507A100(void) {
+    s32 tmp = ((s8)D_800D1892 << 8) | D_800D1893;
+    *(s16 *)((u8 *)D_800D2104[D_800D154C->unk13F] + (D_800D1890 << 3) + (D_800D1891 << 1) + 8) = tmp;
+}
 
 s32 func_1507A164(void) {
     s32 tmp = D_800CC30C[0] + (s8)D_800D1892;
@@ -1339,17 +1359,31 @@ void func_1507A3CC(void) {
     D_800D154C->unk229 = D_800D1890;
 }
 
-//  what is up with these??
+// NON-MATCHING: IDO 5.3 -O2 -g3 emits the paired-lui schedule of matched
+// func_15076624/76678 (lui 1890; lui 1891; lbu 1891; lbu 1890; ...), but these
+// originals use sequential lui/lbu then interleaved sll/load of D_800D1893.
+// Same pack expression; same size (0x40–0x58); JUSTREG / schedule only.
 #pragma GLOBAL_ASM("asm/nonmatchings/game_A28B0/func_1507A3E8.s")
 // s32 func_1507A3E8(void) {
 //     return (D_800D1890 << 0x18) | (D_800D1891 << 0x10) | (D_800D1892 << 8) | D_800D1893;
 // }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_A28B0/func_1507A428.s")
+// void func_1507A428(void) {
+//     s32 tmp = (D_800D1890 << 0x18) | (D_800D1891 << 0x10) | (D_800D1892 << 8) | D_800D1893;
+//     D_800D154C->unk94 = ~(tmp | 1);
+// }
+
 #pragma GLOBAL_ASM("asm/nonmatchings/game_A28B0/func_1507A47C.s")
+// void func_1507A47C(void) {
+//     s32 tmp = (D_800D1890 << 0x18) | (D_800D1891 << 0x10) | (D_800D1892 << 8) | D_800D1893;
+//     D_800D154C->unk94 &= ~tmp;
+// }
+
 #pragma GLOBAL_ASM("asm/nonmatchings/game_A28B0/func_1507A4D4.s")
 // void func_1507A4D4(void) {
-//     D_800D154C->unk94 |= (D_800D1890 << 0x18) | (D_800D1891 << 0x10) | (D_800D1892 << 8) | D_800D1893;
+//     s32 tmp = (D_800D1890 << 0x18) | (D_800D1891 << 0x10) | (D_800D1892 << 8) | D_800D1893;
+//     D_800D154C->unk94 |= tmp;
 // }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_A28B0/func_1507A528.s")
