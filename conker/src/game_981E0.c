@@ -469,7 +469,9 @@ void func_1506D570(void) {
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_1506D584.s")
 // NON-MATCHING: float→int FPCSR path (cvt.w.s); paired with 6D6B4
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_1506D6B4.s")
-// NON-MATCHING: 17/38 — 0x29-default+bnez(slti) shape ok; early bc1tl / D_80099D4C schedule off
+// NON-MATCHING: 13–16/38 size-ok — f4=D99D4C then f0=unk118 fixes c.eq order; health via
+// if(health>=2) 0x2C else 0x29 gives dual-b + 0x29-first; still rematerializes &D1580 store
+// (need lui/addiu $v1 kept for lw/sw 0($v1); volatile adds addiu but keeps remat sw → 0x9c)
 void func_1506D74C(void) {
     f32 sp34;
     f32 sp30;
@@ -1245,20 +1247,17 @@ void func_15070C18(s32 arg0) {
     func_15199834(D_800D154C);
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_15070C40.s")
-// NON-MATCHING: 29/39 size-ok — call is OUTSIDE unk124 if; ternary shape matches but u8 arg
-// emits late lbu a3 from stack instead of early andi a3,a0,0xFF; phi forms are +1 insn (0xa0)
-// void func_15070C40(u8 arg0) {
-//     struct17 tmp;
-//     struct127 *temp_a1 = D_800D154C;
-//
-//     tmp.unk0 = temp_a1->x_position;
-//     tmp.unk4 = temp_a1->y_position;
-//     tmp.unk8 = temp_a1->z_position;
-//     func_15103E40(
-//         temp_a1->unk124 ? &D_800CC2D0[temp_a1->unk124 - 1] : temp_a1,
-//         temp_a1, &tmp, arg0, 0, 0xFF, 0);
-// }
+void func_15070C40(u8 arg0) {
+    struct17 tmp;
+    struct127 *a1 = D_800D154C;
+
+    tmp.unk0 = a1->x_position;
+    tmp.unk4 = a1->y_position;
+    tmp.unk8 = a1->z_position;
+    func_15103E40(
+        a1->unk124 ? &D_800CC2D0[a1->unk124 - 1] : a1,
+        a1, &tmp, arg0, 0, 0xFF, 0);
+}
 
 void func_15070CDC(s32 arg0) {
     func_15070C40(1);
@@ -1472,7 +1471,7 @@ void func_15071A34(s32 arg0) {
 
 // NON-MATCHING: deferred mid/hard leaf (size 0xb4)
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_15071A64.s")
-// NON-MATCHING: 39/45 — single struct199 (vec at unk24); blezl health ok; D_800D154C in $v0 not $a1
+// NON-MATCHING: JUSTREG 45/45 exact 41/45 — body ok (struct199/health/stunned); D_800D154C in $v0 not $a1
 // and lui $at/$v0 schedule vs target (JUSTREG-ish)
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_15071B18.s")
 // NON-MATCHING: size 0x1f0 — unk1D4/unk74 gates; 99BC8 + 15143134 / DC260 / 52190
@@ -1553,7 +1552,7 @@ void func_15071FB0(void) {
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_15071FDC.s")
 // NON-MATCHING: size 0x1c8 — u8 arg / schedule; not thrashed this pass
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_150721A4.s")
-// NON-MATCHING: size 0x4c vs 0x44 — extra move after andi; needs $v1 load of D_800D1580 + andi into $a1/$a3
+// NON-MATCHING: size-ok 10/17 via raw shifts→u8 proto; need lw $v1,%lo(D1580)($v0) not lw $v0; andi schedule into $a1/$a3/$a2
 // void func_150721A4(void) {
 //     s32 v1 = D_800D1580;
 //     s32 t6 = v1 >> 8;
@@ -1607,7 +1606,7 @@ void func_150723E0(void) {
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_15072420.s")
 // NON-MATCHING: size 0x24c — unpacks D_800D1580; 83E0C/5EEF4/60F28 object path
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_1507266C.s")
-// NON-MATCHING: JUSTREG 53/53 exact 29/53 — nested early-return emits beql; regs: base in $v1 not $a3, stride in $a2 not $t0
+// NON-MATCHING: JUSTREG 53/53 exact 29/53 — hoist D_800CC2D0 before early-out; regs: base $v1≠$a3, stride $a2≠$t0, C3E78 $a3≠$t1
 
 void func_15072740(void) {
     s32 temp_v0;
@@ -1798,10 +1797,12 @@ void func_15073A28(void) {
 
 // NON-MATCHING: deferred mid/hard leaf (size 0xe8)
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_15073A50.s")
-// NON-MATCHING: 21/58 size-ok — &D_800CC2D0[unk124] + 5D024; regs ($v0/$v1) and spill slots off
+// NON-MATCHING: ~0xe0–0xe4 vs 0xe8 — need t0=&D154C early; a0=&CC2D0[unk124]; 5D024(a0, D1580&0xFF00FF, 0, C3E78);
+// unk1CC=D_8009A0D8 then if (D1580<<1)<0 overwrite y_position; immune 0→0x14; unk76=unk7A+D1580
+// s32 func_1505D024(struct127*, s32, u16, s32);
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_15073B38.s")
-// NON-MATCHING: ~0xe8/0xf0 — unkA8=(f32)(D_800D1580&0xFFFF); mid byte needs full cvt.w.s FPCSR
-// path into unkAC (f32→u8 trunc is 8B short); struct126 now has unkA8/AC/AD
+// NON-MATCHING: 51/60 JUSTREG 55/60 — &D1580/&D154C ptrs + f32→unkAC FPCSR ok; need li $t4,1
+// before andi and lui $at,0x4F00 after lw unk31C (insn rotation); tail reload regs off
 
 void func_15073C28(void) {
     func_1507F640();
@@ -1910,17 +1911,19 @@ void func_15074664(void) {
 
 // NON-MATCHING: deferred mid/hard leaf (size 0xf4)
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_150746F0.s")
-// NON-MATCHING: best 11/61 size-ok — live a1=&D_800D154C; BE616/?unk13C→a0; health/7CD64/7F488 path
-// NON-MATCHING: 6/23 size-ok; emits *0x32C-0x32C not addiu -1 then *0x32C
-// void func_150747E4(void) {
-//     struct127 *a0;
-//     if (D_800D154C->unk65 != 0) {
-//         a0 = &D_800CC2D0[D_800D154C->unk65 - 1];
-//         a0->unk218 = 0;
-//         a0->unk232 = D_800D1580;
-//     }
-// }
-#pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_150747E4.s")
+// NON-MATCHING: best 42/61 size-ok — need lui $a1,&D154C before or $a0,0 + beqz delay addiu; health/7CD64(a0,6)/7F488 path ok
+
+void func_150747E4(void) {
+    s32 v0 = D_800D154C->unk65;
+    s32 v1 = v0;
+    if (v0 != 0) {
+        struct127 *a0;
+        v1--;
+        a0 = &D_800CC2D0[v1];
+        a0->unk232 = D_800D1580;
+        a0->unk218 = 0;
+    }
+}
 
 void func_15074840(void) {
     if (D_800D154C->unk31C != 0) {
@@ -1932,7 +1935,7 @@ void func_15074870(void) {
     D_800D154C->unk24F = (s8) D_800D1580;
 }
 
-// NON-MATCHING: JUSTREG 21/26 exact 3/26
+// NON-MATCHING: JUSTREG 19/26 exact 4/26 — need or $a1,$v1 then andi; xor path xori/andi $a1,0xFF
 // void func_1507488C(void) {
 //     s32 v1 = D_800D1580;
 //     struct127 *a2 = D_800D154C;
@@ -1967,7 +1970,27 @@ void func_1507490C(void) {
 
 // NON-MATCHING: deferred mid/hard leaf (size 0xc4)
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_15074980.s")
-// NON-MATCHING: exact 42/49 (prior 47/49) — D_8008FD8C loop + 5A72C < (D1580<<3); s0/s2 addiu order
+// NON-MATCHING: best ~0xc8 (+move s4) or 0xbc (remats D154C) vs 0xc4 — need s4=&D_8008FD8C
+// early lui/addiu, s2=&D154C live (volatile helps), s3=0x14, bnel delay lw *s2; chasing=0x14
+// void func_15074980(void) {
+//     s8 *s4 = &D_8008FD8C;
+//     s32 s1 = 0;
+//     f32 f20 = (f32)(D_800D1580 << 3);
+//     struct127 *s0;
+//     struct127 * volatile *s2;
+//     s32 s3 = 0x14;
+//     if (*s4 > 0) {
+//         s2 = &D_800D154C;
+//         s0 = D_800CC2D0;
+//         do {
+//             if (func_1505A72C(*s2, s0) < f20 && s0->unk31C != 0) {
+//                 s0->unk31C->chasing = s3;
+//             }
+//             s1++;
+//             s0++;
+//         } while (s1 < *s4);
+//     }
+// }
 
 void func_15074A44(void) {
     if (D_800D154C->unk31C != 0) {

@@ -734,6 +734,7 @@ void func_150FCA00(struct108 *arg0);
 void func_15100330(s32 arg0);
 void func_15103800(void);
 void func_15103828(void);
+void func_15103E40(struct127 *, struct127 *, struct17 *, u8, s32, s32, s32);
 void func_1510550C(struct102 *arg0, s32 arg1, u8 arg2);
 void func_15105548(struct207 *arg0, s32 *arg1, u8 arg2);
 void func_15105848(struct207 *arg0, s32 arg1, u8 arg2);
