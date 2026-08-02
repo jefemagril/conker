@@ -3,6 +3,7 @@
 #include "variables.h"
 
 extern f32 D_800A4828;
+extern void func_151BC5A4(struct102 *arg0, void *arg1, u8 arg2);
 
 // requires jump table
 #pragma GLOBAL_ASM("asm/nonmatchings/game_161520/func_15134070.s")
@@ -99,7 +100,11 @@ void func_151348F0(f32 arg0, f32 arg1, s32 arg2, s32 arg3) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_161520/func_151349D0.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_161520/func_15134C98.s")
+void func_15134C98(struct102 *arg0, void *arg1, u8 arg2) {
+    if (arg0->unk28 == 1) {
+        func_151BC5A4(arg0, arg1, arg2);
+    }
+}
 
 void func_15134CD4(f32 arg0, f32 arg1, s32 arg2, s32 arg3) {
 }
