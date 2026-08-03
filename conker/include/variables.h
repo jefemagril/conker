@@ -362,6 +362,8 @@ extern s32  D_80082B20;
 extern void (*D_80082B40[])(struct108 *);
 extern u8   D_80082BB4;
 extern u8   D_80082BC0;
+extern void (*D_80082BD0)(void);
+extern void (*D_80082BD4)(void);
 extern u8   D_80082BE0[4];
 extern u8   D_80082BE4[5];
 extern void (*D_80082BFC[])(s32 arg0);
@@ -1305,8 +1307,10 @@ extern u8 D_800DCD28[3];
 
 extern s32  D_800DCDC4; // probably wrong type
 extern u8   D_800DCDD0;
+extern s32  D_800DCE50[];
 extern s8   D_800DD190;
 extern u8   D_800DD198[]; // 24 bytes
+extern s32  D_800DD1B0;
 extern f32  D_800DD1D8[];
 extern f32  D_800DD1E8[];
 
