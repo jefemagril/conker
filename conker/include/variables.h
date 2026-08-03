@@ -1177,6 +1177,11 @@ extern u8  D_800D9938;
 extern u8  D_800D9939;
 extern u8  D_800D992A[];
 extern u8  D_800D993A[];
+extern struct {
+    u8 unk0;
+    u8 unk1;
+    u8 unk2;
+} D_800D9950;
 
 extern s32 D_800D99D0[8];
 extern struct134 *D_800D9A20;

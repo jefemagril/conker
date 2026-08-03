@@ -2,8 +2,23 @@
 #include "functions.h"
 #include "variables.h"
 
+s32 func_151149AC(u32);
 
-// ???
+// NON-MATCHING: length 0x44/0x48 — IDO -O2 folds zero-temps to sb $zero with
+// base in $v0; target wants move $v0,$zero + base in $v1 then sb; tip length_schedule
+// void func_150104F0(void) {
+//     s32 temp_v0;
+//     u8 *p;
+//
+//     p = &D_800D9950.unk0;
+//     temp_v0 = 0;
+//     p[1] = temp_v0;
+//     p[0] = temp_v0;
+//     p[2] = 0;
+//     temp_v0 = func_151149AC(0xF6);
+//     *(f32 *)((u8 *)temp_v0 + 0x7C) = 2.0f;
+//     D_80088980 = 0;
+// }
 #pragma GLOBAL_ASM("asm/nonmatchings/game_3D9A0/func_150104F0.s")
 
 void func_15010538(struct127 *arg0) {
