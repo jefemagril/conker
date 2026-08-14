@@ -27,20 +27,18 @@ void func_151D2B4C(s32 arg0) {
 }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1FFF60/func_151D2BA4.s")
-// s32 func_15167A68(s32, s32, s32, s32, s32, s32);
-// NON-MATCHING: JUSTREG
-// struct224 *func_151D2BA4(s32 arg0, struct00 *arg1, s32 arg2, u8 arg3, s32 arg4) {
+// NON-MATCHING: JUSTREG 32/39 (justreg 39/39) — 3-word copy uses $v1+$t8 vs ROM $t8+$at. tip justreg_park
+// struct224 *func_151D2BA4(void *arg0, struct00 *arg1, s32 arg2, u8 arg3, s32 arg4) {
+//     void *func_15167A68(s32, s32, s32, s32, u8, u8);
 //     struct224 *tmp = func_15167A68(0x3D, arg4, arg2 + 0x48, 1, arg3, 1);
 //
-//     if (tmp == 0) {
+//     if (tmp == NULL) {
 //         return NULL;
 //     }
-//
-//     memcpy(&tmp->unk10, arg0, 36);
+//     memcpy(&tmp->unk10, arg0, 0x24);
 //     tmp->unk34 = arg1->unk0;
 //     tmp->unk38 = arg1->unk4;
 //     tmp->unk3C = arg1->unk8;
-//
 //     func_151D3308(tmp);
 //     return tmp;
 // }
@@ -99,7 +97,32 @@ void func_151D2E14(struct102 *arg0) {
 //     }
 // }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_1FFF60/func_151D2F00.s")
+void *func_151D2F00(void *arg0, void *arg1, u8 arg2, s32 arg3) {
+    typedef struct {
+        u8 pad0[0x10];
+        u8 unk10[8];
+        u8 unk18;
+        u8 pad19[7];
+        s16 unk20;
+        u8 pad22[2];
+        s32 unk24;
+        s32 unk28;
+    } Local;
+    void *func_15167A68(s32, s32, s32, s32, u8, u8);
+    Local *v0;
+
+    v0 = func_15167A68(0x3E, arg3, (s32)arg1 + 0x30, 1, arg2, 1);
+    if (v0 == NULL) {
+        return NULL;
+    }
+    memcpy((u8 *)v0 + 0x10, arg0, 0x10);
+    v0->unk20 = 0;
+    v0->unk24 = 0;
+    v0->unk28 = 0;
+    v0->unk18 &= ~2;
+    return v0;
+}
+
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1FFF60/func_151D2F90.s")
 

@@ -333,6 +333,27 @@ void func_15123508(struct108 *arg0) {
 //     return 0;
 // }
 
+// NON-MATCHING: 32/34 at right 0x88 — copies and `s32 unused = 0` before
+// `if (unk20C[arg1])` match (`beqz`+nop, `li $v0,1`, delay `sh $zero`).
+// Only miss is v1 spill at 0x18 vs ROM 0x1C; extra f32 pad moves the spill
+// to 0x1C but grows the frame 0x20→0x28. Leave asm.
+// s32 func_151239CC(struct108 *arg0, s32 arg1) {
+//     s32 unused = 0;
+//
+//     if (arg0->unk20C[arg1] != 0) {
+//         arg0->unk0 = arg0->unk2[arg1];
+//         arg0->unk2C = ((s32 *)&arg0->unk30)[arg1];
+//         arg0->unkDC = ((s32 *)&arg0->unkE0)[arg1];
+//         arg0->unk84 = ((s32 *)&arg0->unk88)[arg1];
+//         arg0->unk134 = ((s32 *)&arg0->unk138)[arg1];
+//         arg0->unk1B4 = ((s16 *)arg0->unk1B6)[arg1];
+//         arg0->unk1E0 = *(&arg0->unk1E2 + arg1);
+//         func_15124B18(arg0);
+//         arg0->unk20C[arg1] = 0;
+//         return 1;
+//     }
+//     return 0;
+// }
 #pragma GLOBAL_ASM("asm/nonmatchings/game_14FF90/func_151239CC.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_14FF90/func_15123A54.s")
 
@@ -458,7 +479,37 @@ s32 func_151253CC(struct108 *arg0) {
     return 0;
 }
 
-// no idea what going on here
+// NON-MATCHING: 23/25 at right 0x64 — fabsf + `if (unkAD == 1)` body matches
+// through the `< 0x64` `beql`; last miss is `bnezl`+`move $v0,$zero` vs ROM
+// `bnez`+`nop` on `v1 >= 0x12D`. Leave asm.
+// s32 func_15125490(void *arg0) {
+//     typedef struct {
+//         u8 pad0[0x18];
+//         f32 unk18;
+//         u8 pad1C[0x91];
+//         u8 unkAD;
+//         u8 padAE[0x6A];
+//         f32 unk118;
+//     } Obj;
+//     typedef struct {
+//         u8 pad0[0x3D0];
+//         Obj *unk3D0;
+//     } Local;
+//     Local *a = arg0;
+//     Obj *v0 = a->unk3D0;
+//     s32 v1;
+//
+//     if (v0->unkAD == 1) {
+//         v1 = (s32)fabsf(v0->unk18 - v0->unk118);
+//         if (v1 < 0x64) {
+//             return 0;
+//         }
+//         if (v1 >= 0x12D) {
+//             return 1;
+//         }
+//     }
+//     return 0;
+// }
 #pragma GLOBAL_ASM("asm/nonmatchings/game_14FF90/func_15125490.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_14FF90/func_151254F4.s")
@@ -497,9 +548,32 @@ void func_15125608(struct108 *arg0) {
     arg0->unk24C = 3.0f;
     arg0->unk250 = 2.5f;
 }
+void func_15125628(void) {
+    u8 v0;
+    u8 *p4 = D_800DBFF4;
+    u8 *p5 = &D_800DBFF5;
+    u8 *p6 = &D_800DBFF6;
+    u8 *p7 = &D_800DBFF7;
 
-// ???
-#pragma GLOBAL_ASM("asm/nonmatchings/game_14FF90/func_15125628.s")
+    v0 = *p4;
+    if (v0 != 0) {
+        *p4 = v0 - 1;
+    }
+    v0 = *p5;
+    if (v0 != 0) {
+        *p5 = v0 - 1;
+    }
+    v0 = *p6;
+    if (v0 != 0) {
+        *p6 = v0 - 1;
+    }
+    v0 = *p7;
+    if (v0 != 0) {
+        *p7 = v0 - 1;
+    }
+}
+
+
 
 void func_15125690(struct108 *arg0, s32 arg1) {
     u8 *temp_v0 = &D_800DBFF4[arg0->unk23D];
@@ -639,7 +713,27 @@ void func_15127FEC(struct108 *arg0, s32 arg1, s32 arg2) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_14FF90/func_15128030.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_14FF90/func_151283B8.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/game_14FF90/func_151284C4.s")
+void func_151284C4(struct108 *arg0) {
+    struct127 *v0;
+    u8 v1;
+
+    func_1512C490(arg0);
+    v0 = arg0->unk3D0;
+    v1 = arg0->unk23C;
+    arg0->unk2B0 = v0->x_position;
+    arg0->unk2B4 = v0->y_position;
+    arg0->unk2B8 = v0->z_position;
+    if (v1 != 0) {
+        arg0->unk23C = v1 - 1;
+    }
+    if (arg0->unk84 & 8) {
+        if ((s16)arg0->unk5FE <= 0) {
+            arg0->unk5FE = 0x3C;
+            func_15128774(arg0, arg0->unk3D0);
+        }
+    }
+}
+
 #pragma GLOBAL_ASM("asm/nonmatchings/game_14FF90/func_15128540.s")
 
 void func_15128680(struct108 *arg0) {

@@ -23,7 +23,11 @@ void func_1507CD0C(struct127 *arg0) {
 }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_A9D90/func_1507CD64.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/game_A9D90/func_1507D158.s")
+void func_1507D158(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    u8 v0 = D_800CC2D0[arg0].unk13F;
+    func_1509BFB0(3, v0 | 0x2000, arg1, arg2, arg3, arg4);
+}
+
 #pragma GLOBAL_ASM("asm/nonmatchings/game_A9D90/func_1507D1D8.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_A9D90/func_1507D4F8.s")

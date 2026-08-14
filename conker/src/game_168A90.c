@@ -5,7 +5,32 @@
 
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_168A90/func_1513B5E0.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/game_168A90/func_1513B798.s")
+void func_1513B798(void *arg0) {
+    typedef struct {
+        u8 pad0[0x10];
+        u8 unk10;
+        s8 unk11;
+        u8 pad12[2];
+        s16 unk14;
+    } Local;
+    Local *a0 = arg0;
+    u8 ret = 0;
+    extern s32 (*D_80089C18[])(void);
+
+    if ((a0->unk10 & 1) != 0) {
+        a0->unk14 -= D_800BE9E4;
+        if (a0->unk14 < 0) {
+            ret = 1;
+        }
+    }
+    if ((ret == 0) && (a0->unk11 != -1) && (D_80089C18[a0->unk11]() == 0)) {
+        ret = 1;
+    }
+    if (ret) {
+        func_1516972C(arg0);
+    }
+}
+
 #pragma GLOBAL_ASM("asm/nonmatchings/game_168A90/func_1513B83C.s")
 
 s32 func_1513B968(s32 arg0, s32 arg1) {

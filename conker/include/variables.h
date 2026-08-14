@@ -434,6 +434,7 @@ extern s32 D_80089534[];
 extern s16 D_80089550;
 extern void (*D_80089AAC[10])(void);
 extern void (*D_80089AD4[10])(void);
+extern s32  (*D_80089C18[])(void);
 extern void (*D_80089C44[])(void);
 extern void (*D_80089C54[])(void);
 extern void (*D_80089EE8[])(void);

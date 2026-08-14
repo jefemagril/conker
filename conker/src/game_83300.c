@@ -967,6 +967,37 @@ f32 func_1505D34C(f32 arg0, f32 arg1, f32 arg2, f32 arg3, f32 *arg4) {
 #pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_1505DADC.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_1505DDA8.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_1505DF10.s")
+// NON-MATCHING: JUSTREG 30/33 (justreg 33/33) — volatile order matches; second lhu in $a0 vs ROM $t3. tip justreg_park
+// void func_1505DFDC(struct127 *arg0) {
+//     typedef struct {
+//         u8 pad0[0x28];
+//         s32 unk28;
+//         s32 unk2C;
+//         s32 unk30;
+//         s32 unk34;
+//         u8 pad38[8];
+//         u8 unk40[0x1D0];
+//         u8 unk210[0x1D0];
+//     } Snap;
+//     extern u16 D_800C4ED0[];
+//     s32 id;
+//     volatile Snap *v0;
+//     u16 tmp;
+//
+//     v0 = (Snap *)arg0->unk2D0;
+//     arg0->unk84.uh = 0xFFFF;
+//     if (v0 == NULL) {
+//         return;
+//     }
+//     id = arg0->id;
+//     v0->unk28 = 0;
+//     bzero((void *)v0->unk40, 0x3A0);
+//     v0->unk40[1] = D_800C4ED0[id] + 1;
+//     tmp = D_800C4ED0[id];
+//     v0->unk30 = 0;
+//     v0->unk34 = 0;
+//     v0->unk210[1] = tmp + 1;
+// }
 #pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_1505DFDC.s")
 typedef struct {
     u8 pad0[4];

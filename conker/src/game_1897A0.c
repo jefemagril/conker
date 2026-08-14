@@ -13,20 +13,27 @@ typedef struct {
 } Game1897A0Ring;
 
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_1897A0/func_1515C2F0.s")
-// void *func_1515C2F0(void *arg0, void *arg1, s32 arg2, s32 arg3, u8 arg4, s32 arg5) {
-//     void *sp3C;
-//     void *temp_v0;
-//
-//     arg0->unk10 = 0xA;
-//     temp_v0 = func_15147A80(&arg1->unk40, 0x10, 8, 8, 8, 0, 0, arg3, (?32) arg4, arg5);
-//     if (temp_v0 == 0) {
-//         return NULL;
-//     }
-//     sp3C = temp_v0;
-//     memcpy(temp_v0->unk98, arg2, 0x3C); // memcpy
-//     return sp3C;
-// }
+void *func_1515C2F0(void *arg0, void *arg1, void *arg2, s32 arg3, u8 arg4, s32 arg5) {
+    typedef struct {
+        u8 pad[0x10];
+        s32 unk10;
+    } A0;
+    typedef struct {
+        u8 pad[0x98];
+        void *unk98;
+    } Ret;
+    void *func_15147A80(void *, void *, s32, s32, s32, s32, s32, s32, s32, u8, s32);
+    Ret *v0;
+
+    ((A0 *)arg0)->unk10 = 0xA;
+    v0 = func_15147A80(arg0, (u8 *)arg1 + 0x40, 0x10, 8, 8, 8, 0, 0, arg3, arg4, arg5);
+    if (v0 == NULL) {
+        return NULL;
+    }
+    memcpy(v0->unk98, arg2, 0x3C);
+    return v0;
+}
+
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1897A0/func_1515C388.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1897A0/func_1515C534.s")
@@ -74,32 +81,29 @@ s32 func_1515D030(Game1897A0Ring *arg0, s32 arg1) {
 
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1897A0/func_1515D088.s")
-// s32 func_1515D088(void *arg0) {
-//     s32 sp3C;
-//     s8 sp38;
-//     f32 sp34;
-//     void *sp30;
-//     s32 temp_t7;
-//     s32 temp_v0;
-//     void * temp_v0_2;
-//     s32 phi_v1;
+// NON-MATCHING: 23/42 at right 0xa8 — Pack at 0x34 vs ROM 0x30; andi $v1 vs $v0. tip justreg_park / stack
+// void *func_1515D088(void *arg0) {
+//     typedef struct {
+//         void *unk0;
+//         f32 unk4;
+//         s8 unk8;
+//     } Pack;
+//     Pack sp30;
+//     s32 v0;
+//     void *ret;
 //
-//     temp_t7 = arg0->unk18;
-//     temp_v0 = temp_t7 & 0xFF;
-//     sp38 = (s8) temp_t7;
-//     if ((temp_v0 < 0) || (temp_v0 >= 2)) {
-//         return 0;
+//     v0 = *(s32 *)((u8 *)arg0 + 0x18) & 0xFF;
+//     sp30.unk8 = *(s32 *)((u8 *)arg0 + 0x18);
+//     if ((v0 < 0) || (v0 >= 2)) {
+//         return NULL;
 //     }
-//     sp30 = arg0;
-//     sp34 = 0.0f;
-//     temp_v0_2 = func_151491F4(0x12C, -1, 0x11, 0, 0xD, 0xC, 0xFF, 1);
-//     phi_v1 = &temp_v0_2;
-//     if (temp_v0_2 != 0) {
-//         sp3C = temp_v0_2;
-//         memcpy(temp_v0_2->unk28, &sp30, 0xC); // memcpy
-//         phi_v1 = sp3C;
+//     sp30.unk0 = arg0;
+//     sp30.unk4 = 0.0f;
+//     ret = func_151491F4(0x12C, -1, 0x11, 0, 0xD, 0xC, 0xFF, 1);
+//     if (ret != NULL) {
+//         memcpy((u8 *)ret + 0x28, &sp30, 0xC);
 //     }
-//     return phi_v1;
+//     return ret;
 // }
 
 // fat struct

@@ -127,7 +127,37 @@ s32 func_150C251C(void *arg0) {
 }
 #pragma GLOBAL_ASM("asm/nonmatchings/game_EF410/func_150C2558.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_EF410/func_150C2700.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/game_EF410/func_150C2804.s")
+void *func_150C2804(s32 arg0, s32 arg1, s32 arg2, s16 arg3, u8 arg4, s32 arg5) {
+    typedef struct {
+        s32 unk0;
+        s32 unk4;
+        s32 unk8;
+        f32 unkC;
+        f32 unk10;
+        s16 unk14;
+        u8 unk16;
+        u8 unk17;
+        u8 unk18;
+        s8 unk19;
+    } Pack;
+    void *func_15134908(void *, s32, u8, s32);
+    extern f32 D_800A0280;
+    extern f32 D_800A0284;
+    Pack p;
+
+    p.unk0 = arg0;
+    p.unk4 = arg1;
+    p.unk8 = arg2;
+    p.unkC = D_800A0280;
+    p.unk10 = D_800A0284;
+    p.unk14 = arg3;
+    p.unk16 = 5;
+    p.unk17 = 6;
+    p.unk18 = 3;
+    p.unk19 = -1;
+    return func_15134908(&p, 0, arg4, arg5);
+}
+
 #pragma GLOBAL_ASM("asm/nonmatchings/game_EF410/func_150C2898.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_EF410/func_150C29F0.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_EF410/func_150C2C00.s")

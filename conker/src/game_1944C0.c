@@ -5,7 +5,8 @@
 
 
 void func_15168B10(s32 arg0, s32 arg1);
-void *func_15167A68(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4, s32 arg5);
+void func_15168A4C(void *arg0, s32 arg1);
+void *func_15167A68(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4, u8 arg5);
 void func_15169070(s32 arg0, s32 arg1, void *arg2, u8 arg3);
 extern u8 D_800D2DAB;
 
@@ -84,15 +85,53 @@ typedef struct {
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_151671E8.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15167310.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_151674F8.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15167A68.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15167AD8.s")
+
+void *func_15167A68(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4, u8 arg5) {
+    void *v0 = (void *)func_10003C6C(arg2, 1, arg3, 0, arg5);
+
+    if (v0 != NULL) {
+        ((u8 *)v0)[1] = arg1;
+        func_15168A4C(v0, arg0);
+        ((u8 *)v0)[0xC] = arg4;
+    }
+    return v0;
+}
+
+void func_15167AD8(void *arg0, u8 arg1, s32 arg2) {
+    void *v0 = func_15167A68(3, arg2, 0x28, 0, arg1, 1);
+
+    if (v0 != NULL) {
+        bcopy(arg0, (u8 *)v0 + 0x10, 0x18);
+        ((u8 *)v0)[0x23] = 0xFF;
+    }
+}
+
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15167B44.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15167C58.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15167D84.s")
+void *func_15167D84(void *arg0, s32 arg1, s32 arg2, s8 arg3, u8 arg4, s32 arg5) {
+    void *v0 = func_15167A68(arg1 == 0 ? 5 : 0x42, arg5, arg2 + 0x50, 0, arg4, 1);
+
+    if (v0 == NULL) {
+        return v0;
+    }
+    bcopy(arg0, (u8 *)v0 + 0x10, 0x38);
+    ((s8 *)v0)[0x48] = arg3;
+    return v0;
+}
+
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15167E0C.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15168118.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_1516865C.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15168800.s")
+void *func_15168800(void *arg0, u8 arg1, s32 arg2) {
+    void *v0 = func_15167A68(0xE, arg2, 0xB8, 1, arg1, 1);
+
+    if (v0 == NULL) {
+        return NULL;
+    }
+    bcopy(arg0, (u8 *)v0 + 0x10, 0xA8);
+    return v0;
+}
+
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15168870.s")
 void func_15168A2C(s32 arg0) {
     func_15168B10(arg0, 0);
@@ -120,26 +159,37 @@ void func_15168A2C(s32 arg0) {
 //     *slot = a;
 // }
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15168A4C.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15168A9C.s")
-// void *func_15168A9C(struct12 *arg0) {
-//     void *temp_a1;
-//     void *temp_v0;
-//     void *temp_v0_2;
+// NON-MATCHING: JUSTREG 20/29 (justreg 28/29) — unlink from D_800DCE50[unk1]*0x1A0 +
+// unk0*4; prefix matches with `s32 v0 = unk1; s32 v1 = unk0`; list walk stays in
+// $v1 plus extra `move $v0,$v1` vs ROM nop. Same family as func_15168A4C. Leave asm.
+// void *func_15168A9C(void *arg0) {
+//     typedef struct {
+//         u8 unk0;
+//         u8 unk1;
+//         u8 pad2[2];
+//         void *unk4;
+//         void *unk8;
+//     } Node;
+//     Node *a = arg0;
+//     s32 v0 = a->unk1;
+//     s32 v1 = a->unk0;
+//     Node **slot = (Node **)((u8 *)D_800DCE50 + (v0 * 0x1A0) + (v1 * 4));
+//     Node *n;
 //
-//     temp_a1 = (arg0->unk1 * 0x1A0) + (arg0->unk0 * 4) + 0x800DCE50;
-//     if (arg0 == *temp_a1) {
-//         *temp_a1 = (void *) arg0->unk8;
+//     if (a == *slot) {
+//         *slot = a->unk8;
 //     }
-//     temp_v0_2 = arg0->unk8;
-//     if (temp_v0_2 != 0) {
-//         temp_v0_2->unk4 = (void *) arg0->unk4;
+//     n = a->unk8;
+//     if (n != NULL) {
+//         n->unk4 = a->unk4;
 //     }
-//     temp_v0 = arg0->unk4;
-//     if (temp_v0 != 0) {
-//         temp_v0->unk8 = (void *) arg0->unk8;
+//     n = a->unk4;
+//     if (n != NULL) {
+//         n->unk8 = a->unk8;
 //     }
-//     return temp_v0;
+//     return n;
 // }
+#pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15168A9C.s")
 
 
 void func_15168B10(s32 arg0, s32 arg1) {
@@ -147,6 +197,45 @@ void func_15168B10(s32 arg0, s32 arg1) {
     func_15168A4C(arg0, arg1);
 }
 
+// NON-MATCHING: packed u16-in-word decrement. Right-length vol_field is 6/26
+// (justreg 22/26): IDO DSE's the dead `sw` of (word & 0xFFFF0000) before
+// `or`/`sw` of the combined value (4 short without volatile); volatile keeps
+// both stores but swaps `lui 0xFFFF` ahead of `addiu 0x1E` and puts `and`
+// in the `beqz` delay instead of `addiu lo-1`. Leave asm.
+// void func_15168B44(void *arg0) {
+//     typedef struct {
+//         u8 pad0[0x14];
+//         s32 unk14;
+//         u8 pad18[0x20];
+//         s16 unk38;
+//         u8 pad3A[5];
+//         u8 unk3F;
+//     } Local;
+//     Local *a = arg0;
+//     s32 v1 = a->unk14;
+//     s16 t8 = 0x1E;
+//     u16 t6 = v1;
+//
+//     if (t6 != 0) {
+//         s32 t9 = v1 & 0xFFFF0000;
+//
+//         a->unk14 = t9;
+//         a->unk38 = t8;
+//         a->unk14 = t9 | (u16)(t6 - 1);
+//         return;
+//     }
+//     {
+//         u16 hi = v1 >> 16;
+//         u8 a2 = a->unk3F;
+//
+//         if (hi < a2) {
+//             a->unk3F = a2 - hi;
+//             a->unk38 = 0x1E;
+//         } else {
+//             a->unk38 = 0;
+//         }
+//     }
+// }
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15168B44.s")
 
 void func_15168BAC(Game1944C0Dispatch *arg0) {
@@ -157,17 +246,17 @@ void func_15168BAC(Game1944C0Dispatch *arg0) {
     }
 }
 
-// void func_15168BE4(Game1944C0CopySrc *arg0, u8 arg1, s32 arg2) {
-//     Game1944C0CopyDst *temp_v0;
-//
-//     if (arg0->unk40 != 0) {
-//         temp_v0 = func_15167A68(0x10, arg2, 0xF0, 1, arg1, 1);
-//         if (temp_v0 != NULL) {
-//             bcopy(arg0, temp_v0->unk90, 0x60);
-//         }
-//     }
-// }
-#pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15168BE4.s")
+void func_15168BE4(Game1944C0CopySrc *arg0, u8 arg1, s32 arg2) {
+    Game1944C0CopyDst *temp_v0;
+
+    if (arg0->unk40 != 0) {
+        temp_v0 = func_15167A68(0x10, arg2, 0xF0, 1, arg1, 1);
+        if (temp_v0 != NULL) {
+            bcopy(arg0, temp_v0->unk90, 0x60);
+        }
+    }
+}
+
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15168C4C.s")
 void func_15168E34(u32 *arg0, u32 arg1) {
     u32 value = *arg0;

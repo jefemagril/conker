@@ -76,7 +76,21 @@ void func_15141DA4(void *arg0, s32 arg1, s32 arg2) {
 //     func_1513C650(&tmp, 0, 0, arg1->unk4, arg4->unk0, arg1->unk0, arg4->unk8, temp_f2, temp_f2, arg3, phi_v0, 3, 1, 0, 0xFF, 1);
 // }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_151420F8.s")
+s32 func_151420F8(struct127 *arg0) {
+    typedef struct {
+        s32 w[6];
+    } Pack;
+    extern Pack D_800A5200;
+    s32 func_150A2AEC(s32, s32, void *);
+    Pack copy;
+
+    copy = D_800A5200;
+    if (func_150A2AEC(arg0 - D_800CC2D0, 6, &copy) == -1) {
+        return 0;
+    }
+    return 1;
+}
+
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15142180.s")
 
 s32 func_151422C0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
@@ -147,7 +161,21 @@ f32 func_15142B04(f32 arg0) {
 f32 func_15142B44(f32 arg0) {
     return ((arg0 + 1.0f) * (arg0 - 1.0f) * arg0) * D_800A5628;
 }
-#pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15142B7C.s")
+Gfx *func_15142B7C(Gfx *gdl, s32 arg1, s32 arg2) {
+    extern s32 D_800DD200;
+    extern s32 D_800DD1FC;
+
+    if ((~D_800DD200) & arg2) {
+        gSPClearGeometryMode(gdl++, arg2);
+        D_800DD200 |= arg2;
+    }
+    if ((~D_800DD1FC) & arg1) {
+        gSPSetGeometryMode(gdl++, arg1);
+        D_800DD1FC |= arg1;
+    }
+    return gdl;
+}
+
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15142C10.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15142CF0.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15142E24.s")
@@ -301,7 +329,36 @@ f32 func_15144528(f32 arg0, f32 arg1, f32 arg2) {
     }
     return arg0;
 }
-#pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15144598.s")
+f32 func_15144598(struct134 *arg0) {
+    typedef struct {
+        u8 pad0[6];
+        s16 unk6;
+        u8 pad8[2];
+        s16 unkA;
+        u8 padC[9];
+        u8 unk15;
+    } Local;
+    extern f32 D_800A5694;
+    Local *a = (Local *)arg0;
+    s16 v0;
+    f32 f2;
+
+    switch (a->unk15 & 3) {
+    case 2:
+        f2 = (a->unk6 * a->unkA) * 4.0f;
+        break;
+    case 0:
+    case 1:
+        v0 = a->unk6;
+        f2 = (v0 * v0) * D_800A5694;
+        break;
+    default:
+        f2 = 1.0f;
+        break;
+    }
+    return f2;
+}
+
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_1514462C.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_1514470C.s")
 f32 func_15144A74(f32 *arg0, f32 *arg1) {
@@ -514,7 +571,18 @@ u8 func_15145C90(s32 arg0) {
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15145EA4.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15146078.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_151462C8.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_151464B8.s")
+u8 func_151464B8(s16 *arg0) {
+    s32 i = 0;
+    s16 mask = 0;
+    s32 bits;
+
+    for (; i <= D_80082FA0; i++) {
+        mask |= 1 << i;
+    }
+    bits = arg0[1] & mask;
+    return (bits == 0) & 0xFF;
+}
+
 
 void func_15146508(struct127 *arg0, struct127 *arg1) {
     struct193 tmp;
