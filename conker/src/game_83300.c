@@ -1015,7 +1015,22 @@ void func_15060B70(s32 arg0, void *arg1) {
     func_10010154(arg0, arg1, 0x6D60, 0x1F4, 0x9C4);
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_15060BA4.s")
+s32 func_15060BA4(void *arg0, s32 arg1) {
+    typedef struct {
+        u8 pad[0x1CA];
+        u8 unk1CA;
+    } Local;
+    Local *a = arg0;
+
+    if (a->unk1CA == 6) {
+        return 0;
+    }
+    a->unk1CA += arg1;
+    if (a->unk1CA >= 7) {
+        a->unk1CA = 6;
+    }
+    return 1;
+}
 #pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_15060BE0.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_15060D54.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_15060F28.s")

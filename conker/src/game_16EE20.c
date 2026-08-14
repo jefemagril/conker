@@ -189,7 +189,13 @@ s32 func_15143044(u8 arg0, s32 arg1) {
 
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_151436B4.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_1514373C.s")
+void func_1514373C(f32 arg0, f32 arg1, f32 *arg2, f32 *arg3) {
+    f32 c = cosf(arg0);
+    f32 s = sinf(arg0);
+
+    *arg2 = arg1 * s;
+    *arg3 = arg1 * c;
+}
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15143794.s")
 void func_15143834(s16 arg0, s16 arg1, f32 arg2) {
     func_15143794(arg0, arg1, arg2);
@@ -203,7 +209,12 @@ s32 func_15143E08(struct127 *arg0) {
     return (((s32) arg0->unk7A >> 8) + 64) & 0xFF;
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15143E24.s")
+s32 func_15143E24(struct127 *arg0) {
+    if (arg0->unk31C != NULL) {
+        return (s16) ((arg0->unk7A - arg0->unk31C->unk12) >> 8);
+    }
+    return (s16) (arg0->unk7A >> 8);
+}
 f32 func_15143E64(f32 *arg0) {
     f32 x = arg0[0];
     f32 y = arg0[1];
@@ -215,8 +226,40 @@ f32 func_15143E64(f32 *arg0) {
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_1514401C.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_151441A4.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_151442FC.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_151444DC.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15144528.s")
+s32 func_151444DC(s32 arg0, s32 arg1, s32 arg2) {
+    s32 v0;
+
+    if (arg1 < arg0) {
+        v0 = (arg1 - arg2) + 1;
+        do {
+            arg0 -= v0;
+        } while (arg1 < arg0);
+    }
+    if (arg0 < arg2) {
+        v0 = (arg1 - arg2) + 1;
+        do {
+            arg0 += v0;
+        } while (arg0 < arg2);
+    }
+    return arg0;
+}
+f32 func_15144528(f32 arg0, f32 arg1, f32 arg2) {
+    f32 v0;
+
+    if (arg1 < arg0) {
+        v0 = arg1 - arg2;
+        do {
+            arg0 -= v0;
+        } while (arg1 < arg0);
+    }
+    if (arg0 < arg2) {
+        v0 = arg1 - arg2;
+        do {
+            arg0 += v0;
+        } while (arg0 < arg2);
+    }
+    return arg0;
+}
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15144598.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_1514462C.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_1514470C.s")
@@ -236,8 +279,40 @@ f32 func_15144A74(f32 *arg0, f32 *arg1) {
 f32 *func_15144B34(s32 arg0) {
     return &D_800DBFF0[arg0].unk2F8;
 }
+// NON-MATCHING: 22/24 — lwc1 then mov.s/c.lt.s swap vs ROM c.lt.s then mov.s; tip float_cmp_arg_then_work_copy
+// f32 func_15144B68(f32 arg0) {
+//     f32 hi = D_800A56A4;
+//     f32 x = arg0;
+//
+//     if (hi < arg0) {
+//         do {
+//             x -= hi;
+//         } while (hi < x);
+//     }
+//     if (x < 0.0f) {
+//         do {
+//             x += hi;
+//         } while (x < 0.0f);
+//     }
+//     return x;
+// }
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15144B68.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15144BC8.s")
+f32 func_15144BC8(f32 arg0) {
+    f32 hi = 360.0f;
+    f32 x = arg0;
+
+    if (hi < arg0) {
+        do {
+            x -= hi;
+        } while (hi < x);
+    }
+    if (x < 0.0f) {
+        do {
+            x += hi;
+        } while (x < 0.0f);
+    }
+    return x;
+}
 
 s32 func_15144C2C(s16 arg0) {
     s16 tmp1 = arg0;
