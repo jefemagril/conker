@@ -1049,7 +1049,26 @@ void func_150615DC(struct127 *arg0) {
 #pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_1506160C.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_150617BC.s")
 // ???
-#pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_1506196C.s")
+s32 func_1506196C(void *arg0, s32 arg1) {
+    typedef struct {
+        u8 pad0[7];
+        u8 unk7;
+    } A;
+    typedef struct {
+        u8 pad0[0xB];
+        u8 unkB;
+    } B;
+    A *a = arg0;
+    B *b = (void *)((u8 *)arg0 + arg1);
+    s32 prod = b->unkB * a->unk7;
+
+    if (prod == 0xFE01) {
+        prod = 0xFF;
+    } else {
+        prod >>= 8;
+    }
+    return prod;
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_150619A8.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_15061B4C.s")
