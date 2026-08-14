@@ -220,7 +220,18 @@ f32 func_15143E64(f32 *arg0) {
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15144598.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_1514462C.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_1514470C.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15144A74.s")
+f32 func_15144A74(f32 *arg0, f32 *arg1) {
+    typedef struct {
+        f32 unk0;
+        f32 unk4;
+        f32 unk8;
+    } Local;
+
+    Local *a = (Local *)arg0;
+    Local *b = (Local *)arg1;
+
+    return (a->unk0 * b->unk0) + (a->unk4 * b->unk4) + (a->unk8 * b->unk8);
+}
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15144AA8.s")
 f32 *func_15144B34(s32 arg0) {
     return &D_800DBFF0[arg0].unk2F8;
