@@ -62,7 +62,30 @@ void func_150AED4C(struct114 *arg0) {
     arg0->unk36 = arg0->unk34;
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_DBA60/func_150AED9C.s")
+s32 func_150AED9C(void *arg0) {
+    typedef struct {
+        u8 pad0[0x1C];
+        s16 unk1C;
+        u8 pad1E[0x7A];
+        void *unk98;
+    } Local;
+    typedef struct {
+        u8 pad[0x1B];
+        u8 unk1B;
+    } Inner;
+    Local *a = arg0;
+    Inner *p = a->unk98;
+    s32 v = a->unk1C * 8;
+
+    if (v >= 0x100) {
+        v = 0xFF;
+    }
+    p->unk1B = v;
+    if ((u8)v < 0) {
+        return 0;
+    }
+    return 1;
+}
 
 s32 func_150AEDD8(struct202 *arg0) {
     if (arg0->unk1C < 0x20) {

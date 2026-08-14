@@ -101,7 +101,30 @@
 // }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_EF410/func_150C2424.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/game_EF410/func_150C251C.s")
+s32 func_150C251C(void *arg0) {
+    typedef struct {
+        u8 pad0[0x1C];
+        s16 unk1C;
+        u8 pad1E[0x7A];
+        void *unk98;
+    } Local;
+    typedef struct {
+        u8 pad[0x1B];
+        u8 unk1B;
+    } Inner;
+    Local *a = arg0;
+    Inner *p = a->unk98;
+    s32 v = a->unk1C * 8;
+
+    if (v >= 0x100) {
+        v = 0xFF;
+    }
+    p->unk1B = v;
+    if ((u8)v < 0) {
+        return 0;
+    }
+    return 1;
+}
 #pragma GLOBAL_ASM("asm/nonmatchings/game_EF410/func_150C2558.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_EF410/func_150C2700.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_EF410/func_150C2804.s")
