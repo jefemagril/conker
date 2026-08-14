@@ -55,7 +55,23 @@ void func_15043A00(struct105 *arg0, s32 arg1, s32 arg2) {
 #pragma GLOBAL_ASM("asm/nonmatchings/game_70200/func_15043A20.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_70200/func_15043AC8.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_70200/func_15043B70.s")
+s32 func_15043B70(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    s32 v0;
+
+    while (arg3 != 0) {
+        if (arg1 < (arg2 + arg3)) {
+            v0 = arg1 - arg2;
+        } else {
+            v0 = arg3;
+        }
+        arg2 += v0;
+        arg3 -= v0;
+        if (arg2 >= arg1) {
+            arg2 = 0;
+        }
+    }
+    return arg2;
+}
 #pragma GLOBAL_ASM("asm/nonmatchings/game_70200/func_15043BB8.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_70200/func_15043CA4.s")

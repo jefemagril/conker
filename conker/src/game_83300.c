@@ -968,7 +968,39 @@ f32 func_1505D34C(f32 arg0, f32 arg1, f32 arg2, f32 arg3, f32 *arg4) {
 #pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_1505DDA8.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_1505DF10.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_1505DFDC.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_1505E060.s")
+typedef struct {
+    u8 pad0[4];
+    u16 unk4;
+    u16 unk6;
+    f32 unk8;
+    f32 unkC;
+    f32 unk10;
+    f32 unk14;
+    f32 unk18;
+    f32 unk1C;
+    f32 unk20;
+    f32 unk24;
+    s32 unk28;
+    s32 unk2C;
+    u8 pad30[8];
+    s8 unk38;
+    s8 unk39;
+    u8 pad3A[6];
+    u8 unk40[0x1D0];
+    u8 unk210[0x1D0];
+} Game83300Snap;
+
+void func_1505E060(Game83300Snap *arg0) {
+    arg0->unk6 = arg0->unk4;
+    arg0->unkC = arg0->unk8;
+    arg0->unk14 = arg0->unk10;
+    arg0->unk24 = arg0->unk20;
+    arg0->unk1C = arg0->unk18;
+    arg0->unk39 = arg0->unk38;
+    arg0->unk2C = arg0->unk28;
+    bcopy(arg0->unk40, arg0->unk210, 0x1D0);
+}
+
 #pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_1505E0C4.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_1505E650.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_1505E7CC.s")
@@ -1000,8 +1032,22 @@ f32 func_1505D34C(f32 arg0, f32 arg1, f32 arg2, f32 arg3, f32 *arg4) {
 #pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_1505F298.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_1506045C.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_15060778.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_15060A30.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_15060A9C.s")
+void func_15060A30(s32 arg0, struct127 *arg1) {
+    if (arg1->camera == NULL) {
+        func_10010344(arg0, arg1, 0x6D60, 0x1F4, 0x9C4);
+    } else {
+        func_15060778(arg0, arg1, 0x5DC0, 0, 0x1F4, 0x9C4, 1);
+    }
+}
+
+void func_15060A9C(s32 arg0, struct127 *arg1) {
+    if (arg1->camera == NULL) {
+        func_10010630(arg0, arg1, 0x5DC0, 0x1F4, 0x9C4);
+    } else {
+        func_15060778(arg0, arg1, 0x5DC0, 0, 0x1F4, 0x9C4, 0);
+    }
+}
+
 
 void func_15060B04(s32 arg0, struct127 *arg1, s32 arg2) {
     if (arg1->camera == NULL) {

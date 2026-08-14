@@ -6,12 +6,15 @@
 
 void func_15168B10(s32 arg0, s32 arg1);
 void *func_15167A68(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4, s32 arg5);
+void func_15169070(s32 arg0, s32 arg1, void *arg2, u8 arg3);
 extern u8 D_800D2DAB;
 
 typedef struct {
     u8 pad0[0xE4];
     u8 unkE4;
 } Game1944C0Dispatch;
+
+extern void (*D_8008CA20[])(Game1944C0Dispatch *);
 
 typedef struct {
     u8 pad0[0x40];
@@ -94,6 +97,28 @@ typedef struct {
 void func_15168A2C(s32 arg0) {
     func_15168B10(arg0, 0);
 }
+
+// NON-MATCHING: JUSTREG 4/20 — opcodes match; list-insert into D_800DCE50[unk1]*0x1A0 + arg1; tip justreg_park
+// void func_15168A4C(void *arg0, s32 arg1) {
+//     typedef struct {
+//         u8 unk0;
+//         u8 unk1;
+//         u8 pad2[2];
+//         void *unk4;
+//         void *unk8;
+//     } Node;
+//     Node *a = arg0;
+//     Node **slot = (Node **)((u8 *)D_800DCE50 + (a->unk1 * 0x1A0) + (arg1 * 4));
+//     Node *t0 = *slot;
+//
+//     a->unk8 = t0;
+//     if (t0 != NULL) {
+//         t0->unk4 = a;
+//     }
+//     a->unk0 = arg1;
+//     a->unk4 = NULL;
+//     *slot = a;
+// }
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15168A4C.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15168A9C.s")
 // void *func_15168A9C(struct12 *arg0) {
@@ -123,14 +148,14 @@ void func_15168B10(s32 arg0, s32 arg1) {
 }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15168B44.s")
-// void func_15168BAC(Game1944C0Dispatch *arg0) {
-//     u8 idx = arg0->unkE4;
-//
-//     if (idx != 0) {
-//         D_8008CA20[idx](arg0);
-//     }
-// }
-#pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15168BAC.s")
+
+void func_15168BAC(Game1944C0Dispatch *arg0) {
+    u8 idx = arg0->unkE4;
+
+    if (idx != 0) {
+        D_8008CA20[idx](arg0);
+    }
+}
 
 // void func_15168BE4(Game1944C0CopySrc *arg0, u8 arg1, s32 arg2) {
 //     Game1944C0CopyDst *temp_v0;
@@ -187,23 +212,36 @@ void func_15168F84(s32 arg0, s32 *arg1, s32 *arg2) {
     *arg1 = 0x5D;
     *arg2 = 0x60;
 }
-#pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15169040.s")
+
+void func_15169040(void *arg0, u8 arg1) {
+    func_15169070(0, 0x68, arg0, arg1);
+}
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15169070.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15169260.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_1516944C.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_151695F0.s")
-// void func_1516962C(s32 arg0, Game1944C0Payload *arg1, u8 arg2) {
-//     Game1944C0StackPayload sp18;
-//
-//     sp18.payload = arg1;
-//     sp18.unk4 = arg1->unk3B;
-//     func_1516944C(arg0, (s32)&sp18, arg2);
-// }
-#pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_1516962C.s")
+
+void func_151695F0(Game1944C0Payload *arg0, u8 arg1) {
+    Game1944C0StackPayload sp18;
+
+    sp18.payload = arg0;
+    sp18.unk4 = arg0->unk3B;
+    func_15169040(&sp18, arg1);
+}
+
+void func_1516962C(s32 arg0, Game1944C0Payload *arg1, u8 arg2) {
+    Game1944C0StackPayload sp18;
+
+    sp18.payload = arg1;
+    sp18.unk4 = arg1->unk3B;
+    func_1516944C(arg0, (s32)&sp18, arg2);
+}
+
 s32 func_15169668(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     D_800D2DAB = 1;
     return arg0;
 }
+
+// NON-MATCHING: 18/20 — ROM lbu arg1->unk0 then arg0->unkC; C `arg1->unk0 == arg0->unkC` still loads $a0 first. u8 temp from arg1 is JUSTREG 17/20 (v0/t7 vs t7/t8); tip justreg_park
 // void func_1516968C(Game1944C0EventObject *arg0, Game1944C0EventPayloadHeader *arg1, u8 arg2) {
 //     if ((arg2 == 0xF) || (arg2 == 0x10)) {
 //         if (arg1->unk0 == arg0->unkC) {
@@ -213,16 +251,15 @@ s32 func_15169668(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 // }
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_1516968C.s")
 
-// void func_151696DC(struct102 *arg0) {
-//     s32 i;
-//
-//     for (i = 0; i < D_800DD190; i = (s8)(i + 1)) {
-//         if (arg0 == ((void **)D_800DD198)[i]) {
-//             ((void **)D_800DD198)[i] = (void *)arg0->unk8;
-//         }
-//     }
-// }
-#pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_151696DC.s")
+void func_151696DC(struct102 *arg0) {
+    s32 i;
+
+    for (i = 0; i < D_800DD190; i = (s8)(i + 1)) {
+        if (arg0 == ((void **)D_800DD198)[i]) {
+            ((void **)D_800DD198)[i] = (void *)arg0->unk8;
+        }
+    }
+}
 
 void func_1516972C(struct102 *arg0) {
     void (*func)(struct102 *arg0);

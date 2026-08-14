@@ -1161,7 +1161,25 @@ s32 func_1516429C(struct237 *arg0) {
     return 1;
 }
 
-// what structs?
+// NON-MATCHING: JUSTREG 21/23 — ROM lbu arg1->unk4 then tmp->unk4; C still loads $a0+0x18 first. tip cmp_operand_order / justreg_park
+// typedef struct {
+//     f32 unk0;
+//     u8 unk4;
+//     u8 unk5;
+//     u8 unk6;
+//     u8 unk7;
+// } Game18D770F33;
+// void func_1516434C(struct225 *arg0, Game18D770F33 *arg1, u8 arg2) {
+//     Game18D770F33 *tmp = (Game18D770F33 *)&arg0->unk18;
+//     if (arg2 == 0x33) {
+//         if (arg1->unk4 == tmp->unk4) {
+//             tmp->unk0 = arg1->unk0;
+//             arg0->unk14->unk5 = arg1->unk5;
+//             arg0->unk14->unk6 = arg1->unk6;
+//             arg0->unk14->unk7 = arg1->unk7;
+//         }
+//     }
+// }
 #pragma GLOBAL_ASM("asm/nonmatchings/game_18D770/func_1516434C.s")
 
 void func_151643A8(struct225 *arg0, s32 arg1, u8 arg2) {

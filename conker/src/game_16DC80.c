@@ -76,11 +76,24 @@ s32 func_15141818(s32 arg0, s32 arg1) {
 //     return temp_f0;
 // }
 
-// s32 func_15141928(Game16DC80Obj *arg0) {
-//     Game16DC80Vec3f *temp_v0;
-//
-//     temp_v0 = arg0->unk178;
-//     func_1514182C(arg0, &arg0->unk17C, arg0->unk170, arg0->unk174, temp_v0->unk0, temp_v0->unk8);
-//     return 1;
-// }
-#pragma GLOBAL_ASM("asm/nonmatchings/game_16DC80/func_15141928.s")
+s32 func_1514182C(void *arg0, void *arg1, s32 arg2, s32 arg3, f32 arg4, f32 arg5);
+
+s32 func_15141928(void *arg0) {
+    typedef struct {
+        f32 unk0;
+        f32 unk4;
+        f32 unk8;
+    } Vec;
+    typedef struct {
+        u8 pad[0x170];
+        s32 unk170;
+        s32 unk174;
+        Vec *unk178;
+        u8 unk17C;
+    } Local;
+    Local *a = arg0;
+    Vec *v0 = a->unk178;
+
+    func_1514182C(a, &a->unk17C, a->unk170, a->unk174, v0->unk0, v0->unk8);
+    return 1;
+}

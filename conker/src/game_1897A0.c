@@ -56,22 +56,22 @@ typedef struct {
 //     return 1;
 // }
 
-// s32 func_1515D030(Game1897A0Ring *arg0, s32 arg1) {
-//     s32 ret;
-//
-//     ret = 1;
-//     if (arg0->unk2C >= 3) {
-//         arg0->unk2C = arg0->unk2C - 1;
-//         arg0->unk2E = arg0->unk2E - 1;
-//         if (arg0->unk2E < 0) {
-//             arg0->unk2E = arg0->unk25 - 1;
-//         }
-//     } else {
-//         ret = 0;
-//     }
-//     return ret;
-// }
-#pragma GLOBAL_ASM("asm/nonmatchings/game_1897A0/func_1515D030.s")
+s32 func_1515D030(Game1897A0Ring *arg0, s32 arg1) {
+    s32 ret;
+
+    ret = 1;
+    if (arg0->unk2C >= 3) {
+        arg0->unk2C = arg0->unk2C - 1;
+        arg0->unk2E = arg0->unk2E - 1;
+        if (arg0->unk2E < 0) {
+            arg0->unk2E = arg0->unk25 - 1;
+        }
+    } else {
+        ret = 0;
+    }
+    return ret;
+}
+
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1897A0/func_1515D088.s")
 // s32 func_1515D088(void *arg0) {
