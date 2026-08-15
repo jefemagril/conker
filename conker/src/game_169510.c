@@ -517,7 +517,28 @@ void func_1513F4B0(struct210 *arg0, s16 arg1) {
     func_15140410(arg0, &arg0->unk110, &arg0->unk11C, arg1);
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_169510/func_1513F4E4.s")
+Gfx *func_1513F4E4(Gfx *gdl, u8 arg1, u8 *arg2) {
+    s32 func_15143044(u8, s32);
+    extern s16 D_800DD1BE;
+    extern u8 D_800A4BA8[];
+    s32 v0;
+    u8 *p;
+
+    v0 = func_15143044(arg1, 0);
+    if (v0 != D_800DD1BE) {
+        if (*arg2 == 1) {
+            gDPPipeSync(gdl++);
+            *arg2 = 0;
+        }
+        p = &D_800A4BA8[arg1 * 16];
+        gDPSetCombine(gdl++,
+            GCCc0w0(p[0], p[2], p[4], p[6]) | GCCc1w0(p[8], p[10]),
+            GCCc0w1(p[1], p[3], p[5], p[7]) | GCCc1w1(p[9], p[12], p[14], p[11], p[13], p[15]));
+        D_800DD1BE = v0;
+    }
+    return gdl;
+}
+
 
 void func_1513F680(struct171 *arg0, u8 arg1, u8 arg2, u8 arg3, u8 arg4) {
     arg0->unk70 = arg1;
@@ -569,9 +590,69 @@ void func_1513FA70(void *arg0, s16 arg1) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_169510/func_1513FAB4.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_169510/func_1513FFF4.s")
+void func_1513FFF4(Vtx *arg0, u8 arg1, u8 arg2) {
+    typedef struct {
+        u8 pad[6];
+        u16 unk6;
+        u16 unk8;
+        u8 padA[2];
+    } Tex;
+    extern Tex D_80090B60[];
+    Tex *p;
+    s32 a;
+    u16 w;
+    u16 h;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_169510/func_151400D0.s")
+    if (arg1 == 0xFF) {
+        return;
+    }
+    p = &D_80090B60[arg1];
+    w = p->unk6 - 1;
+    h = p->unk8 - 1;
+    a = (arg2 & 1) ? (w << 6) : 0;
+    arg0[3].v.tc[0] = a;
+    arg0[0].v.tc[0] = a;
+    a = (arg2 & 1) ? 0 : (w << 6);
+    arg0[2].v.tc[0] = a;
+    arg0[1].v.tc[0] = a;
+    a = (arg2 & 2) ? (h << 6) : 0;
+    arg0[1].v.tc[1] = a;
+    arg0[0].v.tc[1] = a;
+    a = (arg2 & 2) ? 0 : (h << 6);
+    arg0[3].v.tc[1] = a;
+    arg0[2].v.tc[1] = a;
+}
+
+
+void func_151400D0(Vtx *arg0, struct { s16 unk0; s16 unk2; s16 unk4; s16 unk6; u16 unk8; } *arg1) {
+    arg0 += 3;
+    arg0[-3].v.flag = arg1->unk8;
+    arg1 += 3;
+    arg0[-3].v.cn[0] = arg1[-3].unk0;
+    arg0[-3].v.cn[1] = arg1[-3].unk2;
+    arg0[-3].v.cn[2] = arg1[-3].unk4;
+    arg0[-3].v.cn[3] = arg1[-3].unk6;
+    arg0[-3].v.flag = 0;
+    arg0[-2].v.flag = arg1[-2].unk8;
+    arg0[-2].v.cn[0] = arg1[-2].unk0;
+    arg0[-2].v.cn[1] = arg1[-2].unk2;
+    arg0[-2].v.cn[2] = arg1[-2].unk4;
+    arg0[-2].v.cn[3] = arg1[-2].unk6;
+    arg0[-2].v.flag = 0;
+    arg0[-1].v.flag = arg1[-1].unk8;
+    arg0[-1].v.cn[0] = arg1[-1].unk0;
+    arg0[-1].v.cn[1] = arg1[-1].unk2;
+    arg0[-1].v.cn[2] = arg1[-1].unk4;
+    arg0[-1].v.cn[3] = arg1[-1].unk6;
+    arg0[-1].v.flag = 0;
+    arg0[0].v.flag = arg1[0].unk8;
+    arg0[0].v.cn[0] = arg1[0].unk0;
+    arg0[0].v.cn[1] = arg1[0].unk2;
+    arg0[0].v.cn[2] = arg1[0].unk4;
+    arg0[0].v.cn[3] = arg1[0].unk6;
+    arg0[0].v.flag = 0;
+}
+
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_169510/func_15140190.s")
 

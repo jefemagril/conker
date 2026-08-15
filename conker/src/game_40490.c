@@ -259,5 +259,7 @@ s32 func_15015300(struct134 *arg0) {
 
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_40490/func_15015354.s")
+// NON-MATCHING: JUSTREG 39/44 (justreg 44/44) — `unk14 = 1` interleaved with
+// `unk16 |= 4`; temps $t6/$t8 vs ROM. Named u8 temp grew the frame. tip justreg_park
 #pragma GLOBAL_ASM("asm/nonmatchings/game_40490/func_15015644.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_40490/func_150156F4.s")

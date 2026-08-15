@@ -306,27 +306,35 @@ s32 func_1504AEF4(s32 arg0, s32 arg1) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_77AD0/func_1504B0FC.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_77AD0/func_1504BA38.s")
-// NON-MATCHING: starts to fall apart towards the end
+// NON-MATCHING: JUSTREG 46/46, exact 34/46 — tip justreg_park
+// 3-byte Row* in $v0 (ours) vs $v1 (ROM); unk2 in $v1 vs $a1; unk1 in $v1 vs $v0.
 // void func_1504BA38(struct127 *arg0) {
-//     s8 temp_a1;
-//     s8 temp_v0;
-//     s8 *temp_v1;
+//     typedef struct {
+//         s8 unk0;
+//         s8 unk1;
+//         s8 unk2;
+//     } Row;
+//     Row *row;
+//     s8 a1;
+//     s8 v0;
 //
-//     if (arg0->unk28 > 10.0f) {
+//     if (10.0f < arg0->unk28) {
 //         arg0->unkCE = 0;
-//     } else {
-//         temp_v1 = &D_80099140[(arg0->unk184 & 0x1f) * 3]; // length 3 items
-//         temp_a1 = temp_v1[2];
-//         if ((temp_a1 != 0) && (arg0->unkAA == 0)) {
-//             arg0->unkAA = temp_a1;
-//         }
-//         temp_v0 = temp_v1[1];
-//         if (temp_v0 == 0) {
-//             arg0->unkCE = temp_v1[0];
-//         } else {
-//             arg0->unkCE = (s16) (s32) (temp_v0 * D_800991D4 * ((f32) temp_v1[0] - arg0->unk3C));
+//         return;
+//     }
+//     row = &((Row *)D_80099140)[arg0->unk184 & 0x1F];
+//     a1 = row->unk2;
+//     if (a1 != 0) {
+//         if (arg0->unkAA == 0) {
+//             arg0->unkAA = a1;
 //         }
 //     }
+//     v0 = row->unk1;
+//     if (v0 == 0) {
+//         arg0->unkCE = row->unk0;
+//         return;
+//     }
+//     arg0->unkCE = (f32)v0 * D_800991D4 * ((f32)row->unk0 - arg0->xz_velocity);
 // }
 
 void func_1504BAF0(struct127 *arg0) {

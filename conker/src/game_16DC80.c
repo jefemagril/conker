@@ -4,6 +4,8 @@
 #include "variables.h"
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16DC80/func_151407D0.s")
+// NON-MATCHING: spawn wrapper; jal func_1513D524 then memcpy(v0+0x110). length_schedule on
+// beqz-delay addiu dest vs early return; inner D_800DC9F0++. tip length_schedule
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16DC80/func_151408A4.s")
 

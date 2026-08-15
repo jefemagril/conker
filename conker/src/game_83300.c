@@ -1034,7 +1034,43 @@ void func_1505E060(Game83300Snap *arg0) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_1505E0C4.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_1505E650.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_1505E7CC.s")
+u32 func_1505E7CC(s32 arg0, struct127 *arg1) {
+    s32 *hdr;
+    s32 n;
+    u8 *p;
+    u8 *row;
+    s32 i;
+
+    if (arg1->id == 0xFF) {
+        return 0;
+    }
+    hdr = (s32 *)D_800D1588[arg1->id];
+    if (hdr == NULL) {
+        return 0;
+    }
+    n = hdr[-1];
+    if (n == 0) {
+        return 0;
+    }
+    p = (u8 *)hdr[-2];
+    n = (u32)n / 0x18U;
+    if (p == NULL) {
+        return 0;
+    }
+    if (n != 0) {
+        i = 0;
+        row = p;
+        do {
+            if (*row == arg0) {
+                return i;
+            }
+            i++;
+            row += 0x18;
+        } while ((u32)i < (u32)n);
+    }
+    return 0;
+}
+
 #pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_1505E874.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_1505ED34.s")
 

@@ -122,10 +122,67 @@ s32 func_151422F8(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
 // }
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_151423D8.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15142444.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_151424F4.s")
+// NON-MATCHING: 41/44 at right 0xb0 (justreg 43/44) — u8 copy in $a2 vs ROM $v0
+// (`move $a2,$a0` in the `bne 0xFF` delay, remat `move $a0,$a2` in the jal delay).
+// tip justreg_park
+// struct127 *func_15142444(u8 arg0, struct127 *arg1) {
+//     if (arg0 == 0xFF) {
+//         if (arg1->unk1D4) {
+//             return arg1;
+//         }
+//         return NULL;
+//     }
+//     if ((arg1 != NULL) && (arg1->interaction_state != 0) && (arg1->unique_id == arg0)) {
+//         if (arg1->unk1D4) {
+//             return arg1;
+//         }
+//         return NULL;
+//     }
+//     arg1 = func_15083E90(arg0);
+//     if (arg1 != NULL) {
+//         if (arg1->unk1D4) {
+//             return arg1;
+//         }
+//     }
+//     return NULL;
+// }
+void func_151424F4(void *arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7, f32 arg8, f32 arg9, f32 arg10, f32 arg11) {
+    f32 mtx[4][4];
+
+    func_150A8050(mtx, arg3, arg4, arg5);
+    mtx[3][0] = arg9;
+    mtx[3][1] = arg10;
+    mtx[3][2] = arg11;
+    mtx[0][0] *= arg6 * arg1;
+    mtx[0][1] *= arg7 * arg1;
+    mtx[0][2] *= arg8 * arg1;
+    mtx[1][0] *= arg6 * arg2;
+    mtx[1][1] *= arg7 * arg2;
+    mtx[1][2] *= arg8 * arg2;
+    mtx[2][0] *= arg6 * arg1;
+    mtx[2][1] *= arg7 * arg1;
+    mtx[2][2] *= arg8 * arg1;
+    guMtxF2L(mtx, arg0);
+}
+
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15142600.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15142838.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15142914.s")
+void func_15142914(f32 mtx[4][4], f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7, f32 arg8) {
+    func_150A8050(mtx, arg3, arg4, arg5);
+    mtx[3][0] = arg6;
+    mtx[3][1] = arg7;
+    mtx[3][2] = arg8;
+    mtx[0][0] *= arg1;
+    mtx[0][1] *= arg1;
+    mtx[0][2] *= arg1;
+    mtx[1][0] *= arg2;
+    mtx[1][1] *= arg2;
+    mtx[1][2] *= arg2;
+    mtx[2][0] *= arg1;
+    mtx[2][1] *= arg1;
+    mtx[2][2] *= arg1;
+}
+
 extern u8 D_8008A160[];
 
 void func_151429E0(s32 arg0, u8 *arg1, u8 *arg2, u8 *arg3) {
@@ -176,10 +233,67 @@ Gfx *func_15142B7C(Gfx *gdl, s32 arg1, s32 arg2) {
     return gdl;
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15142C10.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15142CF0.s")
+Gfx *func_15142C10(Gfx *gdl, s32 arg1, s32 arg2, s32 arg3, s32 arg4, u8 *arg5) {
+    extern s16 D_800DD1C8;
+    extern s16 D_800DD1CA;
+    extern s16 D_800DD1CC;
+    extern s16 D_800DD1CE;
+
+    if ((arg1 != D_800DD1C8) || (arg2 != D_800DD1CA) || (arg3 != D_800DD1CC) || (arg4 != D_800DD1CE)) {
+        if (*arg5 == 1) {
+            gDPPipeSync(gdl++);
+            *arg5 = 0;
+        }
+        gDPSetEnvColor(gdl++, arg1, arg2, arg3, arg4);
+        D_800DD1C8 = arg1;
+        D_800DD1CA = arg2;
+        D_800DD1CC = arg3;
+        D_800DD1CE = arg4;
+    }
+    return gdl;
+}
+
+Gfx *func_15142CF0(Gfx *gdl, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, u8 *arg7) {
+    extern s16 D_800DD204;
+    extern s16 D_800DD206;
+    extern s16 D_800DD1C0;
+    extern s16 D_800DD1C2;
+    extern s16 D_800DD1C4;
+    extern s16 D_800DD1C6;
+
+    if ((arg1 != D_800DD204) || (arg2 != D_800DD206) || (arg3 != D_800DD1C0) || (arg4 != D_800DD1C2) || (arg5 != D_800DD1C4) || (arg6 != D_800DD1C6)) {
+        if (*arg7 == 1) {
+            gDPPipeSync(gdl++);
+            *arg7 = 0;
+        }
+        gDPSetPrimColor(gdl++, arg1, arg2, arg3, arg4, arg5, arg6);
+        D_800DD204 = arg1;
+        D_800DD206 = arg2;
+        D_800DD1C0 = arg3;
+        D_800DD1C2 = arg4;
+        D_800DD1C4 = arg5;
+        D_800DD1C6 = arg6;
+    }
+    return gdl;
+}
+
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15142E24.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15142FBC.s")
+Gfx *func_15142FBC(Gfx *gdl, s32 arg1, s32 arg2, u8 *arg3) {
+    extern s32 D_800DD218;
+    extern s32 D_800DD21C;
+
+    if ((arg1 != D_800DD218) || (arg2 != D_800DD21C)) {
+        if (*arg3 == 1) {
+            gDPPipeSync(gdl++);
+            *arg3 = 0;
+        }
+        gDPSetOtherMode(gdl++, arg1 | 0xF, arg2);
+        D_800DD218 = arg1;
+        D_800DD21C = arg2;
+    }
+    return gdl;
+}
+
 s32 func_15143044(u8 arg0, s32 arg1) {
     return (s16)(0x7FFF - arg0);
 }
@@ -463,7 +577,30 @@ void func_151450B4(struct17 *arg0, struct17 *arg1, struct17 *arg2) {
     arg2->unk8 = arg0->unk0 * arg1->unk4 - arg0->unk4 * arg1->unk0;
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15145128.s")
+s32 func_15145128(struct17 *arg0, struct17 *arg1, f32 *arg2, f32 *arg3) {
+    f32 mag;
+
+    if (arg3 == NULL) {
+        f32 dummy;
+        arg3 = &dummy;
+    }
+    mag = (arg0->unk0 * arg0->unk0) + (arg0->unk4 * arg0->unk4) + (arg0->unk8 * arg0->unk8);
+    if (mag == 0.0f) {
+        return 0;
+    }
+    if (arg2 != NULL) {
+        mag = sqrtf(mag);
+        *arg2 = mag;
+        *arg3 = 1.0f / mag;
+    } else {
+        *arg3 = 1.0f / sqrtf(mag);
+    }
+    arg1->unk0 = *arg3 * arg0->unk0;
+    arg1->unk4 = *arg3 * arg0->unk4;
+    arg1->unk8 = *arg3 * arg0->unk8;
+    return 1;
+}
+
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_151451F0.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_151452C4.s")
 
@@ -566,7 +703,30 @@ u8 func_15145C90(s32 arg0) {
     }
 }
 
+// NON-MATCHING: 11/57 at right 0xe4 — extra $s4 for arg0; ROM homes arg1/arg2
+// and reuses $s1 (arg0 then arg1) after the first jal. tip justreg_park
+// void func_15145CD0(f32 *arg0, struct17 **arg1, f32 **arg2, s32 arg3) {
+//     void func_150A7960(f32 [4][4], f32, f32, f32, f32 *, f32 *, f32 *);
+//     f32 mtx[4][4];
+//     struct17 *src;
+//     f32 *dst;
+//
+//     func_150A8050(mtx, arg0[0], arg0[1], arg0[2]);
+//     mtx[3][0] = ((s16 *)arg0)[8];
+//     mtx[3][1] = ((s16 *)arg0)[9];
+//     mtx[3][2] = ((s16 *)arg0)[10];
+//     while (arg3 > 0) {
+//         src = *arg1;
+//         dst = *arg2;
+//         func_150A7960(mtx, src->unk0, src->unk4, src->unk8, dst, dst + 1, dst + 2);
+//         arg3 -= 1;
+//         arg1 += 1;
+//         arg2 += 1;
+//     }
+// }
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15145CD0.s")
+// NON-MATCHING: packed-array sibling of 45CD0 (stride 0xC, live dest+4/+8).
+// Same $s1 reuse stall. tip justreg_park
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15145DB4.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15145EA4.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15146078.s")

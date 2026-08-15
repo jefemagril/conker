@@ -385,4 +385,24 @@ void func_15169824(struct102 *arg0) {
     func_10004074(arg0);
 }
 
+// NON-MATCHING: JUSTREG 41/41 exact 36/41 — 0x2D arm loads $v1 from arg0 then $v0 from *arg2;
+// our C loads $v0 from arg0 first (cmp_operand_order / two-pointer). tip justreg_park
+// void func_15169850(s32 arg0, u8 arg1, s32 arg2, s32 arg3, s32 arg4) {
+//     struct212 *a0 = (struct212 *)arg0;
+//     s32 *a2 = (s32 *)arg2;
+//     u8 *a3 = (u8 *)arg3;
+//     if (arg1 == 0) {
+//         if ((a0->unk0 == *a2) || (a0->unk4.b.unk0 == *a3)) {
+//             func_1516972C((struct102 *)arg4);
+//         }
+//     } else if (arg1 == 0x2D) {
+//         if (a0->unk0 == *a2) {
+//             *a2 = a0->unk4.i.unk0;
+//             *a3 = a0->unk9;
+//         } else if (a0->unk4.i.unk0 == *a2) {
+//             *a2 = a0->unk0;
+//             *a3 = a0->unk8;
+//         }
+//     }
+// }
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15169850.s")
