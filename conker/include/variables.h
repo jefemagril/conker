@@ -366,6 +366,7 @@ extern void (*D_80082BD0)(void);
 extern void (*D_80082BD4)(void);
 extern u8   D_80082BE0[4];
 extern u8   D_80082BE4[5];
+extern u8   D_80082BF4[6];
 extern void (*D_80082BFC[])(s32 arg0);
 extern void (*D_80082D60[])(void);
 extern void (*D_80082D90[])(void);
@@ -567,6 +568,7 @@ extern f32 D_80096540;
 extern f32 D_80096560;
 extern f32 D_80096570;
 extern u32 D_8009667C;
+extern u32 D_800966B4;
 extern f32 D_800968B0;
 extern f32 D_800968C0;
 extern s32 D_800968E0;
@@ -689,6 +691,8 @@ extern s32 D_8009DCCC;
 extern f32 D_8009F6C0; // 0.01745329238474369f
 
 /* 800A0000 */
+extern f32 D_800A0268;
+extern f32 D_800A026C;
 extern f32 D_800A028C;
 extern f32 D_800A0288;
 extern f32 D_800A0290;
@@ -797,6 +801,7 @@ extern f32 D_800AB3EC; //-1.0f
 extern f32 D_800AB464;
 extern f32 D_800AB468;
 extern f32 D_800AB46C; // 0.0003000000142492354f
+extern f32 D_800AB4B0;
 extern f32 D_800AB4C0;
 extern f32 D_800AB4C4;
 extern f32 D_800AB4C8;

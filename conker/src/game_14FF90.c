@@ -713,6 +713,23 @@ void func_15127FEC(struct108 *arg0, s32 arg1, s32 arg2) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_14FF90/func_15128030.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_14FF90/func_151283B8.s")
+// NON-MATCHING: 66/67 justreg=66/67 len=0x10c  tip jal_delay_zero_addiu_vs_or / switch_shared_cases_order
+// ROM `jal func_15121C80; addiu $a1, $zero, 0` vs IDO `jal; or $a1, $zero, $zero` (`move $a1, $zero`).
+// Case layout (body order, 0x800000 falls into empty 0x2000):
+// void func_151283B8(struct108 *arg0) {
+//     switch (arg0->unk2C) {
+//     case 0x80: func_15122440(arg0); break;
+//     case 0x40: func_15129934(arg0); break;
+//     case 1:    func_15122980(arg0); break;
+//     case 8:    func_15121C80(arg0, 0); break;
+//     case 2:    func_151220D0(arg0); break;
+//     case 0x400: func_15122170(arg0); break;
+//     case 0x800: func_15122980(arg0); break;
+//     case 0x100: func_15120158(arg0); break;
+//     case 0x800000: func_1512DEA4(arg0);
+//     case 0x2000: break;
+//     }
+// }
 void func_151284C4(struct108 *arg0) {
     struct127 *v0;
     u8 v1;

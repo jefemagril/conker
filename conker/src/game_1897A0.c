@@ -39,6 +39,8 @@ void *func_1515C2F0(void *arg0, void *arg1, void *arg2, s32 arg3, u8 arg4, s32 a
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1897A0/func_1515C534.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1897A0/func_1515C6F4.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1897A0/func_1515CF9C.s")
+// NON-MATCHING: 11/37 at right 0x94 — extra lw unk94 vs ROM $v1 CSE; wrap
+// `sb` not in delay. Named Slot *base lengthens. Do not thrash.
 // s32 func_1515CF9C(void *arg0, void *arg1) {
 //     s32 temp_v1;
 //     s8 temp_v0;

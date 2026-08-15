@@ -112,6 +112,25 @@ void func_150A7A00(f32 arg0, f32 arg1, s32 arg2, f32 arg3, f32 arg4, f32 arg5, f
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_476D0/func_1501A8C0.s")
 
+// NON-MATCHING: 0xa8 vs 0xb0 ($f12 2.0f, index first) or 0xb4 vs 0xb0 (bare 2.0f in
+// $f0). ROM interleaves lui/lw of D_800BE620/628 with *3<<7. tip f12_imm_vs_index_interleave
+// s32 func_1501AE94(s32 arg0) {
+//     typedef struct {
+//         u8 pad[0x24];
+//         f32 unk24;
+//         f32 unk28;
+//         f32 unk2C;
+//         f32 unk30;
+//     } Slot;
+//     f32 two = 2.0f;
+//     Slot *p = (Slot *)(D_800BE628 + ((arg0 * 3) << 7));
+//
+//     if ((p->unk2C < two) || (((f32) D_800BE620 - two) < p->unk30)
+//         || (p->unk24 < 0.0f) || ((f32) D_800BE624 < p->unk28)) {
+//         return 0;
+//     }
+//     return 1;
+// }
 #pragma GLOBAL_ASM("asm/nonmatchings/game_476D0/func_1501AE94.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_476D0/func_1501AF44.s")

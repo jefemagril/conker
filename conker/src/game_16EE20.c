@@ -166,7 +166,25 @@ void func_151424F4(void *arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5,
 }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15142600.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15142838.s")
+void func_15142838(void *arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7, f32 arg8) {
+    f32 mtx[4][4];
+
+    func_150A8050(mtx, arg3, arg4, arg5);
+    mtx[3][0] = arg6;
+    mtx[3][1] = arg7;
+    mtx[3][2] = arg8;
+    mtx[0][0] *= arg1;
+    mtx[0][1] *= arg1;
+    mtx[0][2] *= arg1;
+    mtx[1][0] *= arg2;
+    mtx[1][1] *= arg2;
+    mtx[1][2] *= arg2;
+    mtx[2][0] *= arg1;
+    mtx[2][1] *= arg1;
+    mtx[2][2] *= arg1;
+    guMtxF2L(mtx, arg0);
+}
+
 void func_15142914(f32 mtx[4][4], f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7, f32 arg8) {
     func_150A8050(mtx, arg3, arg4, arg5);
     mtx[3][0] = arg6;
@@ -385,8 +403,56 @@ void func_15143874(s16 arg0, f32 arg1, f32 *arg2, f32 *arg3) {
 }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_151438D8.s")
+// NON-MATCHING: JUSTREG 24/36 — tip justreg_park; xor rs/rt and temps only
+// void func_15143D18(s32 *arg0, s32 *arg1, s32 arg2, s32 arg3) {
+//     s32 t;
+//     s32 u;
+//
+//     if (arg3 < arg2) {
+//         t = arg2 ^ arg3;
+//         u = arg3 ^ t;
+//         arg3 = u;
+//         arg2 = t ^ u;
+//     }
+//     if (*arg1 < *arg0) {
+//         t = *arg0 ^ *arg1;
+//         *arg0 = t;
+//         *arg1 = *arg1 ^ t;
+//         *arg0 = *arg0 ^ *arg1;
+//     }
+//     if (*arg0 < arg2) {
+//         *arg0 = arg2;
+//     }
+//     if (arg3 < *arg1) {
+//         *arg1 = arg3;
+//     }
+// }
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15143D18.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15143DA8.s")
+
+
+s32 func_15143DA8(s32 *arg0, s32 arg1, s32 arg2) {
+    s32 **pp = &arg0;
+    s32 v;
+    s32 t;
+    s32 u;
+
+    if (arg2 < arg1) {
+        t = arg1 ^ arg2;
+        u = arg2 ^ t;
+        arg2 = u;
+        arg1 = t ^ u;
+    }
+    v = **pp;
+    if (v < arg1) {
+        **pp = arg1;
+        return 1;
+    }
+    if (arg2 < v) {
+        **pp = arg2;
+        return 2;
+    }
+    return 0;
+}
 
 s32 func_15143E08(struct127 *arg0) {
     return (((s32) arg0->unk7A >> 8) + 64) & 0xFF;
@@ -474,6 +540,43 @@ f32 func_15144598(struct134 *arg0) {
 }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_1514462C.s")
+// NON-MATCHING: 0xd8 vs 0xe0. Sibling of func_15144598; case 2 first. IDO chains
+// `multu` after `mflo` (ROM `nop; nop`). volatile s32 fills the gap but adds a
+// frame (0xe4). tip mflo_nops_chained_multu / switch_shared_cases_order
+// f32 func_1514462C(s32 arg0) {
+//     typedef struct {
+//         u8 pad0[6];
+//         s16 unk6;
+//         s16 unk8;
+//         s16 unkA;
+//         u8 padC[9];
+//         u8 unk15;
+//     } Local;
+//     extern f32 D_800A5698;
+//     extern f32 D_800A569C;
+//     Local *a = (Local *)arg0;
+//     s16 v0;
+//     f32 f0;
+//     f32 f2;
+//
+//     switch (a->unk15 & 3) {
+//     case 2:
+//         f2 = a->unk6 * a->unk8 * a->unkA;
+//         break;
+//     case 0:
+//         v0 = a->unk6;
+//         f2 = (v0 * v0) * D_800A5698 * a->unk8;
+//         break;
+//     case 1:
+//         f0 = a->unk6;
+//         f2 = ((f0 * D_800A569C) * f0) * f0;
+//         break;
+//     default:
+//         f2 = 1.0f;
+//         break;
+//     }
+//     return f2;
+// }
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_1514470C.s")
 f32 func_15144A74(f32 *arg0, f32 *arg1) {
     typedef struct {
@@ -601,7 +704,32 @@ s32 func_15145128(struct17 *arg0, struct17 *arg1, f32 *arg2, f32 *arg3) {
     return 1;
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_151451F0.s")
+extern s32 func_151452C4(struct17 *arg0, struct17 *arg1, struct17 *arg2, f32 arg3, void *arg4, void *arg5, f32 *arg6, f32 *arg7);
+
+s32 func_151451F0(struct17 *arg0, struct17 *arg1, struct17 *arg2, f32 arg3, f32 arg4, void *arg5, void *arg6, f32 *arg7, f32 *arg8) {
+    f32 f0;
+    f32 z = 0.0f;
+
+    if (func_151452C4(arg0, arg1, arg2, arg3, arg5, arg6, arg7, arg8)) {
+        f0 = *arg7;
+        if (f0 < z) {
+            if (*arg8 < z) {
+                return 0;
+            }
+        }
+        if (z <= f0) {
+            if (*arg8 < z) {
+                return 1;
+            }
+        }
+        if (f0 < arg4) {
+            return 1;
+        }
+        return 0;
+    }
+    return 0;
+}
+
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_151452C4.s")
 
 s32 func_151454BC(u8 arg0, f32 arg1, struct17 *arg2) {
@@ -622,7 +750,56 @@ s32 func_151454BC(u8 arg0, f32 arg1, struct17 *arg2) {
 }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15145548.s")
+// NON-MATCHING: JUSTREG 61/61 exact 51/61 at 0xf4 — `$at` vs `$t0/$t2` on
+// word copies 0 and 8. Dummy inside the NULL if. tip justreg_park / s32_word_copy_vs_f32
+// extern s32 func_1514563C(struct17 *arg0, struct17 *arg1, struct17 *arg2, struct17 *arg3, f32 *arg4);
+// void func_15145548(struct17 *arg0, struct17 *arg1, struct17 *arg2, struct17 *arg3, f32 *arg4) {
+//     if (arg4 == NULL) {
+//         f32 dummy;
+//         arg4 = &dummy;
+//     }
+//     if (func_1514563C(arg0, arg1, arg2, arg3, arg4)) {
+//         if (*arg4 < 0.0f) {
+//             *(s32 *)&arg3->unk0 = *(s32 *)&arg0->unk0;
+//             *(s32 *)&arg3->unk4 = *(s32 *)&arg0->unk4;
+//             *(s32 *)&arg3->unk8 = *(s32 *)&arg0->unk8;
+//         } else if (1.0f < *arg4) {
+//             arg3->unk0 = arg0->unk0 + arg1->unk0;
+//             arg3->unk4 = arg0->unk4 + arg1->unk4;
+//             arg3->unk8 = arg0->unk8 + arg1->unk8;
+//         }
+//     } else {
+//         *(s32 *)&arg3->unk0 = *(s32 *)&arg0->unk0;
+//         *(s32 *)&arg3->unk4 = *(s32 *)&arg0->unk4;
+//         *(s32 *)&arg3->unk8 = *(s32 *)&arg0->unk8;
+//     }
+// }
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_1514563C.s")
+// NON-MATCHING: 0xfc vs 0x104, frame 0x20 with unused s32 pad0,pad1. IDO `bc1fl`
+// + early `mtc1 $zero` in the first `mul.s` delay vs ROM `nop; add.s; c.eq.s;
+// nop; bc1f; nop; b; move $v0,0`. dummy at 0x1c vs 0x10. tip bc1f_mag0_vs_bc1fl
+// s32 func_1514563C(struct17 *arg0, struct17 *arg1, struct17 *arg2, struct17 *arg3, f32 *arg4) {
+//     f32 dummy;
+//     f32 t;
+//     f32 mag;
+//     s32 pad0;
+//     s32 pad1;
+//
+//     if (arg4 == NULL) {
+//         arg4 = &dummy;
+//     }
+//     mag = (arg1->unk0 * arg1->unk0) + (arg1->unk4 * arg1->unk4) + (arg1->unk8 * arg1->unk8);
+//     if (mag == 0.0f) {
+//         return 0;
+//     }
+//     t = ((arg1->unk0 * arg2->unk0) + (arg1->unk4 * arg2->unk4) + (arg1->unk8 * arg2->unk8)
+//          - ((arg1->unk0 * arg0->unk0) + (arg1->unk4 * arg0->unk4) + (arg1->unk8 * arg0->unk8))) / mag;
+//     *arg4 = t;
+//     arg3->unk0 = t * arg1->unk0 + arg0->unk0;
+//     arg3->unk4 = *arg4 * arg1->unk4 + arg0->unk4;
+//     arg3->unk8 = *arg4 * arg1->unk8 + arg0->unk8;
+//     return 1;
+// }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15145740.s")
 // NON-MATCHING: 90% there

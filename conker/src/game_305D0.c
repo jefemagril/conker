@@ -6,6 +6,38 @@
 
 // what is this loop doing?
 #pragma GLOBAL_ASM("asm/nonmatchings/game_305D0/func_15003120.s")
+// NON-MATCHING: 0xd0 vs 0xcc. Relocates D_800B0E30[0][arg0] by arg1, then walks
+// 0xC-stride pairs adding arg1 to words 0 and 4 until a 0 pointer. IDO remats
+// the two global addrs instead of `lui+addiu` both first. tip live_global_pointer
+// void func_15003120(s32 arg0, s32 arg1, s32 arg2) {
+//     s32 *ptbl = D_800B0E30;
+//     s32 *ctbl = (s32 *) D_800B0E34;
+//     s32 *node;
+//     s32 count;
+//     s32 off;
+//
+//     *(s32 *)(ptbl[0] + (arg0 * 4)) = arg2;
+//     *(u8 *)(ctbl[0] + arg0) = 0;
+//     if (arg2 == 0) {
+//         return;
+//     }
+//     *(s32 *)(ptbl[0] + (arg0 * 4)) = arg2 + arg1;
+//     count = 0;
+//     off = 0;
+//     node = (s32 *)*(s32 *)(ptbl[0] + (arg0 * 4));
+//     if (*node == 0) {
+//         *(u8 *)(ctbl[0] + arg0) = 0;
+//         return;
+//     }
+//     do {
+//         node = (s32 *)((s32) *(s32 *)(ptbl[0] + (arg0 * 4)) + off);
+//         node[0] = node[0] + arg1;
+//         count++;
+//         node[1] = node[1] + arg1;
+//         off += 0xC;
+//     } while (*(s32 *)((s32) *(s32 *)(ptbl[0] + (arg0 * 4)) + off) != 0);
+//     *(u8 *)(ctbl[0] + arg0) = count;
+// }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_305D0/func_150031EC.s")
 

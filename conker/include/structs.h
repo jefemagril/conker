@@ -1382,7 +1382,9 @@ typedef struct {
     s16 unk58;
     u8  pad5A[0x15];
     u8  unk6F;
-    u8  pad70[0x30];
+    u8  pad70[2];
+    u8  unk72;
+    u8  pad73[0x2D];
 } struct131; // size 0xA0
 
 typedef struct {

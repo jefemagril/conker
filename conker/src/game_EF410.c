@@ -100,7 +100,42 @@
 //     func_15151A38(&sp18, arg0 & 0xFF, 1);
 // }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_EF410/func_150C2424.s")
+void func_1514C470(f32, f32, f32, f32, f32, f32, f32, s32, s32, f32, s32, u8);
+void func_150C2424(u8 arg0);
+
+void func_150C2424(u8 arg0) {
+    f32 *p = &D_800A0268;
+
+    func_1514C470(
+        *p,
+        -490.0f,
+        -328.0f,
+        *p,
+        -490.0f,
+        328.0f,
+        (func_150ADA68() * 8.0f) + 8.0f,
+        1,
+        0,
+        0.0f,
+        0,
+        arg0
+    );
+    func_1514C470(
+        D_800A026C,
+        -560.0f,
+        -580.0f,
+        8117.0f,
+        -560.0f,
+        -580.0f,
+        (func_150ADA68() * 3.0f) + 4.0f,
+        3,
+        0,
+        0.0f,
+        0,
+        arg0
+    );
+}
+
 s32 func_150C251C(void *arg0) {
     typedef struct {
         u8 pad0[0x1C];
@@ -127,6 +162,59 @@ s32 func_150C251C(void *arg0) {
 }
 #pragma GLOBAL_ASM("asm/nonmatchings/game_EF410/func_150C2558.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_EF410/func_150C2700.s")
+// NON-MATCHING: 1 insn long (0x108 vs 0x104). Park. Frame 0x68, ra 0x1C,
+// pack at 0x20, a1 = &p.unk8, lbu 0xA3 from a 15-arg proto (dummy s32s),
+// jal delay swc1 D_800A027C. Extra is an s16 `li` in the lui D_800A027C
+// delay vs ROM `lwc1` arg4. Comma / delaying unk14=6 / CSE of 6 for
+// unk14+unk39 still hoist the next s16 immediate. tip s16_li_hoist_vs_lwc1.
+// s32 func_150C2700(s32 arg0, s32 arg1, f32 arg2, f32 arg3, f32 arg4, s32 a5, s32 a6, s32 a7, s32 a8, s32 a9, s32 a10, s32 a11, s32 a12, s32 a13, u8 arg5) {
+//     typedef struct {
+//         s16 unk0, unk2, unk4, unk6;
+//         f32 unk8, unkC, unk10;
+//         s16 unk14, unk16;
+//         f32 unk18, unk1C;
+//         s16 unk20, unk22;
+//         f32 unk24, unk28;
+//         u8 unk2C, unk2D, pad2E[2];
+//         f32 unk30, unk34;
+//         u8 unk38, unk39, pad3A[2];
+//         f32 unk3C;
+//         u8 unk40, pad41[3];
+//         f32 unk44;
+//     } Pack;
+//     void func_15150178(void *, void *, s32, u8, s32);
+//     extern f32 D_800A0274;
+//     extern f32 D_800A0278;
+//     extern f32 D_800A027C;
+//     Pack p;
+//
+//     p.unk18 = 30.0f;
+//     p.unk1C = 35.0f;
+//     p.unk24 = D_800A0274;
+//     p.unk28 = D_800A0278;
+//     p.unk16 = 5;
+//     p.unk0 = 0x6B;
+//     p.unk10 = arg4;
+//     p.unk30 = D_800A027C;
+//     p.unk8 = arg2;
+//     p.unkC = arg3;
+//     p.unk2 = 0x46;
+//     p.unk4 = -0x1F;
+//     p.unk6 = 0x2E;
+//     p.unk14 = 6;
+//     p.unk20 = 0x64;
+//     p.unk22 = 0;
+//     p.unk2C = 0x9B;
+//     p.unk2D = 0x64;
+//     p.unk34 = 0.0f;
+//     p.unk38 = 1;
+//     p.unk39 = 6;
+//     p.unk3C = 0.0f;
+//     p.unk40 = 1;
+//     p.unk44 = 0.0f;
+//     func_15150178(&p, &p.unk8, 0, arg5, 1);
+//     return 1;
+// }
 void *func_150C2804(s32 arg0, s32 arg1, s32 arg2, s16 arg3, u8 arg4, s32 arg5) {
     typedef struct {
         s32 unk0;
@@ -161,7 +249,31 @@ void *func_150C2804(s32 arg0, s32 arg1, s32 arg2, s16 arg3, u8 arg4, s32 arg5) {
 #pragma GLOBAL_ASM("asm/nonmatchings/game_EF410/func_150C2898.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_EF410/func_150C29F0.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_EF410/func_150C2C00.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/game_EF410/func_150C2FCC.s")
+typedef struct {
+    u8 pad0[0x2C];
+    f32 unk2C;
+    f32 unk30;
+    f32 unk34;
+    f32 unk38;
+    u8 pad3C[0x10];
+    f32 unk4C;
+    f32 unk50;
+    u8 pad54[0xFC];
+    f32 unk150;
+} T150C;
+
+s32 func_150C2FCC(T150C *arg0) {
+    f32 *dt = &D_800BE9A4;
+
+    arg0->unk2C = arg0->unk2C - (arg0->unk2C * arg0->unk150);
+    arg0->unk30 = arg0->unk30 - (arg0->unk30 * arg0->unk150);
+    arg0->unk38 += (arg0->unk50 * *dt) + (((0.5f * arg0->unk4C) * *dt) * *dt);
+    arg0->unk50 += arg0->unk4C * *dt;
+    if ((arg0->unk2C < 10.0f) || (arg0->unk30 < 10.0f)) {
+        return 0;
+    }
+    return 1;
+}
 #pragma GLOBAL_ASM("asm/nonmatchings/game_EF410/func_150C308C.s")
 // ? func_150C308C(void *arg0) {
 //     u8 sp1F;
@@ -195,6 +307,27 @@ void *func_150C2804(s32 arg0, s32 arg1, s32 arg2, s16 arg3, u8 arg4, s32 arg5) {
 //     return 1;
 // }
 
+// NON-MATCHING: 25/52 at 0xd0. tip beql_zero_f32_else_div
+// `t = (d==0) ? 1.0f : n/d` then `gDPSetTileSize(gdl++, 4, uls, ult, 0x1FE, 0x3E)` is the right length; IDO `bnezl` to div vs ROM `beql` + delay mtc1 1.0f.
+// Gfx *func_150C3160(Gfx *gdl, T3160 *arg1) {
+//     f32 t;
+//     s32 v1;
+//     s32 a0;
+//     if (arg1->unk2E8 == 0) {
+//         t = 1.0f;
+//     } else {
+//         t = (f32)arg1->unk2E4 / (f32)arg1->unk2E8;
+//     }
+//     t = 1.0f - t;
+//     a0 = 2 - arg1->unk2EC;
+//     v1 = (s32)((500.0f * t) + 2.0f);
+//     arg1->unk2EC = v1 / 3;
+//     while (a0 < 0) {
+//         a0 += 0x40;
+//     }
+//     gDPSetTileSize(gdl++, 4, v1 & 0xFFF, a0 & 0xFFF, 0x1FE, 0x3E);
+//     return gdl;
+// }
 #pragma GLOBAL_ASM("asm/nonmatchings/game_EF410/func_150C3160.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_EF410/func_150C3230.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_EF410/func_150C3574.s")

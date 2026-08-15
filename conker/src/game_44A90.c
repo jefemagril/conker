@@ -13,35 +13,33 @@ void func_150175E0(void) {
 }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_44A90/func_15017640.s")
+// NON-MATCHING: 45/82 justreg=60/82 len=0x148  tip for_ptr_fill_end_reload. Park.
+// for (p = D_800D2410; p < D_800D2428; p++) is exact length. do *p++ CSE's the
+// copy dest as loop end (0x10 short). D_8009DCB4 is s16. Leftover a0/a1/a2 vs
+// v1/a0/a1 on the three vec pointers.
 // void func_15017640(void) {
-//     s32 i;
+//     f32 *p;
+//
 //     D_800D2458 = 0;
 //     D_800D2588 = 0;
-//
 //     D_800D2438[0] = 0.0f;
 //     D_800D2438[1] = 0.0f;
 //     D_800D2438[2] = 0.0f;
-//
 //     D_800D2428[0] = D_8009DCB4[0];
 //     D_800D2428[1] = D_8009DCB4[1];
 //     D_800D2428[2] = D_8009DCB4[2];
-//
 //     D_800D2444 = 0;
 //     D_800D245C = 0;
-//
-//     for (i = 0; i < 6; i++) {
-//         D_800D2410[i] = 1.0f;
+//     for (p = D_800D2410; p < D_800D2428; p++) {
+//         *p = 1.0f;
 //     }
-//
 //     D_800D246D = 0;
 //     D_800D247D = 0;
-//
 //     D_800D2460[1][13] = 0;
 //     D_800D2460[2][13] = 0;
 //     D_800D2460[3][13] = 0;
 //     D_800D2460[0][13] = 0;
-//
 //     D_800D24C0 = 0;
 //     bzero(&D_800D24C8, 0xC0);
-//     guPerspective(&D_800D23D0, &D_800D2454, 50.0f, 60.599998474121094f, 53.0f, D_800968B0, 1.0f);
+//     guPerspective((Mtx *) &D_800D23D0, (u16 *) &D_800D2454, 50.0f, 60.599998474121094f, 53.0f, D_800968B0, 1.0f);
 // }

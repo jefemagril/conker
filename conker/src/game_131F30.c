@@ -7,6 +7,19 @@
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_131F30/func_15104C44.s")
 
+// NON-MATCHING: 19/46 at 0xb8. tip substruct_addr_vs_flat
+// Right frame when rematting `&arg0->unk28` after jal, but that homes $a0; ROM `addiu $v1,$a0,0x28` in the `arg2!=0x38` delay and spills Mid/callback at 0x40/0x3C with no $s0.
+// void func_15104FF8(struct207 *arg0, s32 arg1, u8 arg2) {
+//     typedef struct { void *unk0; u16 unk4; s16 unk8; } Mid;
+//     typedef struct { s16 unk0; s16 unk2; s16 unk4; u8 pad6[0xE]; u8 unk14; } Obj;
+//     Mid *m = (Mid *)&arg0->unk28;
+//     if ((arg2 == 0x38) && (((Obj *)m->unk0)->unk14 == 1)) {
+//         m->unk8 = 300;
+//         func_1000FD38(func_1000EF40, m->unk0, 0);
+//         m = (Mid *)&arg0->unk28;
+//         func_1000FA64(0x236, ((Obj *)m->unk0)->unk0, ((Obj *)m->unk0)->unk2, ((Obj *)m->unk0)->unk4, 0x4000, 0x5DC, 0x3E8, (s32)func_1000EF40, m->unk0, 0, 8, 0);
+//     }
+// }
 #pragma GLOBAL_ASM("asm/nonmatchings/game_131F30/func_15104FF8.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_131F30/func_151050B0.s")

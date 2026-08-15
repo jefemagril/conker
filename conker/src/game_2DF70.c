@@ -246,6 +246,25 @@ void func_15002724(s32 arg0) {
     D_800DBE38 += func_150027F8(arg0);
 }
 
+// NON-MATCHING: JUSTREG 31/41 at 0xa4. tip justreg_park
+// Live `&D_800B0DC0` + ALIGN4 + n*12/8/4 bumps is the right shape; n lands in $a1 not $a2 (index temp swapped).
+// void func_15002754(void) {
+//     s32 *p = &D_800B0DC0;
+//     s32 n;
+//     s32 i;
+//
+//     *p = ALIGN4(*p);
+//     n = D_800DBE38;
+//     i = D_800DBE50;
+//     D_800DBDD8[i] = *p;
+//     *p += n * 12;
+//     D_800DBDE8[i] = *p;
+//     *p += n * 8;
+//     D_800DBDF8[i] = *p;
+//     *p += n * 4;
+//     func_1510F800(i);
+//     D_800DBE38 = 0;
+// }
 #pragma GLOBAL_ASM("asm/nonmatchings/game_2DF70/func_15002754.s")
 
 

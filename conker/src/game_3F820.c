@@ -5,6 +5,8 @@
 
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_3F820/func_15012370.s")
+// NON-MATCHING: guOrtho loop. live &D_80082FA0 / &D_800BE628, s32 n=0x180, Mtx *mtxs.
+// u8 i matches frame 0x58 (s4 live) but 0x10c vs 0x100; s32 i remats 0x180 and drops s4 (0x50 vs 0x58).
 // void func_15012370(void) {
 //     f32 temp_f0;
 //     f32 temp_f2;

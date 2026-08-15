@@ -225,7 +225,45 @@ s32 func_150142AC(struct134 *arg0) {
 #pragma GLOBAL_ASM("asm/nonmatchings/game_40490/func_150144B8.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_40490/func_1501474C.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_40490/func_15014B60.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/game_40490/func_15014F6C.s")
+s32 func_15014F6C(struct134 *arg0) {
+    typedef struct {
+        struct134 *unk0;
+        s32 unk4;
+        s32 unk8;
+        s32 unkC;
+        f32 mtx[4][4];
+        u8 unk50;
+        u8 unk51;
+        u8 pad52[2];
+    } Pack;
+    Pack p;
+    struct260 *v0;
+    s32 v;
+
+    arg0->unk16 |= 4;
+    p.unk51 = arg0->unk20;
+    v = 0;
+    if (arg0->unk1C & 1) {
+        v = 1;
+    } else {
+        v = 0;
+    }
+    p.unk50 = v;
+    p.unk0 = arg0;
+    p.unk4 = arg0->unk18 & 0xFFFF;
+    p.unk8 = ((u32) arg0->unk18 >> 16) & 0xFFFF;
+    p.unkC = (func_150ADA20() % (u32) (p.unk8 + 1)) + p.unk4;
+    func_150A8050(p.mtx, *(f32 *) &arg0->unkC, *(f32 *) &arg0->unk10, 0.0f);
+    p.mtx[3][0] = (f32) arg0->unk0;
+    p.mtx[3][1] = (f32) (s16) arg0->unk2;
+    p.mtx[3][2] = (f32) arg0->unk4;
+    v0 = func_15149130(0x12C, -1, 0x31, -1, 0, 0x2A, (struct37 *) 0x54, 0xFF, 0);
+    if (v0 != NULL) {
+        memcpy((u8 *) v0 + 0x28, &p, 0x54);
+    }
+    return 1;
+}
+
 
 s32 func_150150A4(void) {
     struct17 *temp_v0 = func_1515F1B0();
@@ -238,8 +276,104 @@ s32 func_150150A4(void) {
     return 1;
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_40490/func_15015104.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/game_40490/func_150151D4.s")
+void func_1510F800(s32);
+
+s32 func_15015104(struct134 *arg0) {
+
+    typedef struct {
+        struct134 *unk0;
+        u8 unk4;
+        u8 pad5[3];
+        s32 unk8;
+        u8 unkC;
+        u8 padD[3];
+        s32 unk10;
+    } Pack;
+
+    Pack p;
+    struct260 *v0;
+    s32 v1;
+    u8 t0;
+    u8 t1;
+    s32 pad0, pad1;
+
+    *(u8 *)&arg0->unk14 = 1;
+
+    p.unk0 = arg0;
+    p.unk4 = (u8) arg0->unk1C;
+    func_1510F800(0);
+    p.unk8 = func_1510FD20(arg0->unk0, arg0->unk4);
+
+    v1 = arg0->unk20;
+    t0 = 0;
+    if (v1 != 0) {
+        t0 = 1;
+    } else {
+        t0 = 0;
+    }
+    t1 = 0;
+    if (v1 != 0) {
+        t1 = 2;
+    } else {
+        t1 = 0;
+    }
+    p.unkC = t1 | t0;
+    p.unk10 = 0;
+
+    v0 = func_15149130(0x12C, -1, -1, -1, 0, 0x2C, (struct37 *) 0x14, 0xFF, 0);
+    if (v0 != NULL) {
+        memcpy((u8 *) v0 + 0x28, &p, sizeof(p));
+    }
+    return 1;
+}
+
+s32 func_150151D4(struct134 *arg0) {
+    typedef struct {
+        struct134 *unk0;
+        f32 unk4;
+        s16 unk8;
+        u8 padA[2];
+        f32 unkC;
+        f32 unk10;
+        f32 unk14;
+        f32 unk18;
+        f32 unk1C;
+        f32 unk20;
+        u8 pad24[0x14];
+        s32 unk38;
+        u8 unk3C;
+        u8 unk3D;
+        u8 pad3E[2];
+        s32 unk40;
+        s32 unk44;
+    } Pack;
+    Pack p;
+    struct260 *v0;
+
+    arg0->unk16 |= 4;
+    *(u8 *)&arg0->unk14 = 1;
+    p.unk0 = arg0;
+    p.unk4 = 0.0f;
+    p.unk8 = -1;
+    p.unkC = (f32) arg0->unk0;
+    p.unk10 = (f32) (s16) arg0->unk2;
+    p.unk14 = (f32) arg0->unk4;
+    p.unk18 = (f32) (s16) arg0->unk6;
+    p.unk1C = (f32) (s16) arg0->unk8;
+    p.unk20 = *(f32 *) &D_800966B4;
+    p.unk40 = 0;
+    p.unk3D = 0;
+    p.unk3C = 0;
+    p.unk38 = 0;
+    func_1510F800(0);
+    p.unk44 = func_1510FD20(arg0->unk0, arg0->unk4);
+    v0 = func_15149130(300, -1, 60, -1, 0, 45, (struct37 *) 0x48, 255, 0);
+    if (v0 != 0) {
+        memcpy((u8 *) v0 + 0x28, &p, sizeof(p));
+    }
+    return 1;
+}
+
 
 s32 func_15015300(struct134 *arg0) {
     void (*func)(void);
@@ -262,4 +396,30 @@ s32 func_15015300(struct134 *arg0) {
 // NON-MATCHING: JUSTREG 39/44 (justreg 44/44) — `unk14 = 1` interleaved with
 // `unk16 |= 4`; temps $t6/$t8 vs ROM. Named u8 temp grew the frame. tip justreg_park
 #pragma GLOBAL_ASM("asm/nonmatchings/game_40490/func_15015644.s")
+// NON-MATCHING: JUSTREG 39/44 (justreg 44/44) — same unk14=1 / unk16|=4 temp
+// shuffle as func_15015354 ($t6/$t7/$t8). C is otherwise exact. tip justreg_park
+// s32 func_15015644(struct134 *arg0) {
+//     typedef struct {
+//         struct134 *unk0;
+//         f32 unk4;
+//         s32 unk8;
+//         u8 unkC;
+//         u8 padD[3];
+//     } Pack;
+//     Pack p;
+//     struct260 *v0;
+//
+//     *(u8 *)&arg0->unk14 = 1;
+//     arg0->unk16 |= 4;
+//     p.unk0 = arg0;
+//     p.unk4 = func_15144598(arg0);
+//     func_1510F800(0);
+//     p.unk8 = func_1510FD20(arg0->unk0, arg0->unk4);
+//     p.unkC = 0;
+//     v0 = func_15149130(0x12C, -1, 0x44, -1, 0, 0x2F, (struct37 *) 0x10, 0xFF, 0);
+//     if (v0 != NULL) {
+//         memcpy((u8 *) v0 + 0x28, &p, sizeof(p));
+//     }
+//     return 1;
+// }
 #pragma GLOBAL_ASM("asm/nonmatchings/game_40490/func_150156F4.s")

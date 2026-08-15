@@ -57,6 +57,36 @@ struct249 *func_1509B704(s16 arg0) {
 }
 
 
+// NON-MATCHING: 0xb4 vs 0xac — extra lui remat of &D_800D2F48 on head=next.
+// struct250 *g still remats; volatile g is longer. tip live_global_pointer
+// void func_1509B764(void *arg0) {
+//     typedef struct Node {
+//         u8 pad[0x18];
+//         struct Node *next;
+//         struct Node *prev;
+//     } Node;
+//     Node *n = arg0;
+//
+//     if (D_800D2F48.length == 1) {
+//         D_800D2F48.unk4 = 0;
+//         D_800D2F48.unk8 = 0;
+//     } else {
+//         if (arg0 == D_800D2F48.unk4) {
+//             D_800D2F48.unk4 = n->next;
+//             n->next->prev = 0;
+//         } else {
+//             n->prev->next = n->next;
+//         }
+//         if (arg0 == (void *)D_800D2F48.unk8) {
+//             D_800D2F48.unk8 = (s32)n->prev;
+//             n->prev->next = 0;
+//         } else {
+//             n->next->prev = n->prev;
+//         }
+//     }
+//     func_10004074(arg0);
+//     D_800D2F48.length--;
+// }
 #pragma GLOBAL_ASM("asm/nonmatchings/game_C8950/func_1509B764.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_C8950/func_1509B810.s")
@@ -71,6 +101,29 @@ void func_1509B8FC(s16 arg0) {
     func_1509B950(temp_v0);
 }
 
+// NON-MATCHING: JUSTREG 39/45 at 0xb4. tip justreg_park, u64_imm_vs_add_reassoc
+// s32 `8 - ((p+x)&7)` then `x+pad` reassociates to `(x-mask)+8` (missing li $t8,8 and the dead sh of end).
+// `u64 eight=8` keeps li $t8,8 + dead sh via field reload, but subu dest is $t9 not $v1.
+// int func_1509B950(struct248 *arg0) {
+//     u64 eight = 8;
+//     s32 unk4 = arg0->unk4;
+//     s32 unk6 = arg0->unk6;
+//     s32 pad = (s32)eight - (((s32)arg0 + unk4) & 7);
+//     s32 mid = unk4 + pad;
+//     void *mem;
+//
+//     arg0->unk4 = mid + unk6;
+//     arg0->unkA = mid;
+//     arg0->unk4 = (arg0->unk4 - (((s32)arg0 + arg0->unk4) & 7)) + 8;
+//     mem = (void *)allocate_memory((u16)arg0->unk4, 0xFF, 2, 0);
+//     if (mem == 0) {
+//         for (;;) {}
+//     }
+//     bcopy(arg0, mem, arg0->unk4);
+//     bzero((u8 *)mem + ((struct248 *)mem)->unkA, ((struct248 *)mem)->unk6);
+//     func_10004074(arg0);
+//     return (int)mem;
+// }
 #pragma GLOBAL_ASM("asm/nonmatchings/game_C8950/func_1509B950.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_C8950/func_1509BA04.s")

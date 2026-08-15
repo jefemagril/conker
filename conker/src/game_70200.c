@@ -14,6 +14,8 @@ void func_15042D78(u8 arg0) {
 }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_70200/func_15042D94.s")
+// NON-MATCHING: 0x2c/0x90 hidden-ptr for g(p,&a); T tmp=a is 12-byte copy 0x64;
+// va_arg is 0x74. ROM 0x90 is 16-byte aligned incoming struct copy. tip struct_by_value_forwarder
 #pragma GLOBAL_ASM("asm/nonmatchings/game_70200/func_15042E3C.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_70200/func_15042ECC.s")
 

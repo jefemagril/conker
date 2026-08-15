@@ -712,6 +712,17 @@ void func_1505959C(struct127 *arg0, s32 arg1) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_15059C84.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_1505A184.s")
+// NON-MATCHING: 1/51 at 0xcc. tip f12_arg_spill_vs_f22
+// Right length; IDO saves arg2 in $f22 instead of $f12 + swc1 to the a2 home at 0x38.
+// void func_1505A184(u16 arg0, f32 arg1, f32 arg2, f32 *arg3, f32 *arg4, f32 *arg5) {
+//     arg1 *= 0.5f;
+//     arg2 *= D_800994B8;
+//     *arg5 = func_150AD78C(arg2) * -arg1;
+//     arg1 *= func_150AD780(arg2);
+//     arg2 = (f32)arg0 * D_800994BC;
+//     *arg3 = func_150AD780(arg2) * arg1;
+//     *arg4 = func_150AD78C(arg2) * -arg1;
+// }
 #pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_1505A250.s")
 
 

@@ -3,6 +3,8 @@
 #include "functions.h"
 #include "variables.h"
 
+s32 func_151149AC(u32);
+
 
 void func_150091D0(void) {
     int tmp0 = 127;
@@ -347,30 +349,27 @@ void func_1500A68C(s32 arg0, s32 arg1) {
 }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_36680/func_1500A6D8.s")
+// NON-MATCHING: 0xc0 vs 0xc4. tip beql_eq_assign_vs_bne_nop_b
+// Table copy `u8 sp24[6] = D_80082BEC` + `sp24[v0*3 + arg1 - 0x49]` emits ROM `lbu -0x49`.
+// IDO `beql` + delay `sll` vs ROM `bne; nop; b; li v0,1`. Need `extern u8 D_80082BEC[6]` and `func_150B060C`.
 // void func_1500A6D8(s32 arg0, s32 arg1) {
-//     s8 sp4C;
-//     s16 sp4A;
-//     s8 sp49;
-//     s8 sp48;
-//     ? sp30;
-//     ? sp24;
-//     s32 temp_v0;
-//     s32 phi_v0;
+//     u8 sp24[6] = D_80082BEC;
+//     u8 sp30[0x18];
+//     s32 v0 = 0;
+//     struct225 *tmp;
 //
-//     sp24.unk0 = (s32) (void *)0x80082BEC->unk0;
-//     sp24.unk4 = (u16) (void *)0x80082BEC->unk4;
-//     phi_v0 = 0;
 //     if (D_800BE9F0 == 6) {
-//         phi_v0 = 1;
+//         v0 = 1;
 //     }
-//     if (func_150B060C((&sp24 + ((phi_v0 * 4) - phi_v0) + arg1)->unk-49, &sp30, arg1) != 0) {
-//         sp48 = 0;
-//         sp49 = 23;
-//         sp4A = 300;
-//         sp4C = 0;
-//         temp_v0 = func_1516037C(&sp48, arg0, 24, 255, 1);
-//         if (temp_v0 != 0) {
-//             memcpy(temp_v0 + 0x18, &sp30, 0x18);
+//     if (func_150B060C(sp24[v0 * 3 + arg1 - 0x49], sp30, arg1) != 0) {
+//         Header header;
+//         header.unk0 = 0;
+//         header.unk1 = 0x17;
+//         header.unk2 = 300;
+//         header.unk4 = 0;
+//         tmp = func_1516037C(&header, arg0, 0x18, 255, 1);
+//         if (tmp != 0) {
+//             memcpy(&tmp->unk18, sp30, 0x18);
 //         }
 //     }
 // }
@@ -379,44 +378,46 @@ void func_1500A79C(s32 arg0, s32 arg1) {
     func_15162740(arg0, 22, 6, 0, 300, 2, 255, 1);
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_36680/func_1500A7E8.s")
-// void func_1500A7E8(s32 arg0, s32 arg1) {
-//     s8 sp4C;
-//     s16 sp4A;
-//     s8 sp49;
-//     s8 sp48;
-//     f32 sp44;
-//     f32 sp40;
-//     f32 sp3C;
-//     void *sp38;
-//     f32 sp34;
-//     f32 sp30;
-//     ? sp24;
-//     s32 temp_v0_2;
-//     s8 *temp_a0;
-//     void *temp_v0;
-//
-//     sp24.unk0 = (s32) (void *)0x80082BF4->unk0;
-//     sp24.unk4 = (u16) (void *)0x80082BF4->unk4;
-//     temp_v0 = func_151149AC((&sp24 + arg1)->unk-50);
-//     sp38 = temp_v0;
-//     if (temp_v0 != 0) {
-//         sp30 = -400.0f;
-//         sp34 = 4.0f;
-//         temp_a0 = &sp48;
-//         sp3C = (f32) temp_v0->unk10;
-//         sp40 = (f32) temp_v0->unk12;
-//         sp48 = 0;
-//         sp49 = 0x17;
-//         sp4A = 300;
-//         sp4C = 0;
-//         sp44 = (f32) temp_v0->unk14;
-//         temp_v0_2 = func_1516037C(temp_a0, arg0, 0x18, 255, 1);
-//         if (temp_v0_2 != 0) {
-//             memcpy(temp_v0_2 + 0x18, &sp30, 0x18);
-//         }
-//     }
-// }
+void func_1500A7E8(s32 arg0, s32 arg1) {
+    typedef struct {
+        u8 pad[0x10];
+        s16 unk10;
+        s16 unk12;
+        s16 unk14;
+    } Obj;
+    typedef struct {
+        f32 unk0;
+        f32 unk4;
+        Obj *unk8;
+        f32 unkC;
+        f32 unk10;
+        f32 unk14;
+    } Pack;
+    struct220 tmp;
+    Pack p;
+    s32 pad;
+    u8 ids[6] = D_80082BF4;
+    struct00 *ret;
+
+    // `ids[arg1]` emits `lbu 0($t0)`; ROM delay slot is `lbu -0x50($t0)` (same as A6D8's `idx - imm`).
+    p.unk8 = (Obj *) func_151149AC(ids[arg1 - 0x50]);
+    if (p.unk8 != 0) {
+        p.unk0 = -400.0f;
+        p.unk4 = 4.0f;
+        p.unkC = p.unk8->unk10;
+        p.unk10 = p.unk8->unk12;
+        p.unk14 = p.unk8->unk14;
+        tmp.unk0 = 0;
+        tmp.unk1 = 0x17;
+        tmp.unk2 = 300;
+        tmp.unk4 = 0;
+        ret = func_1516037C(&tmp, arg0, 0x18, 255, 1);
+        if (ret != 0) {
+            memcpy(&ret->unk18, &p, 0x18);
+        }
+    }
+}
+
 
 void func_1500A8C8(s32 arg0, s32 arg1) {
     func_151615F8(arg0, 0, 6, 0xE, 255, 1);
