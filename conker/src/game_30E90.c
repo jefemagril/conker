@@ -83,4 +83,21 @@ ret:
     return id;
 }
 
+// NON-MATCHING: JUSTREG 27/27 exact 14/27 — tip justreg_park; do not thrash
+// Indexed Gfx walker relocates G_MOVEMEM / G_MV_MATRIX when w1 < 0x80000000.
+// Opcodes+length match; cmd latch is $a2 (reloc $a3) vs ROM $a1/$a2.
+// void func_15004CE0(Gfx *arg0, s32 arg1) {
+//     s32 i;
+//     Gfx *g;
+//
+//     for (i = 0, g = arg0; *(s8 *)&arg0[i] != -0x21; g = arg0 + ++i) {
+//         if (*(s8 *)&arg0[i] == -0x24) {
+//             if (((u8 *)g)[3] == 0xE) {
+//                 if (g->words.w1 < 0x80000000U) {
+//                     g->words.w1 += arg1;
+//                 }
+//             }
+//         }
+//     }
+// }
 #pragma GLOBAL_ASM("asm/nonmatchings/game_30E90/func_15004CE0.s")
