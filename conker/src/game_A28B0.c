@@ -1422,27 +1422,31 @@ void func_1507A3CC(void) {
     D_800D154C->unk229 = D_800D1890;
 }
 
-// NON-MATCHING: IDO 5.3 -O2 -g3 emits the paired-lui schedule of matched
-// func_15076624/76678 (lui 1890; lui 1891; lbu 1891; lbu 1890; ...), but these
-// originals use sequential lui/lbu then interleaved sll/load of D_800D1893.
-// Same pack expression; same size (0x40–0x58); JUSTREG / schedule only.
+// NON-MATCHING: opcode_schedule — IDO paired-lui of matched func_15076624/76678
+// vs ROM sequential lui+lbu; same pack; opcodes differ. tip pack_u8_seq_lui_vs_pair
 #pragma GLOBAL_ASM("asm/nonmatchings/game_A28B0/func_1507A3E8.s")
 // s32 func_1507A3E8(void) {
 //     return (D_800D1890 << 0x18) | (D_800D1891 << 0x10) | (D_800D1892 << 8) | D_800D1893;
 // }
 
+
+// NON-MATCHING: exact 5/21 justreg 16/21 len 0x54 — tip pack_u8_seq_lui_vs_pair
 #pragma GLOBAL_ASM("asm/nonmatchings/game_A28B0/func_1507A428.s")
 // void func_1507A428(void) {
 //     s32 tmp = (D_800D1890 << 0x18) | (D_800D1891 << 0x10) | (D_800D1892 << 8) | D_800D1893;
 //     D_800D154C->unk94 = ~(tmp | 1);
 // }
 
+
+// NON-MATCHING: exact 4/22 justreg 15/22 len 0x58 — tip pack_u8_seq_lui_vs_pair
 #pragma GLOBAL_ASM("asm/nonmatchings/game_A28B0/func_1507A47C.s")
 // void func_1507A47C(void) {
 //     s32 tmp = (D_800D1890 << 0x18) | (D_800D1891 << 0x10) | (D_800D1892 << 8) | D_800D1893;
 //     D_800D154C->unk94 &= ~tmp;
 // }
 
+
+// NON-MATCHING: exact 5/21 justreg 16/21 len 0x54 — tip pack_u8_seq_lui_vs_pair
 #pragma GLOBAL_ASM("asm/nonmatchings/game_A28B0/func_1507A4D4.s")
 // void func_1507A4D4(void) {
 //     s32 tmp = (D_800D1890 << 0x18) | (D_800D1891 << 0x10) | (D_800D1892 << 8) | D_800D1893;
