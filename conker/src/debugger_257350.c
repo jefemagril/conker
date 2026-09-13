@@ -17,13 +17,22 @@ u8* func_16001AD0(u8 *arg0, u8 *arg1, u32 arg2) {
     return arg0;
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/debugger_257350/func_16001B00.s")
-// NON-MATCHING: moves in wrong order!
-// s32 func_16001B00(u8 *arg0) { // strlen
-//     s32 i;
-//     for (i = 0; arg0[i]; i++) {};
-//     return i;
-// }
+s32 func_16001B00(u8 *arg0) {
+    s32 var_v1;
+    u8 *var_v0;
+    u8 temp_t7;
+
+    var_v0 = arg0;
+    var_v1 = 0;
+    if (*arg0 != 0) {
+        do {
+            temp_t7 = *(var_v0 + 1) ^ 0;
+            var_v1 += 1;
+            var_v0 += 1;
+        } while (temp_t7 != 0);
+    }
+    return var_v1;
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/debugger_257350/func_16001B34.s")
 // s32 func_16001BB4(void *arg0, s32 arg1, void *arg2, s32 arg3) ;
