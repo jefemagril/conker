@@ -30,6 +30,9 @@ void func_15004A4C(void) {
 }
 
 
+// NON-MATCHING: raw m2c draft already scores exact 41/81 justreg 75/81 at the
+// correct length 0x144 with no hand edits. Close/regalloc — permuter territory.
+// See drafts/func_15004AAC.c (harness draft).
 #pragma GLOBAL_ASM("asm/nonmatchings/game_30E90/func_15004AAC.s")
 
 s32 func_15004BF0(s32 arg0) {

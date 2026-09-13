@@ -266,6 +266,9 @@ void func_15168E34(u32 *arg0, u32 arg1) {
     }
 }
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15168E54.s")
+// NON-MATCHING: m2c draft is 0x78 vs 0x7c (4 short); Gfx-walker double `sw` at
+// +4 is right. ROM hoists -0x21 / 0xFFFFFF / 0xE / -0x24 / 1 before the loop and
+// keeps three `sll $t6,$v0,3` copies. See drafts/func_15168F08.c (harness draft).
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15168F08.s")
 void func_15168F84(s32 arg0, s32 *arg1, s32 *arg2) {
     if (arg0 == 0) {

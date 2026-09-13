@@ -209,6 +209,33 @@ u16 *func_15001DE0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
 // 3 loops
 #pragma GLOBAL_ASM("asm/nonmatchings/game_2DF70/func_15002008.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_2DF70/func_15002248.s")
+// NON-MATCHING: exact 27/39 justreg 36/39, length 0x9c correct — regalloc only
+// ($t8/$t7 vs $t7/$t8, addu operand order) plus IDO duplicating the `sh` into
+// both ternary arms instead of one phi'd store. Permuter territory; named s16 /
+// int locals for the phi both change length (0xa4 / 0x98). Best body:
+// int func_15002560(s8 *arg0, s8 *arg1) {
+//     s8 *p;
+//     s8 *q;
+//
+// loop:
+//     if (arg0 != NULL) {
+//         if (*(s16 *) (arg0 + 4) == 0) {
+//             *(s16 *) (arg0 + 4) = (arg1 != NULL) ? arg1 - arg0 : 0;
+//         }
+//         if (*(s16 *) (arg0 + 0xC) != 0) {
+//             p = arg0 + *(s16 *) (arg0 + 0xC);
+//             if (*(s16 *) (p + 4) != 0) {
+//                 do {
+//                     q = p + *(s16 *) (p + 4);
+//                     func_15002560(p, q);
+//                     p = q;
+//                 } while (*(s16 *) (q + 4) != 0);
+//             }
+//             arg0 = p;
+//             goto loop;
+//         }
+//     }
+// }
 #pragma GLOBAL_ASM("asm/nonmatchings/game_2DF70/func_15002560.s")
 
 void func_150025FC(void) {

@@ -6,7 +6,7 @@
 
 extern f32 D_800A5624;
 extern f32 D_800A5628;
-void func_15143794(s16 arg0, s16 arg1, f32 arg2);
+void func_15143794(s16 arg0, s16 arg1, f32 arg2, f32 *arg3);
 
 void func_15141970(struct37 *arg0) {
     func_1514EDF0(arg0, arg0->unk2C);
@@ -390,9 +390,19 @@ void func_1514373C(f32 arg0, f32 arg1, f32 *arg2, f32 *arg3) {
     *arg2 = arg1 * s;
     *arg3 = arg1 * c;
 }
-#pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15143794.s")
-void func_15143834(s16 arg0, s16 arg1, f32 arg2) {
-    func_15143794(arg0, arg1, arg2);
+void func_15143794(s16 arg0, s16 arg1, f32 arg2, f32 *arg3) {
+    f32 a = func_151423D8((u8) arg0);
+    f32 b = func_151423D8((u8) (arg0 - 0x40));
+    f32 c = func_151423D8((u8) arg1);
+    f32 d = func_151423D8((u8) (arg1 - 0x40));
+    f32 t = arg2 * c;
+
+    arg3[0] = t * b;
+    arg3[1] = -arg2 * d;
+    arg3[2] = t * a;
+}
+void func_15143834(s16 arg0, s16 arg1, f32 arg2, f32 *arg3) {
+    func_15143794(arg0, arg1, arg2, arg3);
 }
 void func_15143874(s16 arg0, f32 arg1, f32 *arg2, f32 *arg3) {
     f32 s = func_151423D8((u8)arg0);
