@@ -573,44 +573,40 @@ f32 func_15144598(struct134 *arg0) {
     return f2;
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_1514462C.s")
-// NON-MATCHING: 0xd8 vs 0xe0. Sibling of func_15144598; case 2 first. IDO chains
-// `multu` after `mflo` (ROM `nop; nop`). volatile s32 fills the gap but adds a
-// frame (0xe4). tip mflo_nops_chained_multu / switch_shared_cases_order
-// f32 func_1514462C(s32 arg0) {
-//     typedef struct {
-//         u8 pad0[6];
-//         s16 unk6;
-//         s16 unk8;
-//         s16 unkA;
-//         u8 padC[9];
-//         u8 unk15;
-//     } Local;
-//     extern f32 D_800A5698;
-//     extern f32 D_800A569C;
-//     Local *a = (Local *)arg0;
-//     s16 v0;
-//     f32 f0;
-//     f32 f2;
-//
-//     switch (a->unk15 & 3) {
-//     case 2:
-//         f2 = a->unk6 * a->unk8 * a->unkA;
-//         break;
-//     case 0:
-//         v0 = a->unk6;
-//         f2 = (v0 * v0) * D_800A5698 * a->unk8;
-//         break;
-//     case 1:
-//         f0 = a->unk6;
-//         f2 = ((f0 * D_800A569C) * f0) * f0;
-//         break;
-//     default:
-//         f2 = 1.0f;
-//         break;
-//     }
-//     return f2;
-// }
+f32 func_1514462C(s32 arg0) {
+    typedef struct {
+        u8 pad0[6];
+        s16 unk6;
+        s16 unk8;
+        s16 unkA;
+        u8 padC[9];
+        u8 unk15;
+    } Local;
+    extern f32 D_800A5698;
+    extern f32 D_800A569C;
+    Local *a = (Local *)arg0;
+    s16 v0;
+    f32 f0;
+    f32 f2;
+
+    switch (a->unk15 & 3) {
+    case 2:
+        f2 = a->unk6 * a->unk8 * a->unkA;
+        break;
+    case 0:
+        v0 = a->unk6;
+        f2 = (v0 * v0) * D_800A5698 * a->unk8;
+        break;
+    case 1:
+        f0 = a->unk6;
+        f2 = ((f0 * D_800A569C) * f0) * f0;
+        break;
+    default:
+        f2 = 1.0f;
+        break;
+    }
+    return f2;
+}
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_1514470C.s")
 f32 func_15144A74(f32 *arg0, f32 *arg1) {
     typedef struct {
