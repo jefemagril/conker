@@ -1085,23 +1085,18 @@ u32 func_1505E7CC(s32 arg0, struct127 *arg1) {
 #pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_1505E874.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_1505ED34.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_1505EEB0.s")
-// I HATE LOOPS.
-// struct127 *func_1505EEB0(s32 state, s32 *arg1) {
-//     struct127 *tmp = D_800CC2D0;
-//     s32 i = 0;
-//
-//     if (state != tmp->interaction_state) {
-//         for (i = 0; i < 25; i++) {
-//             tmp = &D_800CC2D0[i];
-//             if (state == tmp->interaction_state)
-//                 break;
-//         }
-//     }
-//
-//     *arg1 = i;
-//     return tmp;
-// }
+struct127 *func_1505EEB0(s32 arg0, s32 *arg1) {
+    struct127 *tmp = D_800CC2D0;
+    s32 i = 0;
+
+    while (i < 25 && arg0 != tmp->interaction_state) {
+        i++;
+        tmp++;
+    }
+    *arg1 = i;
+    return tmp;
+}
+
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_1505EEF4.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_1505EFD0.s")
