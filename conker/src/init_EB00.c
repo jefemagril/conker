@@ -243,11 +243,90 @@ void func_1000F9D4(u16 arg0, s16 arg1, s16 arg2, s16 arg3) {
     func_1000F85C(arg0, 256, tmp & 0x80);
 }
 
+// NON-MATCHING: typed struct15 (halfword head + f32 unk2C). m2c_fields score 4576
+// at 0x1a8 vs 0x1b4 (12 short). Remaining schedule (sll/sra $a2, extra sreg, b-3).
+// u16 func_1000FA64(u16 arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4, u16 arg5, s16 arg6, s32 arg7, void *arg8, s32 arg9, s32 argA, s32 argB) {
+//     s32 sp24;
+//     s32 sp20;
+//     s16 temp_v0;
+//     s32 temp_a2;
+//
+//     temp_a2 = D_80042760;
+//     if (D_80042760 < 0x20) {
+//         D_80042760 += 1;
+//         if (arg7 != 0) {
+//             D_80041FE0[temp_a2].unk10 = argA | 0x12;
+//         } else {
+//             D_80041FE0[temp_a2].unk10 = (argA & 0x108) | 2;
+//         }
+//         if (argA & 0x40) {
+//             sp20 = temp_a2;
+//             temp_v0 = func_15083E0C((u8) arg1);
+//             arg2 = temp_v0;
+//             if (temp_v0 == -1) {
+//                 goto block_11;
+//             }
+//         }
+//         D_80041FE0[temp_a2].unk24 = 0;
+//         D_80041FE0[temp_a2].unk23 = 0;
+//         D_80041FE0[temp_a2].unk22 = 0;
+//         sp20 = temp_a2;
+//         D_80041FE0[temp_a2].unk0 = arg0;
+//         D_80041FE0[temp_a2].unk2 = arg1;
+//         D_80041FE0[temp_a2].unk4 = arg2;
+//         D_80041FE0[temp_a2].unk6 = arg3;
+//         D_80041FE0[temp_a2].unk8 = arg5;
+//         D_80041FE0[temp_a2].unkA = arg6;
+//         D_80041FE0[temp_a2].unkC = arg4;
+//         D_80041FE0[temp_a2].unk14 = arg7;
+//         D_80041FE0[temp_a2].unk18 = arg8;
+//         D_80041FE0[temp_a2].unk1C = arg9;
+//         D_80041FE0[temp_a2].unk2C = alCents2Ratio(argB);
+//         D_80041FE0[temp_a2].unk26 = 0;
+//         D_80041FE0[temp_a2].unk28 = 0;
+//         D_80041FE0[temp_a2].unk20 = (s16) argB;
+//         sp24 = D_80042760;
+//         func_10011624(D_80041FE0, &D_80042760, temp_a2, temp_a2 + 1);
+//         if (sp24 == D_80042760) {
+//             D_80041FE0[temp_a2].unk10 |= 0x1000;
+//             return D_80041FE0[temp_a2].unk24;
+//         }
+//         goto block_11;
+//     }
+// block_11:
+//     return 0U;
+// }
 #pragma GLOBAL_ASM("asm/nonmatchings/init_EB00/func_1000FA64.s")
+// NON-MATCHING: join analog func_1001001C while→for. do-while + tmp++ is
+// length-equal 0x120 score 895, exact 62/72 justreg 63/72. Remaining miss is
+// likely-branch (`bnel` delay i++).
 #pragma GLOBAL_ASM("asm/nonmatchings/init_EB00/func_1000FC18.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/init_EB00/func_1000FD38.s")
+// NON-MATCHING: typed do-while + id temp is length-equal 0x94 score 930,
+// exact 22/37 justreg 28/37. Remaining likely-branch (`bnel` delay i++).
+// void func_1000FDF4(u16 arg0) {
+//     s32 i = 0;
+//     struct15 *tmp = D_80041FE0;
+//     u16 id;
+//
+//     if (D_80042760 > 0) {
+//         do {
+//             id = tmp->unk24;
+//             if (arg0 == id) {
+//                 if (id != 0) {
+//                     func_100111C8(id);
+//                 }
+//                 tmp->unk10 |= 0x80;
+//             }
+//             i++;
+//             tmp++;
+//         } while (i < D_80042760);
+//     }
+// }
 #pragma GLOBAL_ASM("asm/nonmatchings/init_EB00/func_1000FDF4.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/init_EB00/func_1000FE88.s")
+// NON-MATCHING: join was m2c_field noise. Commented `arg1 * 0x30` + `arg0[arg1]`
+// is score 8, exact 24/26 justreg 24/26, len 0x68. Remaining 2 insns (not inject-0).
 // ? func_1000FE88(s32 arg0, s32 arg1, void *arg2) {
 //     void *sp1C;
 //     s32 temp_t7;
@@ -271,7 +350,9 @@ void func_1000F9D4(u16 arg0, s16 arg1, s16 arg2, s16 arg3) {
 // }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/init_EB00/func_1000FEF0.s")
-// NON-MATCHING: needs a re-work
+// NON-MATCHING: needs a re-work. Typed for/do-while after struct15 still 16–24
+// short (best index_for 0x90 vs 0xa0 score 1954). Recorded m2c goto stays 1714 at
+// 0x88 vs 0xa0.
 // s32 func_1000FEF0(u16 arg0, struct127 *arg1, s32 arg2) {
 //     s32 i;
 //     struct15 *tmp;
@@ -293,6 +374,9 @@ void func_1000F9D4(u16 arg0, s16 arg1, s16 arg2, s16 arg3) {
 // }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/init_EB00/func_1000FF90.s")
+// NON-MATCHING: typed for+index is 0x88 vs 0x8c score 195 (was 8 short / 320).
+// while(1)+tmp++ is length-equal 0x8c score 575, exact 14/35 justreg 28/35.
+// Remaining 4 short or likely-branch; do not permute.
 void func_1001001C(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 i;
     struct15 *tmp;
@@ -300,12 +384,15 @@ void func_1001001C(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     for (i = 0; i < D_80042760; i++) {
         tmp = &D_80041FE0[i];
         if ((arg0 == tmp->unk14) && (arg1 == tmp->unk18) && (arg2 == tmp->unk1C)) {
-            *(f32 *)&tmp->unk2C = alCents2Ratio(arg4);
+            tmp->unk2C = alCents2Ratio(arg4);
             tmp->unkC = arg3;
         }
     }
 }
 
+// NON-MATCHING: join analog func_1001001C is while→for index (8 long here).
+// End-pointer `tmp < &D_80041FE0[D_80042760]` is length-equal 0x74 score 923,
+// exact 0/29 justreg 6/29. Remaining miss is likely-branch (`bnel` delay `+0x30`).
 #pragma GLOBAL_ASM("asm/nonmatchings/init_EB00/func_100100E0.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/init_EB00/func_10010154.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/init_EB00/func_10010344.s")

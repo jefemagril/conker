@@ -18,6 +18,9 @@ void func_150045BC(void) {
 }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_30E90/func_150045C4.s")
+// NON-MATCHING: join list was unrelated goto→for. ASM twin is func_15004CE0.
+// 04CE0 Gfx-index is 0xb4 vs 0xa8 (score 1939, was 20 short). Remaining miss
+// is extra `sll …,3` in `bnel`/`beql` delay slots (likely-branch).
 #pragma GLOBAL_ASM("asm/nonmatchings/game_30E90/func_150049A4.s")
 
 void func_15004A4C(void) {
@@ -86,7 +89,7 @@ ret:
     return id;
 }
 
-// NON-MATCHING: JUSTREG 27/27 exact 14/27 — tip justreg_park; do not thrash
+// NON-MATCHING: JUSTREG 27/27 exact 14/27 score 75 — tip justreg_park; do not thrash
 // Indexed Gfx walker relocates G_MOVEMEM / G_MV_MATRIX when w1 < 0x80000000.
 // Opcodes+length match; cmd latch is $a2 (reloc $a3) vs ROM $a1/$a2.
 // void func_15004CE0(Gfx *arg0, s32 arg1) {

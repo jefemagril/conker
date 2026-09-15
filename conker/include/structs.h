@@ -197,20 +197,26 @@ typedef struct {
 } struct14; // size 0x10
 
 typedef struct {
-    u32 unk0;
-    s32 unk4;
-    u32 unk8;
-    s32 unkC;
-    s32 unk10;  // used
-    s32 unk14;
-    s32 unk18;
-    s32 unk1C;
-    s32 unk20;
-    u16 unk24;
-    u16 unk26;
-    s32 unk28;
-    s32 unk2C;  // used
-} struct15; // 0x30 size
+    /* 0x00 */ u16 unk0;
+    /* 0x02 */ s16 unk2;
+    /* 0x04 */ s16 unk4;
+    /* 0x06 */ s16 unk6;
+    /* 0x08 */ u16 unk8;
+    /* 0x0A */ s16 unkA;
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ s32 unk10; /* flags: 0x80, 0x12, 0x1000 */
+    /* 0x14 */ s32 unk14;
+    /* 0x18 */ s32 unk18;
+    /* 0x1C */ s32 unk1C;
+    /* 0x20 */ u16 unk20;
+    /* 0x22 */ u8  unk22;
+    /* 0x23 */ u8  unk23;
+    /* 0x24 */ u16 unk24;
+    /* 0x26 */ u16 unk26;
+    /* 0x28 */ u16 unk28;
+    /* 0x2A */ u16 unk2A;
+    /* 0x2C */ f32 unk2C;
+} struct15; /* 0x30 */
 
 typedef struct {
     u32 unk0;

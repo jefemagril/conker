@@ -265,6 +265,9 @@ void func_15168E34(u32 *arg0, u32 arg1) {
         *arg0 = value + arg1;
     }
 }
+// NON-MATCHING: join noise (while→for). ASM twin func_15004CE0 indexed Gfx +
+// live helper `func_15168E34`. JUSTREG 45/45 exact 36/45 score 50 at 0xb4.
+// Remaining miss is operands; do not thrash.
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15168E54.s")
 // NON-MATCHING: analog func_15004CE0 indexed Gfx walker with two-store
 // `w1 = (w1 & 0xFFFFFF) + arg1` is 0x78 vs 0x7c (score 435). Remaining miss is
