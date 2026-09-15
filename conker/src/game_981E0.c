@@ -1909,9 +1909,55 @@ void func_15074664(void) {
     v1->unk94 = v0;
 }
 
-// NON-MATCHING: deferred mid/hard leaf (size 0xf4)
-#pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_150746F0.s")
-// NON-MATCHING: best 42/61 size-ok — need lui $a1,&D154C before or $a0,0 + beqz delay addiu; health/7CD64(a0,6)/7F488 path ok
+void func_150746F0(void)
+{
+  struct108 *temp_v0;
+  struct126 *temp_a1;
+  struct127 *var_a0;
+  u8 temp_v1;
+  struct127 *new_var;
+  var_a0 = 0;
+  if (D_800BE616 != 0)
+  {
+    var_a0 = D_800D154C;
+  }
+  else
+  {
+    new_var = D_800CC2D0;
+    if (D_800D154C->unk13C != 0)
+    {
+      var_a0 = new_var;
+    }
+  }
+  if (var_a0 != 0)
+  {
+    ;
+    if (D_800D1580 >= ((s32) var_a0->health))
+    {
+      var_a0->health = 0;
+      D_800D154C->health = 0;
+      if (var_a0->interaction_state == 1)
+      {
+        var_a0->immune = 0xFF;
+        func_1507CD64(var_a0, 6);
+      }
+    }
+    else
+    {
+      temp_a1 = var_a0->unk31C;
+      var_a0->health = var_a0->health - D_800D1580;
+      if (temp_a1 != 0)
+      {
+        temp_v0 = var_a0->camera;
+        if ((temp_v0 != 0) && (temp_a1->unk197 != 0))
+        {
+          func_1517F488(0xFF, 0, 0, 0xB4, 0x14, (s32) temp_v0->unk23D);
+        }
+      }
+    }
+  }
+}
+
 
 void func_150747E4(void) {
     s32 v0 = D_800D154C->unk65;

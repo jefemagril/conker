@@ -354,26 +354,36 @@ s32 func_10010894(struct127 *arg0) {
     return 0;
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/init_EB00/func_1001091C.s")
-// NON-MATCHING: something isnt right...
-// void func_1001091C(struct127 *arg0, struct15 *arg1) {
-//     s32 temp_v0;
-//
-//     if ((arg1 != NULL) && (arg0->unk0 != 0)) {
-//         if (arg0->camera != 0) {
-//             if (arg0->unk8E != 0) {
-//                 func_1000F85C(arg0->unk8E, 8, arg1->unk1C); // help
-//             }
-//         } else {
-//             temp_v0 = func_1000FF90(func_1000EE70, arg0, arg0->unique_id | 0x10000);
-//             if (temp_v0 != -1) {
-//                 D_80041FEC[temp_v0][0] = arg1;
-//             } else {
-//                 arg0->unk8E = 0;
-//             }
-//         }
-//     }
-// }
+void func_1001091C(s8 *arg0, s32 arg1)
+{
+  s32 temp_v0;
+  u16 temp_a0;
+  if ((arg1 != 0) && ((*((s32 *) (((s8 *) arg0) + 0))) != 0))
+  {
+    if ((*((s32 *) (((s8 *) arg0) + 0x318))) != 0)
+    {
+      if (D_80041FEC)
+      {
+      }
+      temp_a0 = *((u16 *) (((s8 *) arg0) + 0x8E));
+      if (temp_a0 != 0)
+      {
+        func_1000F85C(temp_a0, 8U, arg1);
+      }
+    }
+    else
+    {
+      temp_v0 = func_1000FF90((s32) func_1000EE70, (s32) arg0, (*((u8 *) (((s8 *) arg0) + 0x3B))) | 0x10000);
+      if (temp_v0 != (-1))
+      {
+        *D_80041FEC[temp_v0] = arg1;
+        return;
+      }
+      *((u16 *) (((s8 *) arg0) + 0x8E)) = 0U;
+    }
+  }
+}
+
 
 void func_100109D0(struct127 *arg0) {
     if (arg0->camera) {
