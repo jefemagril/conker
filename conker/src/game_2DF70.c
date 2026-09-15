@@ -295,6 +295,9 @@ void func_15002724(s32 arg0) {
 #pragma GLOBAL_ASM("asm/nonmatchings/game_2DF70/func_15002754.s")
 
 
+// NON-MATCHING: JUSTREG 32/32 exact 30/32 score 10 at 0x80. Analog is parked
+// func_15004CE0 (indexed Gfx walker: `*(s8 *)&arg0[i]`, `arg0[++i]`). Remaining
+// miss is operands, not another g++ / for pass. Caller implies `int` return.
 #pragma GLOBAL_ASM("asm/nonmatchings/game_2DF70/func_150027F8.s")
 
 s32 func_15002878(void) {

@@ -293,7 +293,19 @@ void func_1000F9D4(u16 arg0, s16 arg1, s16 arg2, s16 arg3) {
 // }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/init_EB00/func_1000FF90.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/init_EB00/func_1001001C.s")
+void func_1001001C(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    s32 i;
+    struct15 *tmp;
+
+    for (i = 0; i < D_80042760; i++) {
+        tmp = &D_80041FE0[i];
+        if ((arg0 == tmp->unk14) && (arg1 == tmp->unk18) && (arg2 == tmp->unk1C)) {
+            *(f32 *)&tmp->unk2C = alCents2Ratio(arg4);
+            tmp->unkC = arg3;
+        }
+    }
+}
+
 #pragma GLOBAL_ASM("asm/nonmatchings/init_EB00/func_100100E0.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/init_EB00/func_10010154.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/init_EB00/func_10010344.s")
