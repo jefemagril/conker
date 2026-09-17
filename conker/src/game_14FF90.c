@@ -269,8 +269,9 @@ void func_15122AE0(void) {
 // }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_14FF90/func_15123070.s")
-// NON-MATCHING: exact -1/67 justreg -1/67 len 0x108/0x10c score 165
-// opcode delta: lui-1 — first-path delay-slot remat of -360.0f is missing
+// NON-MATCHING: exact 62/67 justreg 62/67 len 0x10c/0x10c score 120
+// dummy_label after first-path store restores delay-slot lui -360.0f (was 4 short).
+// Remaining: schedule of lui/mtc1 360.0f vs lwc1/sub/swc1 on first path.
 // void func_15123070(struct108 *arg0) {
 //     f32 temp_f0;
 //     struct17 tmp;
@@ -278,6 +279,8 @@ void func_15122AE0(void) {
 //     if ((arg0->unk6C8 != 0) && ((arg0->unk6FC == 10) || (arg0->unk6FC == 14))) {
 //         func_15048F90(&arg0->unk618, &arg0->unk2A4, &tmp);
 //         arg0->unk390 = arg0->unk37C - func_15048FC8(&tmp);
+// dummy_label_15123070:
+//         ;
 //     } else {
 //         temp_f0 = (arg0->unk3D0->unk40 - arg0->unk37C) - 180.0f;
 //         if (temp_f0 < 0.0f) {

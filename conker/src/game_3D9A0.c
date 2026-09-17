@@ -4,8 +4,11 @@
 
 s32 func_151149AC(u32);
 
-// NON-MATCHING: exact -1/18 justreg -1/18 len 0x44/0x48 score 175
-// opcode delta: move-1 — IDO -O2 folds proven-zero temps (zero_temp_sb_vs_move)
+// PARKED zero_temp_sb_vs_move: exact -1/18 justreg -1/18 len 0x44/0x48 score 175
+// ROM: lui/addiu $v1=&D_800D9950; move $v0,$zero; sb $v0,1/0($v1); sb $zero,2($v1).
+// Proven-zero temps fold to sb $zero with base in $v0 (4 short). Pointer+temp, chain,
+// !1, &p&0 all still fold. dummy_label is length-equal 0x48 but wrong 3x lui/sb $at shape
+// (score 825) — do not thrash volatile/dummy remat.
 // void func_150104F0(void) {
 //     s32 temp_v0 = 0;
 //
