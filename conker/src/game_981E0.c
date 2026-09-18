@@ -1800,9 +1800,16 @@ void func_15073A28(void) {
 // NON-MATCHING: ~0xe0–0xe4 vs 0xe8 — need t0=&D154C early; a0=&CC2D0[unk124]; 5D024(a0, D1580&0xFF00FF, 0, C3E78);
 // unk1CC=D_8009A0D8 then if (D1580<<1)<0 overwrite y_position; immune 0→0x14; unk76=unk7A+D1580
 // s32 func_1505D024(struct127*, s32, u16, s32);
-#pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_15073B38.s")
-// NON-MATCHING: 51/60 JUSTREG 55/60 — &D1580/&D154C ptrs + f32→unkAC FPCSR ok; need li $t4,1
-// before andi and lui $at,0x4F00 after lw unk31C (insn rotation); tail reload regs off
+void func_15073B38(void) {
+    f32 a;
+    f32 b;
+    struct127 **p = &D_800D154C;
+    a = (f32)(D_800D1580 & 0xFFFF);
+    (*p)->unk31C->unkA8 = a;
+    b = (f32)((D_800D1580 >> 0x10) & 0xFF);
+    (*p)->unk31C->unkAC = (u8)((u32)b);
+    (*p)->unk31C->unkAD = (char)((u8)(D_800D1580 >> 0x18));
+}
 
 void func_15073C28(void) {
     func_1507F640();
