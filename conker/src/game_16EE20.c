@@ -106,21 +106,22 @@ s32 func_151422F8(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
 }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15142314.s")
-// NON-MATCHING: JUSTREG 20/27 — opcodes match; `arg0 & 0xC0` stays in $a0 vs ROM $t0, sll temps differ. tip justreg_park
-// f32 func_151423D8(u8 arg0) {
-//     s32 idx;
-//
-//     if (arg0 & 0x40) {
-//         idx = 0x40 - (arg0 & 0x3F);
-//     } else {
-//         idx = arg0 & 0x3F;
-//     }
-//     if (((arg0 & 0xC0) == 0) || ((arg0 & 0xC0) == 0xC0)) {
-//         return D_8009A220[idx];
-//     }
-//     return -D_8009A220[idx];
-// }
-#pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_151423D8.s")
+f32 func_151423D8(u8 arg0) {
+    s32 idx;
+    u8 quad;
+
+    if (arg0 & 0x40) {
+        idx = 0x40 - (arg0 & 0x3F);
+    } else {
+        idx = arg0 & 0x3F;
+    }
+    quad = arg0 & 0xC0;
+    if ((quad == 0) || (quad == 0xC0)) {
+        return D_8009A220[idx];
+    }
+    return -D_8009A220[idx];
+}
+
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15142444.s")
 // NON-MATCHING: 41/44 at right 0xb0 (justreg 43/44) — u8 copy in $a2 vs ROM $v0
 // (`move $a2,$a0` in the `bne 0xFF` delay, remat `move $a0,$a2` in the jal delay).
