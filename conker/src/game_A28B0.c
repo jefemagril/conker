@@ -1321,16 +1321,14 @@ void func_15079F50(void) {
     D_800D154C->unk23B = D_800D1890;
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_A28B0/func_15079F6C.s")
-// NON-MATCHING: JUSTREG — u16 temps get a0=&D_800D154C and 18/20 insns;
-// only mismatch is lbu D_800D1891 into $v1 (ours) vs $t6 (target), plus matching or.
-// void func_15079F6C(void) {
-//     u16 tmp0 = D_800D1890 << 8;
-//     u16 tmp1 = D_800D1891;
-//     D_800D154C->unk224 = tmp0 | tmp1;
-//     D_800D154C->unk22B = D_800D1892;
-//     D_800D154C->unk226 = D_800D1893;
-// }
+void func_15079F6C(void) {
+    unsigned tmp0 = D_800D1890;
+    unsigned tmp1 = D_800D1891 & 0xFFu;
+
+    D_800D154C->unk224 = (tmp0 << 8) | tmp1;
+    D_800D154C->unk22B = D_800D1892;
+    D_800D154C->unk226 = D_800D1893;
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_A28B0/func_15079FBC.s")
 // NON-MATCHING: JUSTREG
