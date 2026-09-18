@@ -641,26 +641,23 @@ f32 func_15144AA8(s32 arg0) {
 f32 *func_15144B34(s32 arg0) {
     return &D_800DBFF0[arg0].unk2F8;
 }
-// NON-MATCHING: exact 22/24 justreg 22/24 len 0x60/0x60 score 60
-// permuter-plateau: 300s harvest 20/24 score 265; seed stays 22/24
-// lwc1 then mov.s/c.lt.s swap vs ROM c.lt.s then mov.s
-// f32 func_15144B68(f32 arg0) {
-//     f32 hi = D_800A56A4;
-//     f32 x = arg0;
-//
-//     if (hi < arg0) {
-//         do {
-//             x -= hi;
-//         } while (hi < x);
-//     }
-//     if (x < 0.0f) {
-//         do {
-//             x += hi;
-//         } while (x < 0.0f);
-//     }
-//     return x;
-// }
-#pragma GLOBAL_ASM("asm/nonmatchings/game_16EE20/func_15144B68.s")
+f32 func_15144B68(f32 arg0) {
+    f32 hi = D_800A56A4;
+    {
+        f32 x = arg0;
+        if (hi < arg0) {
+            do {
+                x -= hi;
+            } while (hi < x);
+        }
+        if (x < 0.0f) {
+            do {
+                x += hi;
+            } while (x < 0.0f);
+        }
+        return x;
+    }
+}
 f32 func_15144BC8(f32 arg0) {
     f32 hi = 360.0f;
     f32 x = arg0;
