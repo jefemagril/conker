@@ -4,17 +4,21 @@
 #include "variables.h"
 
 
-#pragma GLOBAL_ASM("asm/nonmatchings/init_1420/func_10001420.s")
-// NOT MATCHING: JUSTREG: uses v0 registers not a1 registers
-// void func_10001420(void) {
-//     s32 *tmp = &D_80043B40;
-//     s32 cnt = 4064;
-//
-//     do {
-//         *tmp++ = 0;
-//     }
-//     while ((s32)tmp < (u32)&D_80043B40 + cnt);
-// }
+void func_10001420(void) {
+    s32 a = 0;
+    s32 b = 0;
+    s32 cnt = 4064;
+    s32 occ;
+    s32 occ2;
+    s32 *tmp = (s32 *)&D_80043B40;
+    if (1) {
+        occ = 0;
+        occ2 = 0;
+        do {
+            *tmp++ = 0;
+        } while ((u32)tmp < ((u32)&D_80043B40 + cnt + a + b + occ + occ2));
+    }
+}
 
 void func_10001444(void) {
     u32 saveMask = __osDisableInt();
