@@ -1420,12 +1420,9 @@ void func_1507A3CC(void) {
     D_800D154C->unk229 = D_800D1890;
 }
 
-// NON-MATCHING: opcode_schedule — IDO paired-lui of matched func_15076624/76678
-// vs ROM sequential lui+lbu; same pack; opcodes differ. tip pack_u8_seq_lui_vs_pair
-#pragma GLOBAL_ASM("asm/nonmatchings/game_A28B0/func_1507A3E8.s")
-// s32 func_1507A3E8(void) {
-//     return (D_800D1890 << 0x18) | (D_800D1891 << 0x10) | (D_800D1892 << 8) | D_800D1893;
-// }
+s32 func_1507A3E8(void) {
+    return (((((D_800D1890 << 12) << 12) | ((D_800D1891 << 8) << 8)) | ((D_800D1892 << 4) << 4)) | (D_800D1893 & 0xFF));
+}
 
 
 // NON-MATCHING: exact 5/21 justreg 16/21 len 0x54 — tip pack_u8_seq_lui_vs_pair
