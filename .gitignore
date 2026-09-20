@@ -33,6 +33,11 @@ conker/ctx.c
 *.ld
 *_auto.txt
 
+# local objdiff session config + IDO/cc crash dumps
+conker/objdiff.json
+conker/tools/objdiff_make.sh
+core
+
 # optional tools
 
 tools/decomp-permuter
