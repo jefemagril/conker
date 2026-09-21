@@ -586,52 +586,54 @@ void func_15125690(struct108 *arg0, s32 arg1) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_14FF90/func_151256BC.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_14FF90/func_15125924.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/game_14FF90/func_15125A6C.s")
-// NON-MATCHING: miles away
-// void func_15125A6C(struct108 *arg0) {
-//     f32 pad3C;
-//     f32 sp38;
-//     f32 pad34;
-//     f32 pad30;
-//     f32 sp2C;
-//     f32 sp28;
-//     f32 sp24;
-//
-//     f32 temp_f12;
-//     f32 temp_f12_2;
-//
-//     if (arg0->unk23E == 0x2A) {
-//         sp38 = arg0->unk3D0->unk40;
-//         if (arg0->unk2C != 0x40000) {
-//             func_1512D560(arg0, 5, 0);
-//             arg0->unk7E4 = 1U;
-//         }
-//         D_800DBFF4[0] = 3;
-//         D_800C3600->unk0 = 1;
-//         D_800C3600->unk4 = 0;
-//         temp_f12 = sp38 * D_800A3550;
-//         sp28 = temp_f12;
-//         sp2C = sinf(temp_f12);
-//         temp_f12_2 = (sp38 - 90.0f) * D_800A3554;
-//         sp24 = temp_f12_2;
-//         D_800C3600->unk14 = (sinf(temp_f12_2) * 46.0f) + (arg0->unk3D0->unk14 + (138.0f * sp2C));
-//         D_800C3600->unk18 = arg0->unk3D0->unk18 + 96.0f;
-//         sp2C = cosf(temp_f12);
-//         D_800C3600->unk1C = (cosf(temp_f12_2) * 46.0f) + (arg0->unk3D0->unk1C + (138.0f * sp2C));
-//         D_800C3600->unk20 = 0.0f;
-//         D_800C3600->unk24 = -180.0f;
-//         D_800C3600->unk8 = 0.0f;
-//         D_800C3600->unk28 = sp38 - 180.0f;
-//         D_800C3600->unk5C = 0;
-//         func_1512D560(arg0, 7, D_800C3600);
-//         return;
-//     }
-//
-//     if (arg0->unk7E4 != 0) {
-//         func_1512D560(arg0, 6, 0);
-//         arg0->unk7E4 = 0U;
-//     }
-// }
+extern f32 D_800C3614;
+extern f32 D_800C3618;
+extern f32 D_800C361C;
+extern f32 D_800C3624;
+extern s8 D_800C365C;
+
+void func_15125A6C(struct108 *arg0) {
+    void *volatile *p_D_800A3554 = (void *)&D_800A3554;
+    s32 pad0;
+    s32 pad1;
+    f32 sp38;
+    f32 pad34;
+    f32 pad30;
+    f32 sp2C;
+    f32 sp28;
+    f32 sp24;
+    u8 new_var;
+
+    new_var = arg0->unk23E;
+    if (new_var == 0x2A) {
+        sp38 = arg0->unk3D0->unk40;
+        if (arg0->unk2C != 0x40000) {
+            func_1512D560(arg0, 5, 0);
+            arg0->unk7E4 = 1U;
+        }
+        *D_800DBFF4 = 3;
+        ((struct168 *)&D_800C3600)->unk0 = 1;
+        ((struct168 *)&D_800C3600)->unk4 = 0;
+        sp28 = sp38 * D_800A3550;
+        sp2C = sinf(sp28);
+        sp24 = (sp38 - 90.0f) * D_800A3554;
+        D_800C3614 = (arg0->unk3D0->x_position + (138.0f * sp2C)) + (sinf(sp24) * 46.0f);
+        D_800C3618 = arg0->unk3D0->y_position + 96.0f;
+        sp2C = cosf(sp28);
+        D_800C361C = (cosf(sp24) * 46.0f) + (arg0->unk3D0->z_position + (138.0f * sp2C));
+        ((struct168 *)&D_800C3600)->unk20 = 0.0f;
+        D_800C3624 = -180.0f;
+        ((struct168 *)&D_800C3600)->unk8 = 0.0f;
+        ((struct168 *)&D_800C3600)->unk28 = sp38 - 180.0f;
+        D_800C365C = 0;
+        func_1512D560(arg0, 7, &D_800C3600);
+        return;
+    }
+    if (arg0->unk7E4 != 0) {
+        func_1512D560(arg0, 6, 0);
+        arg0->unk7E4 = 0U;
+    }
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_14FF90/func_15125C40.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_14FF90/func_15125DB4.s")
