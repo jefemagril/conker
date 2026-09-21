@@ -506,17 +506,14 @@ void func_15076760(void) {
 // }
 
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_A28B0/func_150767F4.s")
-// NON-MATCHING: JUSTREG
-// void func_150767F4(void) {
-//     struct127 *tmp = &D_800CC2D0[D_800D154C->unk222]; // * 0x32C) ;
-//
-//     s32 tmp0 = func_1505A630(tmp->x_position - D_800D154C->x_position, D_800D154C->z_position - tmp->z_position, 0) >> 8;
-//
-//     if ((tmp0 + ((D_800CC34A[D_800D154C->unk222 * 0x196] >> 8) - D_800D1891) & 0xFF) < (D_800D1891 * 2)) {
-//         func_15075400(D_800D1890);
-//     }
-// }
+void func_150767F4(void) {
+    struct127 *temp_v1;
+
+    temp_v1 = &D_800CC2D0[D_800D154C->unk222];
+    if ((((((func_1505A630(temp_v1->x_position - D_800D154C->x_position, D_800D154C->z_position - temp_v1->z_position, 0) & 0xFFFF) >> 8) - (((u16 (*)[0x196])D_800CC34A)[D_800D154C->unk222][0] >> 8)) + D_800D1891) & 0xFF) < (D_800D1891 << 1)) {
+        func_15075400(D_800D1890);
+    }
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_A28B0/func_150768DC.s")
 // NON-MATCHING: almost JUSTREG
