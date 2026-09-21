@@ -38,32 +38,52 @@ void *func_1515C2F0(void *arg0, void *arg1, void *arg2, s32 arg3, u8 arg4, s32 a
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1897A0/func_1515C388.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1897A0/func_1515C534.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1897A0/func_1515C6F4.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/game_1897A0/func_1515CF9C.s")
-// NON-MATCHING: 11/37 at right 0x94 — extra lw unk94 vs ROM $v1 CSE; wrap
-// `sb` not in delay. Named Slot *base lengthens. Do not thrash.
-// s32 func_1515CF9C(void *arg0, void *arg1) {
-//     s32 temp_v1;
-//     s8 temp_v0;
-//     void *temp_t1;
-//
-//     temp_v0 = arg0->unk2C;
-//     if ((s32) temp_v0 < (arg0->unk25 - 1)) {
-//         temp_v1 = arg0->unk94;
-//         arg0->unk2C = (s8) (temp_v0 + 1);
-//         temp_t1 = temp_v1 + (arg0->unk2E * 0x10);
-//         temp_t1->unk0 = (s32) arg0->unk10;
-//         temp_t1->unk4 = (s32) arg0->unk14;
-//         temp_t1->unk8 = (s32) arg0->unk18;
-//         (temp_v1 + (arg0->unk2E * 0x10))->unkC = (f32) arg1->unk8;
-//         arg0->unk2E = (s8) (arg0->unk2E + 1);
-//         if (arg0->unk25 == arg0->unk2E) {
-//             arg0->unk2E = (u8)0;
-//         }
-//     } else {
-//         arg1->unk39 = (u8)-1;
-//     }
-//     return 1;
-// }
+s32 func_1515CF9C(void *arg0, void *arg1)
+{
+  typedef struct 
+  {
+    s32 unk0;
+    s32 unk4;
+    s32 unk8;
+  } Vec3;
+  typedef struct 
+  {
+    u8 pad[0x39];
+    s8 unk39;
+  } A1;
+  s32 temp_v1;
+  s8 temp_v0;
+  s8 *temp_t1;
+  A1 *b = arg1;
+  temp_v0 = *((s8 *) (((u8 *) arg0) + 0x2C));
+  if (((s32) temp_v0) < ((*((u8 *) (((u8 *) arg0) + 0x25))) - 1))
+  {
+    temp_v1 = *((s32 *) (((u8 *) arg0) + 0x94));
+    *((s8 *) (((u8 *) arg0) + 0x2C)) = (s8) (temp_v0 + 1);
+    temp_t1 = (s8 *) (temp_v1 + (((*((s8 *) (((u8 *) arg0) + 0x2E))) * 0x10) ^ 0));
+    *((Vec3 *) ((s8 *) (temp_v1 + ((*((s8 *) (((u8 *) arg0) + 0x2E))) * 0x10)))) = *((Vec3 *) (((u8 *) arg0) + 0x10));
+    *((f32 *) (((s8 *) (temp_v1 + ((*((s8 *) (((u8 *) arg0) + 0x2E))) * 0x10))) + 0xC)) = *((f32 *) (((u8 *) arg1) + 8));
+    *((s8 *) (((u8 *) arg0) + 0x2E)) = (s8) ((*((s8 *) (((u8 *) arg0) + 0x2E))) + 1);
+    if ((*((u8 *) (((u8 *) arg0) + 0x25))) == (*((s8 *) (((u8 *) arg0) + 0x2E))))
+    {
+      goto zero;
+    }
+    goto done;
+    zero:
+    *((s8 *) (((u8 *) arg0) + 0x2E)) = 0;
+
+    done:
+    ;
+
+    ;
+  }
+  else
+  {
+    b->unk39 = -1;
+  }
+  return 1;
+}
+
 
 s32 func_1515D030(Game1897A0Ring *arg0, s32 arg1) {
     s32 ret;

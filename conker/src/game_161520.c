@@ -704,55 +704,29 @@ s32 func_15137E10(struct259 *arg0) {
 // }
 #pragma GLOBAL_ASM("asm/nonmatchings/game_161520/func_15137E60.s")
 
-// NON-MATCHING: parked — schedule/JUSTREG/length; leave asm
-// extern f32 D_800A482C;
-// extern void func_151D9014(void);
-// 
-// void func_15137F30(f32 *arg0, f32 *arg1, f32 *arg2, struct102 *arg3, f32 *arg4, s16 *arg5, u8 *arg6, f32 *arg7) {
-//     f32 scale;
-//     f32 sp74;
-//     f32 a;
-//     f32 b;
-//     f32 c;
-//     f32 d;
-//     f32 e;
-//     f32 f;
-//     f32 r0;
-//     f32 r1;
-//     f32 r2;
-//     s32 t0;
-//     s32 t1;
-// 
-//     scale = arg7[0];
-//     sp74 = arg3->unk74;
-//     a = arg0[0] + (arg2[0] * scale);
-//     arg4[0] = a;
-//     b = arg0[1] + (arg2[1] * scale);
-//     arg4[1] = b;
-//     c = arg0[2] + (arg2[2] * scale);
-//     arg4[2] = c;
-//     d = arg1[0] + (arg3[0] * scale);
-//     arg5[0] = d;
-//     e = arg1[1] + (arg3[1] * scale);
-//     arg5[1] = e;
-//     f = arg1[2] + (arg3[2] * scale);
-//     arg5[2] = f;
-//     r0 = (d - a) * sp74;
-//     arg6[0] = r0;
-//     r1 = (e - b) * sp74;
-//     arg6[1] = r1;
-//     r2 = (f - c) * sp74;
-//     arg6[2] = r2;
-//     func_150ADA68();
-//     arg7[0] = ((func_150ADA68() * 217.0f) - 456.0f) * D_800A482C;
-//     func_150ADA20();
-//     t0 = func_150ADA20();
-//     arg5[0] = (t0 % 0x1F) + 0x1E;
-//     t1 = func_150ADA68();
-//     arg6[0] = (t1 % 0x9C) + 0x64;
-//     arg7[0] = (func_150ADA68() * 34.0f) + 36.0f;
-// }
-#pragma GLOBAL_ASM("asm/nonmatchings/game_161520/func_15137F30.s")
+void func_15137F30(
+    f32 *arg0, f32 *arg1, f32 *arg2, f32 *arg3,
+    f32 arg4, struct259 *arg5,
+    f32 *arg6, f32 *arg7, f32 *arg8,
+    f32 *arg9, s16 *argA, u8 *argB, f32 *argC)
+
+{
+    arg6[0] = (arg2[0] * arg4) + arg0[0];
+    arg6[1] = (arg2[1] * arg4) + arg0[1];
+    arg6[2] = (arg2[2] * arg4) + arg0[2];
+    arg7[0] = (arg3[0] * arg4) + arg1[0];
+    arg7[1] = (arg3[1] * arg4) + arg1[1];
+    arg7[2] = (arg3[2] * arg4) + arg1[2];
+    arg8[0] = (arg7[0] - arg6[0]) * arg5->unk74;
+    arg8[1] = (arg7[1] - arg6[1]) * arg5->unk74;
+    arg8[2] = (arg7[2] - arg6[2]) * arg5->unk74;
+
+    *arg9 = ((func_150ADA68() * 217.0f) + (-456.0f)) * D_800A482C;
+    *argA = (func_150ADA20() % 31U) + 0x1E;
+    *argB = (func_150ADA20() % 156U) + 0x64;
+    *argC = (func_150ADA68() * 35.0f) + 40.0f;
+}
+
 
 s32 func_151380B4(struct102 *arg0, s32 arg1, s32 arg2) {
     s32 v0 = *(s32 *)((s32)arg0 + 0x1D4);

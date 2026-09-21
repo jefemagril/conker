@@ -1422,12 +1422,11 @@ s32 func_1507A3E8(void) {
 }
 
 
-// NON-MATCHING: exact 5/21 justreg 16/21 len 0x54 — tip pack_u8_seq_lui_vs_pair
-#pragma GLOBAL_ASM("asm/nonmatchings/game_A28B0/func_1507A428.s")
-// void func_1507A428(void) {
-//     s32 tmp = (D_800D1890 << 0x18) | (D_800D1891 << 0x10) | (D_800D1892 << 8) | D_800D1893;
-//     D_800D154C->unk94 = ~(tmp | 1);
-// }
+void func_1507A428(void) {
+    s32 tmp = ((((D_800D1890 << 12) << 12) | ((D_800D1891 << 8) << 8)) | ((D_800D1892 << 4) << 4)) | (D_800D1893 & 0xFF);
+    D_800D154C->unk94 = ~(tmp | 1);
+}
+
 
 
 // NON-MATCHING: exact 4/22 justreg 15/22 len 0x58 — tip pack_u8_seq_lui_vs_pair

@@ -298,47 +298,44 @@ s32 func_1505693C(struct127 *arg0, s32 arg1) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_15056A00.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_15056B08.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_1505841C.s")
-// NON-MATCHING: JUSTREG
-// void func_1505841C(struct127 *arg0, f32 arg1) {
-//     struct197 *temp_v0_2;
-//     f32 temp_f0;
-//     f32 temp_f1;
-//     s32 idx;
-//
-//     temp_f0 = (((arg0->unk246 & 0x1F) << 8) + arg0->unk249) * D_80099468;
-//     if ((arg0->unk246 & 0x80) == 0) {
-//         if ((arg0->xz_velocity <= 1.0f) || (((arg0->unk22C & 0x10) != 0) && (arg0->unk28 == 0.0f))) {
-//             temp_f0 = arg1;
-//         } else {
-//             // regalloc off here
-//             temp_f1 = (arg0->xz_velocity * (0.5f / arg0->xz_scale));
-//             temp_f0 = temp_f1 / (temp_f0 * 10.0f);
-//             temp_f0 += D_8009946C;
-//
-//             if ((arg0->unk246 & 0x20) == 0) {
-//                 temp_f0 += D_80099470;
-//             }
-//         }
-//     }
-//     if (arg0->unk223 == 0xD) {
-//         temp_f0 = (arg0->unk250 & 0x7F) * D_80099474;
-//     }
-//     if (arg0->unk246 == 0xFF) {
-//         temp_f0 = 0.0f;
-//     }
-//     func_1505E650(arg0, arg0->unk244, temp_f0, arg0->unk1D0, 0.0f, 0.0f, 0);
-//
-//     if (arg0->unk246 == 0xFF) {
-//         // regalloc off here
-//         idx = D_800419A0 << 4;
-//         temp_f0 = D_800418B0[idx];
-//         if (temp_f0 >= 0.0f) {
-//             temp_v0_2 = arg0->unk2D0;
-//             temp_v0_2->unk8 = (f32) ((temp_v0_2->unk18 * (32768.0f - temp_f0)) / 32768.0f);
-//         }
-//     }
-// }
+void func_1505841C(struct127 *arg0, f32 arg1) {
+    struct197 *temp_v0_2;
+    f32 temp_f0;
+    f32 temp_f1;
+    f32 quot;
+
+    temp_f0 = (((arg0->unk246 & 0x1F) << 8) + arg0->unk249) * D_80099468;
+    if ((arg0->unk246 & 0x80) == 0) {
+        if ((arg0->xz_velocity <= 1.0f) || (((arg0->unk22C & 0x10) != 0) && (arg0->unk28 == 0.0f))) {
+            temp_f0 = arg1;
+        } else {
+            temp_f1 = arg0->xz_velocity * (0.5f / arg0->xz_scale);
+            temp_f0 = temp_f0 * 10.0f;
+            quot = temp_f1 / temp_f0;
+            temp_f0 = quot + D_8009946C;
+            if ((arg0->unk246 & 0x20) == 0) {
+                temp_f0 = temp_f0 + D_80099470;
+            }
+        }
+    }
+    if (arg0->unk223 == 0xD) {
+        temp_f0 = (arg0->unk250 & 0x7F) * D_80099474;
+    }
+    if (arg0->unk246 == 0xFF) {
+        temp_f0 = 0.0f;
+    }
+    func_1505E650(arg0, arg0->unk244, temp_f0, arg0->unk1D0, 0.0f, 0.0f, 0);
+    if (arg0->unk246 == 0xFF) {
+
+        temp_f0 = (f32) *(s32 *)((s8 *)D_800418B0 + (D_800419A0 << 6));
+
+        if (temp_f0 >= 0.0f) {
+            temp_v0_2 = arg0->unk2D0;
+            temp_v0_2->unk8 = (temp_v0_2->unk18 * (32768.0f - temp_f0)) / 32768.0f;
+        }
+    }
+}
+
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_150585F0.s")
 // NON-MATCHING: 80% there
