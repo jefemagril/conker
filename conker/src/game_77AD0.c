@@ -513,7 +513,32 @@ void func_1504C9E4(struct127 *arg0, s8 arg1, u8 arg2) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_77AD0/func_1504CA60.s")
+void func_1504CA60(struct127 *arg0) {
+    f32 var_f12;
+    f32 var_f2;
+
+    var_f12 = 18.0f;
+    var_f2 = arg0->unk180 + 20.0f;
+    arg0->unk1CC = arg0->y_position;
+    if (arg0->unk28 > 30.0f) {
+        var_f12 = 80.0f;
+    }
+    if (arg0->unk81 != 0) {
+        var_f12 = 80.0f;
+        var_f2 -= 30.0f;
+        if ((arg0->unk28 < 5.0f) && (arg0->y_velocity < 0.0f)) {
+            arg0->unk81 = 0;
+            arg0->y_velocity = 45.0f;
+        }
+    } else if (arg0->unk28 < 20.0f) {
+        if (!(func_150ADA20() & 0x3F)) {
+            arg0->y_velocity = 25.0f;
+        }
+    }
+    func_15058EA4(arg0, var_f2, 3.8f, var_f2, -3.5f, 80.0f, -var_f12);
+    arg0->unk80 = 1;
+}
+
 #pragma GLOBAL_ASM("asm/nonmatchings/game_77AD0/func_1504CB98.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_77AD0/func_150511E8.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_77AD0/func_15051558.s")
