@@ -33,10 +33,74 @@ void func_15004A4C(void) {
 }
 
 
-// NON-MATCHING: raw m2c draft already scores exact 41/81 justreg 75/81 at the
-// correct length 0x144 with no hand edits. Close/regalloc — permuter territory.
-// See drafts/func_15004AAC.c (harness draft).
-#pragma GLOBAL_ASM("asm/nonmatchings/game_30E90/func_15004AAC.s")
+extern u16 D_800BE2A0;
+extern u16 D_800BE2A2;
+extern u16 D_800BE2A4;
+
+void func_15004AAC(void *arg0, s32 arg1) {
+    f32 sz;
+    f32 sx;
+    f32 sy;
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 root;
+    f32 new_var;
+    s32 maxv = 0;
+    s32 off;
+    s32 len;
+    s32 val;
+    s16 *p;
+    u16 new_var2;
+    u16 cur;
+    u16 count;
+
+    count = *((u16 *)(((s8 *)arg0) + 0x16));
+    new_var2 = count;
+    if (0 < ((s32)new_var2)) {
+        if ((arg0 && arg0) && arg0) {
+        }
+        off = 0;
+        p = *((s16 **)(((s8 *)arg0) + 0x28));
+        sz = *((f32 *)(((s8 *)arg0) + 0x34));
+        z = ((f32)p[2]) * sz;
+        sx = *((f32 *)(((s8 *)arg0) + 0x2C));
+        x = ((f32)p[0]) * sx;
+        sy = *((f32 *)(((s8 *)arg0) + 0x30));
+        if (!arg0) {
+        }
+        len = ((s32)new_var2) * 0x10;
+        do {
+            off += 0x10;
+            z = ((f32)p[2]) * sz;
+            x = ((f32)p[0]) * sx;
+            new_var = sy;
+            y = ((f32)p[1]) * new_var;
+            val = (s32)((z * z) + ((x * x) + (y * y)));
+            if (maxv < val) {
+                maxv = val;
+            }
+            p = p + 8;
+        } while (off < len);
+    }
+    if (maxv != 0) {
+        cur = *((u16 *)(((s8 *)arg0) + 0x50));
+        root = sqrtf((f32)maxv);
+        if ((*((u16 *)(((s8 *)arg0) + 0x50))) == 0) {
+            val = (s32)root;
+            *((u16 *)(((s8 *)arg0) + 0x50)) = (u16)val;
+            *((u16 *)(((s8 *)arg0) + 0x52)) = (u16)val;
+            D_800BE2A2 += 1;
+            return;
+        }
+        val = (s32)root;
+        if ((((s32)cur) < val) || (((s32)(*((u16 *)(((s8 *)arg0) + 0x52)))) < val)) {
+            D_800BE2A0 += 1;
+            return;
+        }
+        D_800BE2A4 += 1;
+    }
+}
 
 s32 func_15004BF0(s32 arg0) {
     s32 n;

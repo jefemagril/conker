@@ -59,8 +59,10 @@ void func_15141250(void *arg0) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16DC80/func_151412BC.s")
 
-// NON-MATCHING: 10/15 at right 0x3c — addiu $v0,$a0,0x110 hoisted before beqz
-// (and first lwc1/lw swapped). tip substruct_addiu_vs_nullcheck; do not thrash
+// PARKED: tip substruct_addiu_vs_nullcheck — IDO hoist vs remat two-basin.
+// Best C score=90 exact=6/15 justreg=12/15 len OK (oracle_lw_first): addiu $v0,$a0,0x110
+// still before beqz; inside-block lw/lwc1 order matches. Mid-unit hasm blocked (no ROM
+// gap for 16-byte .text pad). Leave GLOBAL_ASM.
 // void func_1514143C(void *arg0) {
 //     typedef struct {
 //         f32 unk0;
@@ -69,7 +71,7 @@ void func_15141250(void *arg0) {
 //     } Vec;
 //     typedef struct {
 //         u8 pad[0x44];
-//         Vec * volatile unk44;
+//         Vec *unk44;
 //     } Mid;
 //     typedef struct {
 //         u8 pad0[0x34];
@@ -81,11 +83,15 @@ void func_15141250(void *arg0) {
 //     } Local;
 //     Local *a = arg0;
 //     Mid *m = &a->unk110;
+//     Vec *v;
 //
-//     if (m->unk44 != NULL) {
-//         m->unk44->unk0 = a->unk34;
-//         m->unk44->unk4 = a->unk38;
-//         m->unk44->unk8 = a->unk3C;
+//     if (*(s32 *)((u8 *)a + 0x154) != 0) {
+//         v = m->unk44;
+//         v->unk0 = a->unk34;
+//         v = m->unk44;
+//         v->unk4 = a->unk38;
+//         v = m->unk44;
+//         v->unk8 = a->unk3C;
 //     }
 // }
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16DC80/func_1514143C.s")

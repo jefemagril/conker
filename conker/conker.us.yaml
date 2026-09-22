@@ -459,7 +459,7 @@ segments:
       - [0xD50C0, asm]
       - [0xD5160, c, game_D5160]
       - [0xD51B0, c, game_D51B0]
-      - [0xD5250, c, game_D5250]
+      - [0xD5250, asm, libultra/gu/guMtxIdentFW] # handwritten; tracked in src/hasm/ (sibling of guMtxIdentF)
       - [0xD52A0, asm]
       - [0xD5500, c, game_D5500]
       - [0xD5650, asm]

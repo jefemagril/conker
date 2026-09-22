@@ -341,6 +341,7 @@ $(BUILD_DIR)/%.c.o: %.c
 $(BUILD_DIR)/asm/%.s.o: $(HASM_DIR)/%.s
 	$(AS) $(ASFLAGS) -o $@ $<
 
+
 $(BUILD_DIR)/%.s.o: %.s
 	$(AS) $(ASFLAGS) -o $@ $<
 
