@@ -480,38 +480,40 @@ s32 func_151253CC(struct108 *arg0) {
     return 0;
 }
 
-// NON-MATCHING: 23/25 at right 0x64 — fabsf + `if (unkAD == 1)` body matches
-// through the `< 0x64` `beql`; last miss is `bnezl`+`move $v0,$zero` vs ROM
-// `bnez`+`nop` on `v1 >= 0x12D`. Leave asm.
-// s32 func_15125490(void *arg0) {
-//     typedef struct {
-//         u8 pad0[0x18];
-//         f32 unk18;
-//         u8 pad1C[0x91];
-//         u8 unkAD;
-//         u8 padAE[0x6A];
-//         f32 unk118;
-//     } Obj;
-//     typedef struct {
-//         u8 pad0[0x3D0];
-//         Obj *unk3D0;
-//     } Local;
-//     Local *a = arg0;
-//     Obj *v0 = a->unk3D0;
-//     s32 v1;
-//
-//     if (v0->unkAD == 1) {
-//         v1 = (s32)fabsf(v0->unk18 - v0->unk118);
-//         if (v1 < 0x64) {
-//             return 0;
-//         }
-//         if (v1 >= 0x12D) {
-//             return 1;
-//         }
-//     }
-//     return 0;
-// }
-#pragma GLOBAL_ASM("asm/nonmatchings/game_14FF90/func_15125490.s")
+s32 func_15125490(void *arg0) {
+    typedef struct {
+        u8 pad0[0x18];
+        f32 unk18;
+        u8 pad1C[0x91];
+        u8 unkAD;
+        u8 padAE[0x6A];
+        f32 unk118;
+    } Obj15125490;
+    typedef struct {
+        u8 pad0[0x3D0];
+        Obj15125490 *unk3D0;
+    } Local15125490;
+    Local15125490 *a;
+    Obj15125490 *v0;
+    s32 v1;
+
+    a = arg0;
+    v0 = a->unk3D0;
+    if (v0->unkAD == 1) {
+        v1 = (s32)fabsf(v0->unk18 - v0->unk118);
+        if (v1 < 0x64) {
+            return 0;
+        }
+        if (v1 >= 0x12D) {
+            return 1;
+        }
+    } else {
+        v0 = 0;
+    }
+    if ((v0 && 0) && 0) {
+        return (s32)0;
+    }
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_14FF90/func_151254F4.s")
 // NON-MATCHING: first statements in wrong order
