@@ -59,42 +59,40 @@ void func_15141250(void *arg0) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16DC80/func_151412BC.s")
 
-// PARKED: tip substruct_addiu_vs_nullcheck — IDO hoist vs remat two-basin.
-// Best C score=90 exact=6/15 justreg=12/15 len OK (oracle_lw_first): addiu $v0,$a0,0x110
-// still before beqz; inside-block lw/lwc1 order matches. Mid-unit hasm blocked (no ROM
-// gap for 16-byte .text pad). Leave GLOBAL_ASM.
-// void func_1514143C(void *arg0) {
-//     typedef struct {
-//         f32 unk0;
-//         f32 unk4;
-//         f32 unk8;
-//     } Vec;
-//     typedef struct {
-//         u8 pad[0x44];
-//         Vec *unk44;
-//     } Mid;
-//     typedef struct {
-//         u8 pad0[0x34];
-//         f32 unk34;
-//         f32 unk38;
-//         f32 unk3C;
-//         u8 pad40[0xD0];
-//         Mid unk110;
-//     } Local;
-//     Local *a = arg0;
-//     Mid *m = &a->unk110;
-//     Vec *v;
-//
-//     if (*(s32 *)((u8 *)a + 0x154) != 0) {
-//         v = m->unk44;
-//         v->unk0 = a->unk34;
-//         v = m->unk44;
-//         v->unk4 = a->unk38;
-//         v = m->unk44;
-//         v->unk8 = a->unk3C;
-//     }
-// }
-#pragma GLOBAL_ASM("asm/nonmatchings/game_16DC80/func_1514143C.s")
+// MATCH: empty label barrier + goto body keeps addiu after beqz/nop (not hoisted,
+// not remat-folded to lw 0x154). Direct m->unk44-> stores get t7/t8/t9.
+void func_1514143C(void *arg0) {
+    typedef struct {
+        f32 unk0;
+        f32 unk4;
+        f32 unk8;
+    } Vec;
+    typedef struct {
+        u8 pad[0x44];
+        Vec *unk44;
+    } Mid;
+    typedef struct {
+        u8 pad0[0x34];
+        f32 unk34;
+        f32 unk38;
+        f32 unk3C;
+        u8 pad40[0xD0];
+        Mid unk110;
+    } Local;
+    Local *a = arg0;
+    Mid *m;
+
+    if (*(s32 *)((u8 *)a + 0x154) != 0) {
+        L_1514143C: ;
+        m = &a->unk110;
+        goto body;
+    }
+    return;
+body:
+    m->unk44->unk0 = a->unk34;
+    m->unk44->unk4 = a->unk38;
+    m->unk44->unk8 = a->unk3C;
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16DC80/func_15141478.s")
 // NON-MATCHING: 53/59 justreg=53/59 len=0xec  tip ptr_home_20_vs_24_frame
