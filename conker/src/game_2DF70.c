@@ -295,10 +295,29 @@ void func_15002724(s32 arg0) {
 #pragma GLOBAL_ASM("asm/nonmatchings/game_2DF70/func_15002754.s")
 
 
-// NON-MATCHING: JUSTREG 32/32 exact 30/32 score 10 at 0x80. Analog is parked
-// func_15004CE0 (indexed Gfx walker: `*(s8 *)&arg0[i]`, `arg0[++i]`). Remaining
-// miss is operands, not another g++ / for pass. Caller implies `int` return.
-#pragma GLOBAL_ASM("asm/nonmatchings/game_2DF70/func_150027F8.s")
+int func_150027F8(Gfx *arg0) {
+    s32 var_v0;
+    s32 ret;
+    s32 i;
+
+    if (arg0 == NULL) {
+        return 0;
+    }
+
+    var_v0 = 0;
+    ret = 0;
+    for (i = *(s8 *)arg0; i != -0x21; i = *(s8 *)&arg0[var_v0]) {
+        if ((i >> 4) == 1) {
+            ret += 4;
+        } else if (i == 6) {
+            ret += 2;
+        } else if (i == 5) {
+            ret += 1;
+        }
+        var_v0 += 1;
+    }
+    return ret;
+}
 
 s32 func_15002878(void) {
     s32 i;
