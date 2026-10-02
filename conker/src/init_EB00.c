@@ -392,7 +392,44 @@ void func_1000FD38(s32 arg0, s32 arg1, s32 arg2)
 //     return -1;
 // }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/init_EB00/func_1000FF90.s")
+s32 func_1000FF90(s32 arg0, s32 arg1, s32 arg2)
+{
+  s32 i;
+  struct15 *p;
+  s32 count;
+  s32 t0;
+  s32 keep;
+  keep = arg0;
+  count = D_80042760;
+ i = 0; if (count <= 0) { goto fail; } t0 = -1; p = D_80041FE0; do {
+    if (keep != p->unk14)
+    {
+      goto next;
+    }
+    if ((arg1 != p->unk18) && (arg1 != t0))
+    {
+      goto next;
+    }
+    if ((arg2 != p->unk1C) && (((u32) arg2) != 0xFFFFFFFF))
+    {
+      goto next;
+    }
+    if (p->unk10 & 0x80)
+    {
+      goto next;
+    }
+    return i;
+    next:
+    i++;
+
+    p++;
+  }
+  while (i < count);
+  fail:
+  return -1;
+
+}
+
 // NON-MATCHING: typed for+index is 0x88 vs 0x8c score 195 (was 8 short / 320).
 // while(1)+tmp++ is length-equal 0x8c score 575, exact 14/35 justreg 28/35.
 // Remaining 4 short or likely-branch; do not permute.
