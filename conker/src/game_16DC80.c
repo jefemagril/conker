@@ -59,8 +59,8 @@ void func_15141250(void *arg0) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16DC80/func_151412BC.s")
 
-// MATCH: empty label barrier + goto body keeps addiu after beqz/nop (not hoisted,
-// not remat-folded to lw 0x154). Direct m->unk44-> stores get t7/t8/t9.
+// MATCH: two empty labels — def_ blocks delay-slot steal of addiu; use: stops
+// fold of 0x110+0x44 into lw 0x154(a0). Direct m->unk44-> stores → t7/t8/t9.
 void func_1514143C(void *arg0) {
     typedef struct {
         f32 unk0;
@@ -82,16 +82,14 @@ void func_1514143C(void *arg0) {
     Local *a = arg0;
     Mid *m;
 
-    if (*(s32 *)((u8 *)a + 0x154) != 0) {
-        L_1514143C: ;
+    if (a->unk110.unk44 != NULL) {
+    def_:
         m = &a->unk110;
-        goto body;
+    use:
+        m->unk44->unk0 = a->unk34;
+        m->unk44->unk4 = a->unk38;
+        m->unk44->unk8 = a->unk3C;
     }
-    return;
-body:
-    m->unk44->unk0 = a->unk34;
-    m->unk44->unk4 = a->unk38;
-    m->unk44->unk8 = a->unk3C;
 }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16DC80/func_15141478.s")
