@@ -159,37 +159,36 @@ void func_15168A2C(s32 arg0) {
 //     *slot = a;
 // }
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15168A4C.s")
-// NON-MATCHING: JUSTREG 20/29 (justreg 28/29) — unlink from D_800DCE50[unk1]*0x1A0 +
-// unk0*4; prefix matches with `s32 v0 = unk1; s32 v1 = unk0`; list walk stays in
-// $v1 plus extra `move $v0,$v1` vs ROM nop. Same family as func_15168A4C. Leave asm.
-// void *func_15168A9C(void *arg0) {
-//     typedef struct {
-//         u8 unk0;
-//         u8 unk1;
-//         u8 pad2[2];
-//         void *unk4;
-//         void *unk8;
-//     } Node;
-//     Node *a = arg0;
-//     s32 v0 = a->unk1;
-//     s32 v1 = a->unk0;
-//     Node **slot = (Node **)((u8 *)D_800DCE50 + (v0 * 0x1A0) + (v1 * 4));
-//     Node *n;
-//
-//     if (a == *slot) {
-//         *slot = a->unk8;
-//     }
-//     n = a->unk8;
-//     if (n != NULL) {
-//         n->unk4 = a->unk4;
-//     }
-//     n = a->unk4;
-//     if (n != NULL) {
-//         n->unk8 = a->unk8;
-//     }
-//     return n;
-// }
-#pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15168A9C.s")
+void func_15168A9C(void *arg0) {
+    typedef struct {
+        u8 unk0;
+        u8 unk1;
+        u8 pad2[2];
+        void *unk4;
+        void *unk8;
+    } Node;
+    Node *a;
+    s32 v0;
+    s32 v1;
+    Node **slot;
+    Node *n;
+
+    a = arg0;
+    v0 = a->unk1;
+    v1 = a->unk0;
+    slot = (Node **)((u8 *)D_800DCE50 + (v0 * 0x1A0) + (v1 * 4));
+    if (a == *slot) {
+        *slot = a->unk8;
+    }
+    n = a->unk8;
+    if (n != NULL) {
+        n->unk4 = a->unk4;
+    }
+    n = a->unk4;
+    if (n != NULL) {
+        n->unk8 = a->unk8;
+    }
+}
 
 
 void func_15168B10(s32 arg0, s32 arg1) {
