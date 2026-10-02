@@ -301,7 +301,26 @@ void func_1000F9D4(u16 arg0, s16 arg1, s16 arg2, s16 arg3) {
 // length-equal 0x120 score 895, exact 62/72 justreg 63/72. Remaining miss is
 // likely-branch (`bnel` delay i++).
 #pragma GLOBAL_ASM("asm/nonmatchings/init_EB00/func_1000FC18.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/init_EB00/func_1000FD38.s")
+void func_1000FD38(s32 arg0, s32 arg1, s32 arg2)
+{
+  s32 i;
+  struct15 *tmp;
+  u16 id;
+  for (i = 0; i < D_80042760; i++)
+  {
+    tmp = &D_80041FE0[i];
+    if (((arg0 == tmp->unk14) && (arg1 == (&D_80041FE0[i])->unk18)) && (arg2 == (&D_80041FE0[i])->unk1C))
+    {
+      id = tmp->unk24;
+      if (id != 0)
+      {
+        func_100111C8(id);
+      }
+      (&D_80041FE0[i])->unk10 |= 0x80;
+    }
+  }
+
+}
 // NON-MATCHING: typed do-while + id temp is length-equal 0x94 score 930,
 // exact 22/37 justreg 28/37. Remaining likely-branch (`bnel` delay i++).
 // void func_1000FDF4(u16 arg0) {
