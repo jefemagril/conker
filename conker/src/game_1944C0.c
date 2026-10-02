@@ -197,46 +197,86 @@ void func_15168B10(s32 arg0, s32 arg1) {
     func_15168A4C(arg0, arg1);
 }
 
-// NON-MATCHING: packed u16-in-word decrement. Right-length vol_field is 6/26
-// (justreg 22/26): IDO DSE's the dead `sw` of (word & 0xFFFF0000) before
-// `or`/`sw` of the combined value (4 short without volatile); volatile keeps
-// both stores but swaps `lui 0xFFFF` ahead of `addiu 0x1E` and puts `and`
-// in the `beqz` delay instead of `addiu lo-1`. Leave asm.
-// void func_15168B44(void *arg0) {
-//     typedef struct {
-//         u8 pad0[0x14];
-//         s32 unk14;
-//         u8 pad18[0x20];
-//         s16 unk38;
-//         u8 pad3A[5];
-//         u8 unk3F;
-//     } Local;
-//     Local *a = arg0;
-//     s32 v1 = a->unk14;
-//     s16 t8 = 0x1E;
-//     u16 t6 = v1;
-//
-//     if (t6 != 0) {
-//         s32 t9 = v1 & 0xFFFF0000;
-//
-//         a->unk14 = t9;
-//         a->unk38 = t8;
-//         a->unk14 = t9 | (u16)(t6 - 1);
-//         return;
-//     }
-//     {
-//         u16 hi = v1 >> 16;
-//         u8 a2 = a->unk3F;
-//
-//         if (hi < a2) {
-//             a->unk3F = a2 - hi;
-//             a->unk38 = 0x1E;
-//         } else {
-//             a->unk38 = 0;
-//         }
-//     }
-// }
-#pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15168B44.s")
+typedef struct {
+  u8 pad0[0x14];
+  s32 unk14;
+  u8 pad18[0x20];
+  s16 unk38;
+  u8 pad3A[5];
+  u8 unk3F;
+} Local15168B44;
+
+void func_15168B44(void *arg0)
+{
+  Local15168B44 *a;
+  s32 v1;
+  s32 new_var2;
+  u16 t6;
+  u16 hi;
+  u8 a2;
+  int new_var;
+  s32 c0;
+  s32 z0;
+  s32 z1;
+  s32 z2;
+  s32 t9;
+  s32 z3;
+  s32 z4;
+  s32 z5;
+  s32 keep;
+  a = arg0;
+  hi = 0x1E;
+  v1 = a->unk14;
+  new_var2 = v1;
+  t6 = ((u16) new_var2) ^ 0;
+  new_var = t6 - (1 & 0xFFFFFFFFu);
+  if (t6 != 0)
+  {
+    c0 = v1;
+    z0 = 0;
+    z1 = 0;
+    z2 = 0;
+    z3 = 0;
+    z4 = 0;
+    z5 = 0;
+    keep = new_var & 0xFFFF;
+    new_var = keep * 0;
+    if (a)
+    {
+    }
+    hi++;
+    hi--;
+    t9 = (v1 & 0xFFFF0000) | new_var;
+    v1 = 0;
+    a->unk14 = t9;
+    a->unk38 = hi;
+    if (keep)
+    {
+      ;
+    }
+    *((s32 *) (((s8 *) arg0) + 0x14)) = ((t9 | keep) | (((((((c0 * 0) | (z0 * 0)) | (z1 * 0)) | (z2 * 0)) | (z3 * 0)) | (z4 * 0)) | (z4 = z5 * 0))) & 0xFFFFFFFFu;
+    return;
+  }
+  hi = (u16) (v1 >> 16);
+  v1 = a->unk3F;
+  if (0)
+  {
+  }
+  a2 = v1;
+  if (hi < a2)
+  {
+    a->unk3F = a2 - hi;
+    if (1)
+    {
+    }
+    a->unk38 = 0x1E;
+  }
+  else
+  {
+    a2 = 0;
+    a->unk38 = (a2, 0);
+  }
+}
 
 void func_15168BAC(Game1944C0Dispatch *arg0) {
     u8 idx = arg0->unkE4;
@@ -336,15 +376,19 @@ s32 func_15169668(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return arg0;
 }
 
-// NON-MATCHING: 18/20 — ROM lbu arg1->unk0 then arg0->unkC; C `arg1->unk0 == arg0->unkC` still loads $a0 first. u8 temp from arg1 is JUSTREG 17/20 (v0/t7 vs t7/t8); tip justreg_park
-// void func_1516968C(Game1944C0EventObject *arg0, Game1944C0EventPayloadHeader *arg1, u8 arg2) {
-//     if ((arg2 == 0xF) || (arg2 == 0x10)) {
-//         if (arg1->unk0 == arg0->unkC) {
-//             func_1516972C(arg0);
-//         }
-//     }
-// }
-#pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_1516968C.s")
+void func_1516968C(Game1944C0EventObject *arg0, Game1944C0EventPayloadHeader *arg1, u8 arg2) {
+    if (arg2 == 0xF) {
+        goto body;
+    }
+    if (arg2 == 0x10) {
+        goto body;
+    }
+    return;
+body:
+    if (arg1->unk0 == (0, arg0->unkC)) {
+        func_1516972C((struct102 *)arg0);
+    }
+}
 
 void func_151696DC(struct102 *arg0) {
     s32 i;
