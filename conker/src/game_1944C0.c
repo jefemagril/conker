@@ -5,7 +5,7 @@
 
 
 void func_15168B10(s32 arg0, s32 arg1);
-void func_15168A4C(void *arg0, s32 arg1);
+void func_15168A4C();
 void *func_15167A68(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4, u8 arg5);
 void func_15169070(s32 arg0, s32 arg1, void *arg2, u8 arg3);
 extern u8 D_800D2DAB;
@@ -46,20 +46,26 @@ typedef struct {
     u8 unk0;
 } Game1944C0EventPayloadHeader;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15167010.s")
-// NON-MATCHING: not hugely far away
-// void func_15167010(void) {
-//     void (*func)(void);
-//     s32 i;
-//
-//     for (i = 0; i < 24; i++)
-//     {
-//         func = D_8008B4A8[i].unk18;
-//         if (func != NULL) {
-//             func();
-//         }
-//     }
-// }
+void func_15167010(void) {
+    struct115 *var_s0;
+    struct115 *end;
+    void (*func)(void);
+    s32 pad;
+
+    var_s0 = D_8008B4A8;
+    end = (struct115 *)((u32)var_s0 + 0x1484);
+    pad = 0;
+loop:
+    func = (void (*)(void))var_s0->unk18;
+    if (func != NULL) {
+        func();
+    }
+    var_s0++;
+    pad ^= 0;
+    if ((u32)var_s0 < (u32)end) {
+        goto loop;
+    }
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_1516706C.s")
 // NEAR-MATCHING: loop body matches, but IDO schedules the setup as
@@ -137,28 +143,38 @@ void func_15168A2C(s32 arg0) {
     func_15168B10(arg0, 0);
 }
 
-// NON-MATCHING: JUSTREG 4/20 — opcodes match; list-insert into D_800DCE50[unk1]*0x1A0 + arg1; tip justreg_park
-// void func_15168A4C(void *arg0, s32 arg1) {
-//     typedef struct {
-//         u8 unk0;
-//         u8 unk1;
-//         u8 pad2[2];
-//         void *unk4;
-//         void *unk8;
-//     } Node;
-//     Node *a = arg0;
-//     Node **slot = (Node **)((u8 *)D_800DCE50 + (a->unk1 * 0x1A0) + (arg1 * 4));
-//     Node *t0 = *slot;
-//
-//     a->unk8 = t0;
-//     if (t0 != NULL) {
-//         t0->unk4 = a;
-//     }
-//     a->unk0 = arg1;
-//     a->unk4 = NULL;
-//     *slot = a;
-// }
-#pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15168A4C.s")
+void func_15168A4C(arg0, arg1, arg2, arg3)
+void *arg0;
+s32 arg1;
+s32 arg2;
+s32 arg3;
+{
+    typedef struct {
+        u8 unk0;
+        u8 unk1;
+        u8 pad2[2];
+        void *unk4;
+        void *unk8;
+    } Node;
+    Node *a;
+    s32 v0;
+    Node **slot;
+    Node *t0;
+
+    a = arg0;
+    v0 = a->unk1;
+    slot = (Node **)((u8 *)D_800DCE50 + (v0 * 0x1A0) + (arg1 * 4));
+    t0 = *slot;
+    a->unk8 = t0;
+    if (t0 != NULL) {
+        t0->unk4 = a;
+    }
+    a->unk0 = arg1;
+    a->unk4 = NULL;
+    *slot = a;
+    if (arg2) {}
+    if (arg3) {}
+}
 void func_15168A9C(void *arg0) {
     typedef struct {
         u8 unk0;
