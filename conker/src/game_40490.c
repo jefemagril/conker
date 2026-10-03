@@ -395,31 +395,31 @@ s32 func_15015300(struct134 *arg0) {
 #pragma GLOBAL_ASM("asm/nonmatchings/game_40490/func_15015354.s")
 // NON-MATCHING: JUSTREG 39/44 (justreg 44/44) — `unk14 = 1` interleaved with
 // `unk16 |= 4`; temps $t6/$t8 vs ROM. Named u8 temp grew the frame. tip justreg_park
-#pragma GLOBAL_ASM("asm/nonmatchings/game_40490/func_15015644.s")
-// NON-MATCHING: JUSTREG 39/44 (justreg 44/44) — same unk14=1 / unk16|=4 temp
-// shuffle as func_15015354 ($t6/$t7/$t8). C is otherwise exact. tip justreg_park
-// s32 func_15015644(struct134 *arg0) {
-//     typedef struct {
-//         struct134 *unk0;
-//         f32 unk4;
-//         s32 unk8;
-//         u8 unkC;
-//         u8 padD[3];
-//     } Pack;
-//     Pack p;
-//     struct260 *v0;
-//
-//     *(u8 *)&arg0->unk14 = 1;
-//     arg0->unk16 |= 4;
-//     p.unk0 = arg0;
-//     p.unk4 = func_15144598(arg0);
-//     func_1510F800(0);
-//     p.unk8 = func_1510FD20(arg0->unk0, arg0->unk4);
-//     p.unkC = 0;
-//     v0 = func_15149130(0x12C, -1, 0x44, -1, 0, 0x2F, (struct37 *) 0x10, 0xFF, 0);
-//     if (v0 != NULL) {
-//         memcpy((u8 *) v0 + 0x28, &p, sizeof(p));
-//     }
-//     return 1;
-// }
+s32 func_15015644(struct134 *arg0)
+{
+  typedef struct 
+  {
+    struct134 *unk0;
+    f32 unk4;
+    s32 unk8;
+    u8 unkC;
+    u8 padD[3];
+  } Pack;
+  Pack p;
+  struct260 *v0;
+  arg0->unk16 |= 4;
+  *((u8 *) (&arg0->unk14)) = 1;
+  p.unk0 = arg0;
+  p.unk4 = func_15144598(arg0);
+  func_1510F800(0);
+  p.unk8 = func_1510FD20(arg0->unk0, arg0->unk4);
+  p.unkC = 0;
+  v0 = func_15149130(0x12C, -1, 0x44, -1, 0, 0x2F, (struct37 *) 0x10, 0xFF, 0);
+  if (v0 != 0)
+  {
+    memcpy(((u8 *) v0) + 0x28, &p, sizeof(p));
+  }
+  return 1;
+}
+
 #pragma GLOBAL_ASM("asm/nonmatchings/game_40490/func_150156F4.s")
