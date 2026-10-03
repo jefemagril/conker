@@ -339,22 +339,28 @@ void func_1513555C(struct102 *arg0, s32 *arg1, u8 arg2) {
 }
 
 
-// NON-MATCHING: schedule 10/40 len=0xa0 — beqz/beql vs else-if; tip thrash
-// void func_151355B8(struct102 *arg0, s32 *arg1, u8 arg2) {
-//     if (arg2 == 0) {
-//         if ((arg1[0] == *(s32 *)((s32)arg0 + 0x1C)) ||
-//             (*(u8 *)((s32)arg1 + 4) == *(u8 *)((s32)arg0 + 0x18))) {
-//             func_1516972C(arg0);
-//         }
-//     } else if (arg2 == 3) {
-//         if ((arg1[0] == *(s32 *)((s32)arg0 + 0x1C)) ||
-//             (*(u8 *)((s32)arg1 + 4) == *(u8 *)((s32)arg0 + 0x18))) {
-//             *(s32 *)((s32)arg0 + 0x10) &= ~1;
-//             *(s32 *)((s32)arg0 + 0x10) &= ~1;
-//         }
-//     }
-// }
-#pragma GLOBAL_ASM("asm/nonmatchings/game_161520/func_151355B8.s")
+void func_151355B8(struct102 *arg0, s32 *arg1, u8 arg2) {
+    switch (arg2) {
+    case 0:
+        if ((arg1[0] == *(s32 *)((s32)arg0 + 0x1C)) ||
+            (*(u8 *)((s32)arg1 + 4) == *(u8 *)((s32)arg0 + 0x18))) {
+            if (1) {}
+            func_1516972C(arg0);
+        }
+        break;
+    case 3:
+        if ((arg1[0] == *(s32 *)((s32)arg0 + 0x1C)) ||
+            (*(u8 *)((s32)arg1 + 4) == *(u8 *)((s32)arg0 + 0x18))) {
+            s32 *p = (s32 *)((s32)arg0 + 0x10);
+            s32 t;
+            *p &= ~1;
+            t = *p;
+            *p = t;
+        }
+        break;
+    }
+}
+
 
 s32 func_15135658(struct259 *arg0) {
     s32 ret = 1;
