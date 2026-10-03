@@ -343,30 +343,29 @@ void func_1000FD38(s32 arg0, s32 arg1, s32 arg2)
 //     }
 // }
 #pragma GLOBAL_ASM("asm/nonmatchings/init_EB00/func_1000FDF4.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/init_EB00/func_1000FE88.s")
-// NON-MATCHING: join was m2c_field noise. Commented `arg1 * 0x30` + `arg0[arg1]`
-// is score 8, exact 24/26 justreg 24/26, len 0x68. Remaining 2 insns (not inject-0).
-// ? func_1000FE88(s32 arg0, s32 arg1, void *arg2) {
-//     void *sp1C;
-//     s32 temp_t7;
-//     u16 temp_a0;
-//     void *temp_v1;
-//     ? phi_return;
-//
-//     phi_return = 1;
-//     if (arg1 < *arg2) {
-//         temp_t7 = arg1 * 0x30;
-//         temp_v1 = arg0 + temp_t7;
-//         temp_a0 = temp_v1->unk24;
-//         if (temp_a0 != 0) {
-//             sp1C = temp_v1;
-//             func_100111C8(temp_a0, arg0);
-//         }
-//         (arg0 + temp_t7)->unk10 = (s32) ((arg0 + temp_t7)->unk10 | 0x80);
-//         phi_return = 0;
-//     }
-//     return phi_return;
-// }
+s32 func_1000FE88(struct15 *arg0, s32 arg1, s32 *arg2)
+{
+  struct15 *v1;
+  u16 new_var2;
+  unsigned int new_var3;
+  s32 new_var;
+  new_var = arg1;
+  v1 = arg0;
+  if (new_var < (*arg2))
+  {
+    v1 += new_var;
+    new_var3 = v1->unk24;
+    new_var2 = new_var3;
+    if (new_var2 != 0)
+    {
+      func_100111C8(new_var3);
+    }
+    v1->unk10 |= 0x80;
+    return 0;
+  }
+  return 1;
+}
+
 
 #pragma GLOBAL_ASM("asm/nonmatchings/init_EB00/func_1000FEF0.s")
 // NON-MATCHING: needs a re-work. Typed for/do-while after struct15 still 16–24
