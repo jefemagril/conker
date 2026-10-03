@@ -783,22 +783,18 @@ void func_15162110(s32 arg0) {
 //     }
 //     return v0;
 // }
-#pragma GLOBAL_ASM("asm/nonmatchings/game_18D770/func_15162510.s")
-// s32 func_15162510(struct237 *arg0) {
-//     struct235 *temp_v1;
-//     f32 temp_f0;
-//
-//     temp_f0 = sinf(arg0->unk18.unk18);
-//     temp_v1 = &arg0->unk18;
-//
-//     arg0->unk14->unk5 = temp_v1->unk0 + (temp_f0 * arg0->unk0[2]);
-//     arg0->unk14->unk6 = temp_v1->unk4 + (temp_f0 * temp_v1->unk10);
-//     arg0->unk14->unk7 = temp_v1->unk8 + (temp_f0 * temp_v1->unk14);
-//
-//     temp_v1->unk18 += temp_v1->unk1C * D_800BE9A4;
-//     temp_v1->unk18 = func_15144B68(temp_v1->unk18);
-//     return 1;
-// }
+s32 func_15162510(struct237 *arg0) {
+    struct235 *v1 = (struct235 *)((u8 *)arg0 + 0x18);
+    f32 s;
+    s = sinf(arg0->unk18.unk18);
+    arg0->unk14->unk5 = v1->unk0 + (s * v1->unkC);
+    arg0->unk14->unk6 = v1->unk4 + (s * v1->unk10);
+    arg0->unk14->unk7 = v1->unk8 + (s * v1->unk14);
+    v1->unk18 += v1->unk1C * D_800BE9A4;
+    v1->unk18 = func_15144B68(v1->unk18);
+    return 1;
+}
+
 
 struct225 *func_15162740(s32 arg0, u8 arg1, u8 arg2, u8 arg3, s16 arg4, s8 arg5, u8 arg6, s32 arg7) {
     struct225 *temp_v0;
