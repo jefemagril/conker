@@ -307,29 +307,43 @@ s32 func_150C2FCC(T150C *arg0) {
 //     return 1;
 // }
 
-// NON-MATCHING: 25/52 at 0xd0. tip beql_zero_f32_else_div
-// `t = (d==0) ? 1.0f : n/d` then `gDPSetTileSize(gdl++, 4, uls, ult, 0x1FE, 0x3E)` is the right length; IDO `bnezl` to div vs ROM `beql` + delay mtc1 1.0f.
-// Gfx *func_150C3160(Gfx *gdl, T3160 *arg1) {
-//     f32 t;
-//     s32 v1;
-//     s32 a0;
-//     if (arg1->unk2E8 == 0) {
-//         t = 1.0f;
-//     } else {
-//         t = (f32)arg1->unk2E4 / (f32)arg1->unk2E8;
-//     }
-//     t = 1.0f - t;
-//     a0 = 2 - arg1->unk2EC;
-//     v1 = (s32)((500.0f * t) + 2.0f);
-//     arg1->unk2EC = v1 / 3;
-//     while (a0 < 0) {
-//         a0 += 0x40;
-//     }
-//     gDPSetTileSize(gdl++, 4, v1 & 0xFFF, a0 & 0xFFF, 0x1FE, 0x3E);
-//     return gdl;
-// }
-#pragma GLOBAL_ASM("asm/nonmatchings/game_EF410/func_150C3160.s")
+Gfx *func_150C3160(Gfx *gdl, s8 *arg1)
+{
+  int new_var2;
+  f32 t;
+  s32 v1;
+  s32 new_var;
+  s32 a0;
+  s32 d;
+  d = *((s32 *) (arg1 + 0x2E8));
+  if (d != 0)
+  {
+    t = ((f32) (*((s32 *) (arg1 + 0x2E4)))) / ((f32) d);
+  }
+  else
+  {
+    t = 1.0f;
+  }
+  t = 1.0f - t;
+  new_var = (s32) ((500.0f * t) + 2.0f);
+  a0 = 2 - (*((s32 *) (arg1 + 0x2EC)));
+  v1 = new_var;
+  *((s32 *) (arg1 + 0x2EC)) = v1 / 3;
+  while (a0 < 0)
+  {
+    a0 += 0x40;
+  }
+
+ { Gfx *_g = (Gfx *) (gdl++); _g->words.w0 = ((0xF2 << 24) | ((v1 & 0xFFF) << 12)) | (a0 & 0xFFF);
+    new_var2 = 0x1FE;
+    _g->words.w1 = ((4 << 24) | (new_var2 << 12)) | 0x3E;
+  }
+  return gdl;
+}
+
+
 #pragma GLOBAL_ASM("asm/nonmatchings/game_EF410/func_150C3230.s")
+
 #pragma GLOBAL_ASM("asm/nonmatchings/game_EF410/func_150C3574.s")
 #pragma GLOBAL_ASM("asm/nonmatchings/game_EF410/func_150C3994.s")
 
