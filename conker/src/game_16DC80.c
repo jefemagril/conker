@@ -153,46 +153,41 @@ s32 func_15141564(void *arg0) {
 }
 
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_16DC80/func_151415D4.s")
-// NON-MATCHING: 1 insn short (0x110 vs 0x114). Park. First 6 words match (lwc1
-// unk17C/180 from $a0, addiu $v0,$a0,0x170, c.lt.s, nop, bc1fl). Missing
-// remat `addiu $v0,$a0,0x170` in the unkC<unk10 arm (ROM then lwc1 4($v0)).
-// Reassigning m / nested q / a->unk170.unk4 CSE to lwc1 0x174($a0) or add
-// move $v0,$v1. Named d/s temps get the second-arm load order (unk10, unk20,
-// unk8) at 0x114 only with the extra v1 copy (22/69). Sibling of matched
-// func_15141564. Leave asm.
-// s32 func_151415D4(void *arg0) {
-//     typedef struct {
-//         f32 unk0, unk4, unk8, unkC, unk10, unk14, unk18, unk1C, unk20;
-//     } Mid;
-//     typedef struct {
-//         u8 pad[0x158];
-//         f32 unk158;
-//         u8 pad15C[0x14];
-//         Mid unk170;
-//     } Local;
-//     Local *a = arg0;
-//     Mid *m = &a->unk170;
-//     f32 d, s;
-//
-//     if (m->unkC < m->unk10) {
-//         a->unk158 = m->unk4;
-//     } else if (m->unkC < m->unk14) {
-//         d = m->unkC - m->unk10;
-//         s = d * m->unk20;
-//         a->unk158 = m->unk4 + (m->unk8 * s);
-//     } else if (m->unkC < m->unk18) {
-//         a->unk158 = m->unk0;
-//     } else {
-//         d = m->unkC - m->unk18;
-//         a->unk158 = m->unk4 + (m->unk8 * (1.0f - (d * m->unk20)));
-//     }
-//     m->unkC = m->unkC + D_800BE9A4;
-//     while (m->unk1C < m->unkC) {
-//         m->unkC = m->unkC - m->unk1C;
-//     }
-//     return 1;
-// }
+s32 func_151415D4(void *arg0) {
+    typedef struct {
+        f32 unk0, unk4, unk8, unkC, unk10, unk14, unk18, unk1C, unk20;
+    } Mid;
+    typedef struct {
+        u8 pad[0x158];
+        f32 unk158;
+        u8 pad15C[0x14];
+        Mid unk170;
+    } Local;
+    Local *a = arg0;
+    Mid *m = &a->unk170;
+    f32 d;
+    if (m->unkC < m->unk10) {
+        if (1) {}
+        a->unk158 = m->unk4;
+    } else if (m->unkC < m->unk14) {
+        f32 s;
+        s = (m->unkC - m->unk10) * m->unk20;
+        a->unk158 = m->unk4 + (m->unk8 * s);
+    } else if (m->unkC < m->unk18) {
+        a->unk158 = m->unk0;
+    } else {
+        d = 1.0f - ((m->unkC - m->unk18) * m->unk20);
+        a->unk158 = m->unk4 + (m->unk8 * d);
+
+    }
+    m->unkC = m->unkC + D_800BE9A4;
+
+    while (m->unk1C < m->unkC) {
+        m->unkC = m->unkC - m->unk1C;
+    }
+    return 1;
+}
+
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_16DC80/func_151416E8.s")
 
