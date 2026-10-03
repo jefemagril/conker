@@ -409,7 +409,42 @@ void func_1000E40C(s32 arg0, s32 arg1) {
 }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/init_B1B0/func_1000E46C.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/init_B1B0/func_1000E588.s")
+s32 func_1000E588(s32 arg0, s32 arg1, s32 arg2)
+{
+  struct151 *temp_v0;
+  temp_v0 = func_1000B1FC(arg0);
+  arg1 = arg1;
+  if (temp_v0 != 0)
+  {
+    if (temp_v0->unk0 >= 0)
+    {
+      if (arg1 >= 0x65)
+      {
+        arg1 = 0x64;
+      }
+      else
+        if (0 > arg1)
+      {
+        arg1 = 0;
+      }
+      func_1000886C(((u8 *) temp_v0)[3], arg2, (arg1 * 0xFF) / 100);
+      return 1;
+    }
+    arg1 = arg1;
+    if (arg1 <= 0)
+    {
+      temp_v0->unk38 |= arg2;
+      return 1;
+    }
+    if (arg1 > 0)
+    {
+      temp_v0->unk38 &= ~arg2;
+      return 1;
+    }
+  }
+  return 0;
+}
+
 
 s32 func_1000E654(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     struct151 *sp1C;
