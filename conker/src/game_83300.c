@@ -660,7 +660,46 @@ void func_1505959C(struct127 *arg0, s32 arg1) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_150597FC.s")
+void func_150597FC(struct127 *arg0)
+{
+  s32 i;
+  struct126 *temp_a2;
+  struct127 *new_var;
+  s32 new_var2;
+  struct127 *temp;
+  u8 temp_v1;
+  s32 one;
+  one = 1;
+  new_var2 = D_800CC268;
+  for (i = 0; i < D_8008FD8C; i++)
+  {
+    temp = &D_800CC2D0[i];
+    if (((((((1 << i) & new_var2) && (temp->unk13C == 0)) && (temp->disable_run == 0)) && (temp->interaction_state == one)) && (temp->stunned == 0)) && (temp->unk127 != 0xFF))
+    {
+      break;
+    }
+  }
+
+  if (i != D_8008FD8C)
+  {
+    temp = &D_800CC2D0[i];
+    if (temp->unk13C == 0)
+    {
+      temp_a2 = temp->unk31C;
+      if ((((((((((temp_a2->unk27 == 0) && (temp->health != 0)) && (arg0->unk13D == (one * 0))) && (((arg0->stunned != 0) || (arg0->unk25C & 0x1000)) || (arg0->id == 0x57))) && (arg0->unk28 == 0.0f)) && (temp->unk28 == 0.0f)) && (arg0->unk25C & 8)) && (temp_a2->unk19B == 0)) && (((temp_v1 = arg0->id, temp_v1 != 0xA9)) || ((*((u8 *) (&temp->pad128))) == 0))) && ((temp_v1 != 0xA8) || ((*((u8 *) (&temp->pad128))) != 0)))
+      {
+        if (temp_v1)
+        {
+        }
+        (new_var = temp)->unk13C = D_800C3E78 + 0x64;
+        new_var->xz_velocity = 0.0f;
+        *((s16 *) (((u8 *) temp_a2) + 0x18)) = 0;
+        one = one * 0;
+        func_1505959C(arg0, i);
+      }
+    }
+  }
+}
 #pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_150599C8.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/game_83300/func_15059B54.s")
