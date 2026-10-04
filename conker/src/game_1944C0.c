@@ -112,7 +112,69 @@ void func_15167AD8(void *arg0, u8 arg1, s32 arg2) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15167B44.s")
+void func_15167B44(void *arg0)
+{
+  typedef struct 
+  {
+    u8 pad[4];
+    u8 unk4;
+  } Inner;
+  typedef struct 
+  {
+    u8 pad0[0x10];
+    Inner *unk10;
+    s16 unk14;
+    s16 unk16;
+    u8 pad18[0xA];
+    s8 unk22;
+    u8 unk23;
+    u8 unk24;
+  } Local;
+  Local *a = arg0;
+  s8 v1;
+  unsigned int v0;
+  s16 a2;
+  if (a->unk24 != 0)
+  {
+    D_8008CA20[a->unk24]((Game1944C0Dispatch *) a);
+  }
+  v1 = a->unk22;
+  if (v1 > 0)
+  {
+    v0 = a->unk23;
+    if (v1 < ((s32) v0))
+    {
+      a->unk23 = v0 - v1;
+    }
+    else
+    {
+      a->unk14 = a->unk10->unk4 << 8;
+    }
+  }
+  else
+    if (v1 < 0)
+  {
+    a2 = a->unk14;
+    if ((a2 / 256) >= (a->unk10->unk4 - 1))
+    {
+      if ((v1 && v1) && v1)
+      {
+      }
+      v0 = a->unk23;
+      if ((-v1) < ((s32) v0))
+      {
+        a->unk23 = v0 - (-v1);
+        a->unk14 = a2 - a->unk16;
+      }
+    }
+  }
+  a->unk14 = a->unk14 + a->unk16;
+  if ((a->unk14 / 256) >= ((s32) a->unk10->unk4))
+  {
+    func_1516972C((struct102 *) a);
+  }
+}
+
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1944C0/func_15167C58.s")
 void *func_15167D84(void *arg0, s32 arg1, s32 arg2, s8 arg3, u8 arg4, s32 arg5) {
     void *v0 = func_15167A68(arg1 == 0 ? 5 : 0x42, arg5, arg2 + 0x50, 0, arg4, 1);
