@@ -995,7 +995,22 @@ s32 func_151380B4(struct102 *arg0, s32 arg1, s32 arg2) {
 //         }
 //     }
 // }
-#pragma GLOBAL_ASM("asm/nonmatchings/game_161520/func_15138BC0.s")
+void func_15138BC0(s32 arg0, u8 arg1, s32 arg2) {
+    s32 sp50[4];
+    u8 sp28[0x20];
+    s32 temp_v0;
+    u8 *a1p = &arg1;
+    temp_v0 = func_15134070(arg0);
+    if (temp_v0 != 0x63) {
+        sp28[0x1F] = func_151380B4(arg0, temp_v0, (s32)sp50);
+        func_15138120(arg0, temp_v0, 1);
+        if (sp28[0x1F] != 0) {
+            func_1504715C(sp28 - 8, arg0);
+            func_151382E0(sp50, temp_v0, (s32)(sp28 - 8), *a1p, arg2);
+            func_15138424(arg0, sp50, temp_v0, sp28 - 8, *a1p, arg2);
+        }
+    }
+}
 
 // NON-MATCHING: jtbl jtbl_800A4874 — defer Wave 7
 #pragma GLOBAL_ASM("asm/nonmatchings/game_161520/func_15138C80.s")
