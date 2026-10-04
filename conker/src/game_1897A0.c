@@ -102,31 +102,29 @@ s32 func_1515D030(Game1897A0Ring *arg0, s32 arg1) {
 }
 
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_1897A0/func_1515D088.s")
-// NON-MATCHING: 23/42 at right 0xa8 — Pack at 0x34 vs ROM 0x30; andi $v1 vs $v0. tip justreg_park / stack
-// void *func_1515D088(void *arg0) {
-//     typedef struct {
-//         void *unk0;
-//         f32 unk4;
-//         s8 unk8;
-//     } Pack;
-//     Pack sp30;
-//     s32 v0;
-//     void *ret;
-//
-//     v0 = *(s32 *)((u8 *)arg0 + 0x18) & 0xFF;
-//     sp30.unk8 = *(s32 *)((u8 *)arg0 + 0x18);
-//     if ((v0 < 0) || (v0 >= 2)) {
-//         return NULL;
-//     }
-//     sp30.unk0 = arg0;
-//     sp30.unk4 = 0.0f;
-//     ret = func_151491F4(0x12C, -1, 0x11, 0, 0xD, 0xC, 0xFF, 1);
-//     if (ret != NULL) {
-//         memcpy((u8 *)ret + 0x28, &sp30, 0xC);
-//     }
-//     return ret;
-// }
+void *func_1515D088(void *arg0) {
+    typedef struct {
+        void *unk0;
+        f32 unk4;
+        s8 unk8;
+    } Pack;
+    void *ret;
+    Pack pack;
+    s32 v0;
+
+    pack.unk8 = *(s32 *)((u8 *)arg0 + 0x18);
+    v0 = (u8)pack.unk8;
+    if ((v0 < 0) || (v0 >= 2)) {
+        return 0;
+    }
+    pack.unk0 = arg0;
+    pack.unk4 = 0.0f;
+    ret = func_151491F4(0x12C, -1, 0x11, 0, 0xD, 0xC, 0xFF, 1);
+    if (ret != 0) {
+        memcpy((u8 *)ret + 0x28, &pack, 0xC);
+    }
+    return ret;
+}
 
 // fat struct
 #pragma GLOBAL_ASM("asm/nonmatchings/game_1897A0/func_1515D130.s")
