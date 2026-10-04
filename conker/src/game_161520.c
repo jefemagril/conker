@@ -216,30 +216,31 @@ s32 func_15134CEC(void *arg0) {
     return 1;
 }
 
-// NON-MATCHING: JUSTREG 35/39 — tip justreg_park; do not thrash
-// void *func_15134DAC(void *arg0, s32 arg1) {
-//     void *v1;
-//     void *v0;
-//     void *t8;
-//     s16 t9;
-// 
-//     v1 = func_15167A68(0x29, 0, arg1 + 0x80, 1, 0xFF, 1);
-//     if (v1 == 0) {
-//         return 0;
-//     }
-//     memcpy((void *)((s32)v1 + 0x18), arg0, 0x3C);
-//     t8 = arg0;
-//     v0 = v1;
-//     t9 = *(s16 *)((s32)t8 + 0x28);
-//     *(s32 *)((s32)v0 + 0x10) = 1;
-//     *(s16 *)((s32)v0 + 0x54) = -t9;
-//     *(s32 *)((s32)v0 + 0x14) = 0;
-//     *(f32 *)((s32)v0 + 0x70) = 0.0f;
-//     *(f32 *)((s32)v0 + 0x74) = 0.0f;
-//     *(f32 *)((s32)v0 + 0x78) = 0.0f;
-//     return v0;
-// }
-#pragma GLOBAL_ASM("asm/nonmatchings/game_161520/func_15134DAC.s")
+void *func_15134DAC(void *arg0, s32 arg1) {
+    void *v1;
+    void *v0;
+    void *t8;
+    s16 t9;
+    f32 f0;
+
+    v1 = func_15167A68(0x29, 0, arg1 + 0x80, 1, 0xFF, 1);
+    if (v1 == 0) {
+        return 0;
+    }
+    memcpy((void *)((s32)v1 + 0x18), arg0, 0x3C);
+    t8 = arg0;
+    v0 = v1;
+    f0 = 0.0f;
+    t9 = ((((((((((*((s16 *)(((s32)t8) + 0x28))) & 0xFFFF) & 0xFFFF) & 0xFFFF) & 0xFFFF) & 0xFFFF) & 0xFFFF) & 0xFFFF) & 0xFFFF) & 0xFFFF);
+    *((s16 *)(((s32)v0) + 0x54)) = -t9;
+    *((s32 *)(((s32)v0) + 0x10)) = 1;
+    *((s32 *)(((s32)v0) + 0x14)) = 0;
+    *((f32 *)(((s32)v0) + 0x70)) = f0;
+    *((f32 *)(((s32)v0) + 0x74)) = f0;
+    *((f32 *)(((s32)v0) + 0x78)) = f0;
+    return v0;
+}
+
 
 // NON-MATCHING: parked — schedule/JUSTREG/length; leave asm
 #pragma GLOBAL_ASM("asm/nonmatchings/game_161520/func_15134E48.s")
