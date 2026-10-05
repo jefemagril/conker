@@ -204,9 +204,8 @@ void func_151D33FC(struct224 *arg0, struct223 *arg1) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_1FFF60/func_151D343C.s")
-// NON-MATCHING: ops in wrong order
-// void func_151D343C(s32 arg0, u8 arg1) {
-//     s32 sp1C[1] = D_800AB168;
-//     func_15169260(sp1C, 1, arg0, arg1);
-// }
+void func_151D343C(s32 arg0, u8 arg1) {
+    s32 sp1C[1] = D_800AB168;
+    func_15169260(sp1C, 1, arg0, arg1);
+}
+
