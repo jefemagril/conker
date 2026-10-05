@@ -481,29 +481,27 @@ void func_150766D0(void) {
 void func_15076760(void) {
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/game_A28B0/func_15076768.s")
-// NON-MATCHING: 21/35 — need beq + `lui a1, %hi(D_800D154C)` delay + frame 0x50.
-// plain switch: frame 0x50 but beql/-390 delay + orphan lui (0x90).
-// xz temps: size 0x8C + beq, but frame 0x58 and delay=addiu mtx; actor in $v0.
-// void func_15076768(void) {
-//     f32 pos[3];
-//     f32 sp20[9];
-//
-//     switch (D_800D1890) {
-//     case 0:
-//         func_15197A7C(D_800D154C);
-//         break;
-//     case 1: {
-//         struct127 *a1 = D_800D154C;
-//         pos[1] = -390.0f;
-//         pos[0] = a1->x_position;
-//         pos[2] = a1->z_position;
-//         func_1504715C(sp20);
-//         func_1514B364(pos, sp20, 0xFF, 0);
-//         break;
-//     }
-//     }
-// }
+void func_15076768(void) {
+    f32 pos[3];
+    f32 sp20[9];
+
+    switch (D_800D1890) {
+    case 0:
+        func_15197A7C(D_800D154C);
+        break;
+    case 1: {
+        struct127 *a1 = D_800D154C;
+        pos[0] = a1->x_position;
+        pos[1] = -390.0f;
+        pos[2] = a1->z_position;
+        dummy_label_222019: ;
+        func_1504715C(sp20, a1);
+        func_1514B364(pos, sp20, 0xFF, 0);
+        break;
+    }
+    }
+}
+
 
 
 void func_150767F4(void) {
@@ -1430,11 +1428,14 @@ void func_1507A428(void) {
 
 
 // NON-MATCHING: exact 4/22 justreg 15/22 len 0x58 — tip pack_u8_seq_lui_vs_pair
-#pragma GLOBAL_ASM("asm/nonmatchings/game_A28B0/func_1507A47C.s")
-// void func_1507A47C(void) {
-//     s32 tmp = (D_800D1890 << 0x18) | (D_800D1891 << 0x10) | (D_800D1892 << 8) | D_800D1893;
-//     D_800D154C->unk94 &= ~tmp;
-// }
+void func_1507A47C(void)
+{
+  struct127 *new_var;
+  s32 tmp = ((((D_800D1890 << 16) << 8) | (((((((((((D_800D1891 & 0xFFFF) & 0xFFFF) & 0xFFFF) & 0xFFFF) & 0xFFFF) & 0xFFFF) & 0xFFFF) & 0xFFFF) & 0xFFFF) & 0xFFFF) << 0x10)) | ((D_800D1892 << 3) << 5)) | (D_800D1893 & 0xFFu);
+  new_var = (0, D_800D154C);
+  new_var->unk94 &= ~tmp;
+}
+
 
 
 // NON-MATCHING: exact 5/21 justreg 16/21 len 0x54 — tip pack_u8_seq_lui_vs_pair
