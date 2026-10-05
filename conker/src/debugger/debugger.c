@@ -304,7 +304,29 @@ void func_16001338(u8 arg0, u8 arg1, u8 arg2) {
 #pragma GLOBAL_ASM("asm/nonmatchings/debugger/debugger/func_1600160C.s")
 
 // contains delay slot
-#pragma GLOBAL_ASM("asm/nonmatchings/debugger/debugger/func_16001678.s")
+void func_16001678(void) {
+    u32 *v0 = (u32 *)D_8002AAE8[D_16003888];
+    s32 width = D_160038A8;
+    s32 stride;
+    u32 *end;
+    u32 fill;
+
+    if (width == 0x124) {
+        stride = 0xD7;
+    } else {
+        stride = 0x108;
+    }
+    end = v0 + ((width >> 1) * stride);
+    fill = 0x10001;
+    while (v0 < end) {
+        v0 += 4;
+        v0[-4] = fill;
+        v0[-3] = fill;
+        v0[-2] = fill;
+        v0[-1] = fill;
+    }
+}
+
 
 s32 func_160016F4(s32 arg0) {
     return arg0;
