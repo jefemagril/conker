@@ -76,7 +76,38 @@ void func_1000E40C(s32, s32);
 // }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/init_A420/func_1000A750.s")
-#pragma GLOBAL_ASM("asm/nonmatchings/init_A420/func_1000B060.s")
+s32 func_1000B060(f32 arg0, f32 arg1, s32 arg2) {
+    struct {
+        f32 sp18;
+        s16 a1;
+    } sp;
+    s16 v1;
+    s32 temp_f6;
+
+    sp.sp18 = sqrtf((arg0 * arg0) + (arg1 * arg1));
+    if (D_8002C214 < sp.sp18) {
+        sp.sp18 = arg0 / sp.sp18;
+    }
+    sp.a1 = 0x80;
+    temp_f6 = (s32) (((f64) func_150487E0(sp.sp18)) * D_8002C218);
+    v1 = (s16) temp_f6;
+    if (0.0f < arg1) {
+        v1 = (((s16) temp_f6) < 0) ? ((-0x80) - ((s16) temp_f6)) : (0x80 - ((s16) temp_f6));
+    }
+    v1 = (s8) (((v1 + arg2) & 0xFFu) & 0xFFu);
+    if ((v1 >= 0x60) || (v1 < (-0x60))) {
+        v1 = 0;
+    } else if (v1 >= 0x20) {
+        v1 = 0x5F - v1;
+    } else if (v1 < (-0x20)) {
+        v1 = (-0x5F) - v1;
+    } else {
+        sp.a1 = 0;
+        v1 = v1 + v1;
+    }
+    return (v1 + 0x40) | sp.a1;
+}
+
 // NON-MATCHING: fair amount to fix up
 // s32 func_1000B060(f32 arg0, f32 arg1, s32 arg2) {
 //     s16 phi_a1;
