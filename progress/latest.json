@@ -1,33 +1,33 @@
 {
-  "timestamp": "2026-09-22T21:08:20Z",
-  "commit": "1e7acc4",
+  "timestamp": "2026-10-05T02:04:37Z",
+  "commit": "b36cc83",
   "sections": {
     "total": {
-      "percent": 12.739,
-      "c_bytes": 287484,
+      "percent": 13.0561,
+      "c_bytes": 294640,
       "bytes": 2256728,
-      "c_funcs": 2251,
+      "c_funcs": 2288,
       "funcs": 8031
     },
     "init": {
-      "percent": 61.1211,
-      "c_bytes": 100268,
+      "percent": 61.7136,
+      "c_bytes": 101240,
       "bytes": 164048,
-      "c_funcs": 416,
+      "c_funcs": 421,
       "funcs": 575
     },
     "game": {
-      "percent": 8.6226,
-      "c_bytes": 178736,
+      "percent": 8.9149,
+      "c_bytes": 184796,
       "bytes": 2072880,
-      "c_funcs": 1671,
+      "c_funcs": 1702,
       "funcs": 7274
     },
     "debugger": {
-      "percent": 42.8283,
-      "c_bytes": 8480,
+      "percent": 43.4545,
+      "c_bytes": 8604,
       "bytes": 19800,
-      "c_funcs": 164,
+      "c_funcs": 165,
       "funcs": 182
     }
   }
