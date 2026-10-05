@@ -346,8 +346,24 @@ void func_1506BCA0(void) {
 
 // ???
 // NON-MATCHING: deferred mid/hard leaf (size 0x120)
-#pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_1506BCC8.s")
-// NON-MATCHING: 27/72 size-ok — id==0x16 / unk180 y_velocity path; control-flow schedule off
+void func_1506BCC8(void) {
+    struct127 *v1 = D_800D154C;
+
+    if (v1->interaction_state == 0x16) {
+        if (v1->y_position == v1->unk180) {
+            D_800D154C->y_velocity = (f32)((func_151EF610() % 8) + D_800D1580);
+            v1 = D_800D154C;
+            if (v1->xz_velocity != 0.0f) {
+                v1->y_velocity *= v1->xz_velocity / 40.0f;
+            } else {
+                v1->y_velocity = 0.0f;
+            }
+        }
+    } else if ((v1->y_position - v1->unk180) > -5.0f && (v1->y_position - v1->unk180) < 5.0f) {
+        v1->y_velocity = (f32)D_800D1580;
+    }
+}
+
 
 void func_1506BDE8(void) {
     if (D_800D154C->y_position < D_80099C40) {
@@ -468,7 +484,35 @@ void func_1506D570(void) {
 // NON-MATCHING: deferred mid/hard leaf (size 0x130)
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_1506D584.s")
 // NON-MATCHING: float→int FPCSR path (cvt.w.s); paired with 6D6B4
-#pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_1506D6B4.s")
+void func_1506D6B4(void)
+{
+  f32 temp_f0;
+  unsigned short var_v0;
+  struct127 *v0;
+  struct127 *new_var;
+  new_var = D_800D154C;
+  v0 = new_var;
+  temp_f0 = v0->unk118;
+  if (v0->unk118 == D_80099D4C)
+  {
+    return;
+  }
+  if (temp_f0 < ((f32) v0->unk1A6))
+  {
+    return;
+  }
+  if (((s32) v0->health) >= 2)
+  {
+    var_v0 = 0x2C;
+  }
+  else
+  {
+    var_v0 = 0x29;
+  }
+  *(&D_800D1580) = ((var_v0 << 10) << 14) | ((*(&D_800D1580)) & 0xFFFF);
+  func_1506D584();
+}
+
 // NON-MATCHING: 13–16/38 size-ok — f4=D99D4C then f0=unk118 fixes c.eq order; health via
 // if(health>=2) 0x2C else 0x29 gives dual-b + 0x29-first; still rematerializes &D1580 store
 // (need lui/addiu $v1 kept for lw/sw 0($v1); volatile adds addiu but keeps remat sw → 0x9c)
@@ -1470,9 +1514,18 @@ void func_15071A34(s32 arg0) {
 }
 
 // NON-MATCHING: deferred mid/hard leaf (size 0xb4)
-#pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_15071A64.s")
-// NON-MATCHING: JUSTREG 45/45 exact 41/45 — body ok (struct199/health/stunned); D_800D154C in $v0 not $a1
-// and lui $at/$v0 schedule vs target (JUSTREG-ish)
+void func_15071A64(u16 arg0) {
+    f32 sp4C[3];
+    s32 sp28[9];
+
+    if (!(func_150ADA20() & 1) && (D_800D154C->unk1D4 != NULL)
+        && ((D_800D154C->unk74 & 0xF) != 0xF) && (D_800CC2D0->stunned != 0)
+        && (D_800CC2D0->health > 0)) {
+        func_1504715C(sp28, D_800D154C);
+        func_15143134(D_80099BBC, sp4C, (s32)D_800D154C->unk1D4 + 0x3C0);
+        func_151DC484(sp4C, sp28, 0, 0xFF, 1);
+    }
+}
 #pragma GLOBAL_ASM("asm/nonmatchings/game_981E0/func_15071B18.s")
 // NON-MATCHING: size 0x1f0 — unk1D4/unk74 gates; 99BC8 + 15143134 / DC260 / 52190
 
